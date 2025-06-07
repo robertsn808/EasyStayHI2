@@ -131,6 +131,18 @@ export const calendarEvents = pgTable("calendar_events", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const contacts = pgTable("contacts", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }),
+  message: text("message"),
+  company: varchar("company", { length: 255 }),
+  position: varchar("position", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const inquiries = pgTable("inquiries", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -138,6 +150,36 @@ export const inquiries = pgTable("inquiries", {
   phone: varchar("phone", { length: 50 }),
   message: text("message").notNull(),
   status: varchar("status", { length: 50 }).default("new"), // new, contacted, closed
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const inventory = pgTable("inventory", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  quantity: integer("quantity").notNull().default(0),
+  category: varchar("category", { length: 100 }),
+  location: varchar("location", { length: 255 }),
+  condition: varchar("condition", { length: 50 }).default("good"), // good, fair, poor, damaged
+  purchaseDate: date("purchase_date"),
+  purchasePrice: numeric("purchase_price", { precision: 10, scale: 2 }),
+  supplier: varchar("supplier", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const receipts = pgTable("receipts", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+  category: varchar("category", { length: 100 }),
+  vendor: varchar("vendor", { length: 255 }),
+  receiptDate: date("receipt_date").notNull(),
+  description: text("description"),
+  receiptUrl: varchar("receipt_url", { length: 500 }),
+  paymentMethod: varchar("payment_method", { length: 50 }),
+  roomId: integer("room_id").references(() => rooms.id),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -162,8 +204,11 @@ export type InsertTenantSession = typeof tenantSessions.$inferInsert;
 export type InsertMaintenanceRequest = typeof maintenanceRequests.$inferInsert;
 export type InsertPayment = typeof payments.$inferInsert;
 export type InsertNotification = typeof notifications.$inferInsert;
+export type InsertContact = typeof contacts.$inferInsert;
 export type InsertAnnouncement = typeof announcements.$inferInsert;
 export type InsertCalendarEvent = typeof calendarEvents.$inferInsert;
+export type InsertInventory = typeof inventory.$inferInsert;
+export type InsertReceipt = typeof receipts.$inferInsert;
 export type InsertInquiry = typeof inquiries.$inferInsert;
 export type InsertTodo = typeof todos.$inferInsert;
 
@@ -175,7 +220,23 @@ export type SelectTenantSession = typeof tenantSessions.$inferSelect;
 export type SelectMaintenanceRequest = typeof maintenanceRequests.$inferSelect;
 export type SelectPayment = typeof payments.$inferSelect;
 export type SelectNotification = typeof notifications.$inferSelect;
+export type SelectContact = typeof contacts.$inferSelect;
 export type SelectAnnouncement = typeof announcements.$inferSelect;
 export type SelectCalendarEvent = typeof calendarEvents.$inferSelect;
+export type SelectInventory = typeof inventory.$inferSelect;
+export type SelectReceipt = typeof receipts.$inferSelect;
 export type SelectInquiry = typeof inquiries.$inferSelect;
 export type SelectTodo = typeof todos.$inferSelect;
+
+// Type aliases for compatibility
+export type User = SelectUser;
+export type UpsertUser = InsertUser;
+export type Building = SelectBuilding;
+export type Room = SelectRoom;
+export type Inquiry = SelectInquiry;
+export type Contact = SelectContact;
+export type Announcement = SelectAnnouncement;
+export type CalendarEvent = SelectCalendarEvent;
+export type InventoryItem = SelectInventory;
+export type Receipt = SelectReceipt;
+export type Todo = SelectTodo;
