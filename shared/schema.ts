@@ -240,3 +240,44 @@ export type CalendarEvent = SelectCalendarEvent;
 export type InventoryItem = SelectInventory;
 export type Receipt = SelectReceipt;
 export type Todo = SelectTodo;
+
+// Validation schemas (simplified - using the insert types as schemas)
+export const insertInquirySchema = {
+  parse: (data: any) => data as InsertInquiry
+};
+export const insertContactSchema = {
+  parse: (data: any) => data as InsertContact
+};
+export const insertAnnouncementSchema = {
+  parse: (data: any) => data as InsertAnnouncement
+};
+export const insertCalendarEventSchema = {
+  parse: (data: any) => data as InsertCalendarEvent
+};
+export const insertInventorySchema = {
+  parse: (data: any) => data as InsertInventory
+};
+export const insertReceiptSchema = {
+  parse: (data: any) => data as InsertReceipt
+};
+export const insertTodoSchema = {
+  parse: (data: any) => data as InsertTodo
+};
+export const insertRoomSchema = {
+  parse: (data: any) => data as InsertRoom
+};
+export const insertBuildingSchema = {
+  parse: (data: any) => data as InsertBuilding
+};
+export const insertTenantSessionSchema = {
+  parse: (data: any) => data as InsertTenantSession
+};
+export const insertMaintenanceRequestSchema = {
+  parse: (data: any) => data as InsertMaintenanceRequest
+};
+export const insertPaymentSchema = {
+  parse: (data: any) => data as InsertPayment
+};
+export const insertNotificationSchema = {
+  parse: (data: any) => data as InsertNotification
+};
