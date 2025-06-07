@@ -19,6 +19,17 @@ import {
 } from "lucide-react";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import type { Inquiry, Contact, CalendarEvent, InventoryItem, Receipt, Todo } from "@shared/schema";
+import {
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/index";
 
 export default function AdminTabs() {
   const { toast } = useToast();
@@ -199,7 +210,7 @@ export default function AdminTabs() {
     <Card className="shadow-sm">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <div className="border-b border-gray-200">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-11">
             <TabsTrigger value="inquiries" className="relative">
               Inquiries
               {newInquiriesCount > 0 && (
@@ -664,6 +675,414 @@ function PaymentsTab({ payments, onUpdateStatus }: { payments: any[], onUpdateSt
           </Card>
         );
       })}
+    </div>
+  );
+}
+
+function NotificationsTab() {
+  const [newNotification, setNewNotification] = useState({
+    title: "",
+    message: "",
+    type: "info" as const,
+    roomId: "",
+  });
+
+  const { data: rooms } = useQuery({
+    queryKey: ["/api/admin/rooms"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/admin/rooms");
+      return await response.json();
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/admin/notifications", {
+        ...data,
+        roomId: data.roomId ? parseInt(data.roomId) : null,
+      });
+      return await response.json();
+    },
+    onSuccess: () => {
+      setNewNotification({ title: "", message: "", type: "info", roomId: "" });
+      toast({
+        title: "Success",
+        description: "Notification sent successfully",
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newNotification.title.trim() || !newNotification.message.trim()) return;
+    createMutation.mutate(newNotification);
+  };
+
+  return (
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg">
+        <h3 className="text-lg font-medium">Send Notification</h3>
+        <Input
+          placeholder="Notification title"
+          value={newNotification.title}
+          onChange={(e) => setNewNotification(prev => ({ ...prev, title: e.target.value }))}
+        />
+        <Textarea
+          placeholder="Notification message"
+          value={newNotification.message}
+          onChange={(e) => setNewNotification(prev => ({ ...prev, message: e.target.value }))}
+        />
+        <Select value={newNotification.type} onValueChange={(value: any) => setNewNotification(prev => ({ ...prev, type: value }))}>
+          <SelectTrigger>
+            <SelectValue placeholder="Notification type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="info">Info</SelectItem>
+            <SelectItem value="warning">Warning</SelectItem>
+            <SelectItem value="payment">Payment</SelectItem>
+            <SelectItem value="maintenance">Maintenance</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={newNotification.roomId} onValueChange={(value) => setNewNotification(prev => ({ ...prev, roomId: value }))}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select room (optional - leave empty for global)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Rooms (Global)</SelectItem>
+            {rooms?.map((room: any) => (
+              <SelectItem key={room.id} value={room.id.toString()}>
+                Room {room.number}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button type="submit" disabled={createMutation.isPending}>
+          {createMutation.isPending ? "Sending..." : "Send Notification"}
+        </Button>
+      </form>
+    </div>
+  );
+}
+
+function AnnouncementsTab() {
+  const { data: announcements, isLoading } = useQuery({
+    queryKey: ["/api/admin/announcements"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/admin/announcements");
+      return await response.json();
+    },
+  });
+
+  const [newAnnouncement, setNewAnnouncement] = useState({
+    title: "",
+    content: "",
+    type: "info" as const,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/admin/announcements", data);
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/announcements"] });
+      setNewAnnouncement({ title: "", content: "", type: "info" });
+      toast({
+        title: "Success",
+        description: "Announcement created successfully",
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAnnouncement.title.trim() || !newAnnouncement.content.trim()) return;
+    createMutation.mutate(newAnnouncement);
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg">
+        <h3 className="text-lg font-medium">Create New Announcement</h3>
+        <Input
+          placeholder="Announcement title"
+          value={newAnnouncement.title}
+          onChange={(e) => setNewAnnouncement(prev => ({ ...prev, title: e.target.value }))}
+        />
+        <Textarea
+          placeholder="Announcement content"
+          value={newAnnouncement.content}
+          onChange={(e) => setNewAnnouncement(prev => ({ ...prev, content: e.target.value }))}
+        />
+        <Select value={newAnnouncement.type} onValueChange={(value: any) => setNewAnnouncement(prev => ({ ...prev, type: value }))}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="info">Info</SelectItem>
+            <SelectItem value="warning">Warning</SelectItem>
+            <SelectItem value="success">Success</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button type="submit" disabled={createMutation.isPending}>
+          {createMutation.isPending ? "Creating..." : "Create Announcement"}
+        </Button>
+      </form>
+
+      <div className="space-y-4">
+        {announcements?.map((announcement: any) => (
+          <Card key={announcement.id}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                {announcement.title}
+                <Badge variant={announcement.type === "warning" ? "destructive" : "default"}>
+                  {announcement.type}
+                                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{announcement.content}</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Created: {new Date(announcement.createdAt).toLocaleDateString()}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MaintenanceTab() {
+  const { data: requests, isLoading } = useQuery({
+    queryKey: ["/api/admin/maintenance"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/admin/maintenance");
+      return await response.json();
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, ...data }: any) => {
+      const response = await apiRequest("PUT", `/api/admin/maintenance/${id}`, data);
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/maintenance"] });
+      toast({
+        title: "Success",
+        description: "Maintenance request updated successfully",
+      });
+    },
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div className="space-y-6">
+      <h3 className="text-lg font-medium">Maintenance Requests</h3>
+      <div className="space-y-4">
+        {requests?.map((item: any) => (
+          <Card key={item.request.id}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>{item.request.title}</span>
+                <div className="flex gap-2">
+                  <Badge variant={item.request.priority === "urgent" ? "destructive" : "default"}>
+                    {item.request.priority}
+                  </Badge>
+                  <Badge variant="outline">
+                    {item.request.status}
+                  </Badge>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-2">{item.request.description}</p>
+              <p className="text-sm text-muted-foreground">
+                Room: {item.room?.number} ({item.building?.name})
+              </p>
+              <div className="flex gap-2 mt-4">
+                <Select
+                  value={item.request.status}
+                  onValueChange={(value) => updateMutation.mutate({ id: item.request.id, status: value })}
+                >
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="submitted">Submitted</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PaymentsTab() {
+  const { data: payments, isLoading } = useQuery({
+    queryKey: ["/api/admin/payments"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/admin/payments");
+      return await response.json();
+    },
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: any) => {
+      const response = await apiRequest("PUT", `/api/admin/payments/${id}/status`, { status });
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/payments"] });
+      toast({
+        title: "Success",
+        description: "Payment status updated successfully",
+      });
+    },
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div className="space-y-6">
+      <h3 className="text-lg font-medium">Payment Management</h3>
+      <div className="space-y-4">
+        {payments?.map((item: any) => (
+          <Card key={item.payment.id}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>${item.payment.amount}</span>
+                <Badge variant={item.payment.status === "completed" ? "default" : "outline"}>
+                  {item.payment.status}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Room: {item.room?.number}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Payment Date: {new Date(item.payment.paymentDate).toLocaleDateString()}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Method: {item.payment.paymentMethod}
+              </p>
+              {item.payment.notes && (
+                <p className="text-sm mt-2">{item.payment.notes}</p>
+              )}
+              <div className="flex gap-2 mt-4">
+                <Select
+                  value={item.payment.status}
+                  onValueChange={(value) => updateStatusMutation.mutate({ id: item.payment.id, status: value })}
+                >
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="failed">Failed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function NotificationsTab() {
+  const [newNotification, setNewNotification] = useState({
+    title: "",
+    message: "",
+    type: "info" as const,
+    roomId: "",
+  });
+
+  const { data: rooms } = useQuery({
+    queryKey: ["/api/admin/rooms"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/admin/rooms");
+      return await response.json();
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/admin/notifications", {
+        ...data,
+        roomId: data.roomId ? parseInt(data.roomId) : null,
+      });
+      return await response.json();
+    },
+    onSuccess: () => {
+      setNewNotification({ title: "", message: "", type: "info", roomId: "" });
+      toast({
+        title: "Success",
+        description: "Notification sent successfully",
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newNotification.title.trim() || !newNotification.message.trim()) return;
+    createMutation.mutate(newNotification);
+  };
+
+  return (
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg">
+        <h3 className="text-lg font-medium">Send Notification</h3>
+        <Input
+          placeholder="Notification title"
+          value={newNotification.title}
+          onChange={(e) => setNewNotification(prev => ({ ...prev, title: e.target.value }))}
+        />
+        <Textarea
+          placeholder="Notification message"
+          value={newNotification.message}
+          onChange={(e) => setNewNotification(prev => ({ ...prev, message: e.target.value }))}
+        />
+        <Select value={newNotification.type} onValueChange={(value: any) => setNewNotification(prev => ({ ...prev, type: value }))}>
+          <SelectTrigger>
+            <SelectValue placeholder="Notification type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="info">Info</SelectItem>
+            <SelectItem value="warning">Warning</SelectItem>
+            <SelectItem value="payment">Payment</SelectItem>
+            <SelectItem value="maintenance">Maintenance</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={newNotification.roomId} onValueChange={(value) => setNewNotification(prev => ({ ...prev, roomId: value }))}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select room (optional - leave empty for global)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Rooms (Global)</SelectItem>
+            {rooms?.map((room: any) => (
+              <SelectItem key={room.id} value={room.id.toString()}>
+                Room {room.number}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button type="submit" disabled={createMutation.isPending}>
+          {createMutation.isPending ? "Sending..." : "Send Notification"}
+        </Button>
+      </form>
     </div>
   );
 }

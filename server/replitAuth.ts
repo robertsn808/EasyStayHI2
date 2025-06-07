@@ -155,3 +155,8 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     return;
   }
 };
+
+// Simple admin authentication for demo purposes
+export function validateAdminCredentials(username: string, password: string): boolean {
+  return username === "Bo$$l@dy" && password === "Wordpass3211";
+}

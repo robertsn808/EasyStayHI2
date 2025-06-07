@@ -139,6 +139,56 @@ export const todos = pgTable("todos", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const tenantSessions = pgTable("tenant_sessions", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  sessionToken: varchar("session_token", { length: 255 }).notNull().unique(),
+  tenantName: varchar("tenant_name", { length: 255 }).notNull(),
+  tenantEmail: varchar("tenant_email", { length: 255 }),
+  tenantPhone: varchar("tenant_phone", { length: 50 }),
+  isActive: boolean("is_active").default(true),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const maintenanceRequests = pgTable("maintenance_requests", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  tenantSessionId: integer("tenant_session_id").references(() => tenantSessions.id),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  priority: varchar("priority", { length: 20 }).default("normal"), // urgent, normal, low
+  status: varchar("status", { length: 50 }).default("submitted"), // submitted, in_progress, completed
+  assignedTo: varchar("assigned_to", { length: 255 }),
+  photoUrls: text("photo_urls"), // JSON array of photo URLs
+  createdAt: timestamp("created_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+export const payments = pgTable("payments", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  tenantSessionId: integer("tenant_session_id").references(() => tenantSessions.id),
+  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+  paymentDate: date("payment_date").notNull(),
+  paymentMethod: varchar("payment_method", { length: 50 }),
+  status: varchar("status", { length: 50 }).default("pending"), // pending, completed, failed
+  receiptUrl: varchar("receipt_url", { length: 500 }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id),
+  tenantSessionId: integer("tenant_session_id").references(() => tenantSessions.id),
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  type: varchar("type", { length: 50 }).default("info"), // info, warning, payment, maintenance
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertBuildingSchema = createInsertSchema(buildings).omit({ id: true, createdAt: true });
 export const insertRoomSchema = createInsertSchema(rooms).omit({ id: true, createdAt: true });
@@ -149,6 +199,10 @@ export const insertCalendarEventSchema = createInsertSchema(calendarEvents).omit
 export const insertInventorySchema = createInsertSchema(inventory).omit({ id: true, createdAt: true });
 export const insertReceiptSchema = createInsertSchema(receipts).omit({ id: true, createdAt: true });
 export const insertTodoSchema = createInsertSchema(todos).omit({ id: true, createdAt: true });
+export const insertTenantSessionSchema = createInsertSchema(tenantSessions).omit({ id: true, createdAt: true });
+export const insertMaintenanceRequestSchema = createInsertSchema(maintenanceRequests).omit({ id: true, createdAt: true, completedAt: true });
+export const insertPaymentSchema = createInsertSchema(payments).omit({ id: true, createdAt: true });
+export const insertNotificationSchema = createInsertSchema(notifications).omit({ id: true, createdAt: true });
 export const insertTenantSessionSchema = createInsertSchema(tenantSessions).omit({ id: true, createdAt: true });
 export const insertMaintenanceRequestSchema = createInsertSchema(maintenanceRequests).omit({ id: true, createdAt: true, completedAt: true });
 export const insertPaymentSchema = createInsertSchema(payments).omit({ id: true, createdAt: true });
@@ -183,6 +237,18 @@ export type Receipt = typeof receipts.$inferSelect;
 
 export type InsertTodo = z.infer<typeof insertTodoSchema>;
 export type Todo = typeof todos.$inferSelect;
+
+export type InsertTenantSession = z.infer<typeof insertTenantSessionSchema>;
+export type TenantSession = typeof tenantSessions.$inferSelect;
+
+export type InsertMaintenanceRequest = z.infer<typeof insertMaintenanceRequestSchema>;
+export type MaintenanceRequest = typeof maintenanceRequests.$inferSelect;
+
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+export type Payment = typeof payments.$inferSelect;
+
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type Notification = typeof notifications.$inferSelect;
 
 export type InsertTenantSession = z.infer<typeof insertTenantSessionSchema>;
 export type TenantSession = typeof tenantSessions.$inferSelect;

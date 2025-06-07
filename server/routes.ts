@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated, validateAdminCredentials } from "./replitAuth";
 import { 
   insertInquirySchema, 
   insertContactSchema, 
@@ -24,6 +24,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await setupAuth(app);
 
   // Auth routes
+  app.post('/api/auth/admin-login', async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      if (validateAdminCredentials(username, password)) {
+        // Create a session or token for admin
+        res.json({ 
+          success: true, 
+          message: "Admin login successful",
+          user: { username: "Bo$$l@dy", role: "admin" }
+        });
+      } else {
+        res.status(401).json({ message: "Invalid credentials" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
