@@ -1,3 +1,4 @@
+
 import {
   pgTable,
   text,
@@ -108,7 +109,6 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Announcements table
 export const announcements = pgTable("announcements", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -116,3 +116,66 @@ export const announcements = pgTable("announcements", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+export const calendarEvents = pgTable("calendar_events", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  roomId: integer("room_id").references(() => rooms.id),
+  tenantSessionId: integer("tenant_session_id").references(() => tenantSessions.id),
+  eventType: varchar("event_type", { length: 50 }).default("general"), // general, maintenance, inspection, meeting
+  isAllDay: boolean("is_all_day").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const inquiries = pgTable("inquiries", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }),
+  message: text("message").notNull(),
+  status: varchar("status", { length: 50 }).default("new"), // new, contacted, closed
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const todos = pgTable("todos", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  completed: boolean("completed").default(false),
+  priority: varchar("priority", { length: 20 }).default("normal"), // urgent, normal, low
+  dueDate: date("due_date"),
+  assignedTo: varchar("assigned_to", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Type definitions for inserts
+export type InsertUser = typeof users.$inferSelect;
+export type InsertBuilding = typeof buildings.$inferInsert;
+export type InsertRoom = typeof rooms.$inferInsert;
+export type InsertTenantSession = typeof tenantSessions.$inferInsert;
+export type InsertMaintenanceRequest = typeof maintenanceRequests.$inferInsert;
+export type InsertPayment = typeof payments.$inferInsert;
+export type InsertNotification = typeof notifications.$inferInsert;
+export type InsertAnnouncement = typeof announcements.$inferInsert;
+export type InsertCalendarEvent = typeof calendarEvents.$inferInsert;
+export type InsertInquiry = typeof inquiries.$inferInsert;
+export type InsertTodo = typeof todos.$inferInsert;
+
+// Type definitions for selects
+export type SelectUser = typeof users.$inferSelect;
+export type SelectBuilding = typeof buildings.$inferSelect;
+export type SelectRoom = typeof rooms.$inferSelect;
+export type SelectTenantSession = typeof tenantSessions.$inferSelect;
+export type SelectMaintenanceRequest = typeof maintenanceRequests.$inferSelect;
+export type SelectPayment = typeof payments.$inferSelect;
+export type SelectNotification = typeof notifications.$inferSelect;
+export type SelectAnnouncement = typeof announcements.$inferSelect;
+export type SelectCalendarEvent = typeof calendarEvents.$inferSelect;
+export type SelectInquiry = typeof inquiries.$inferSelect;
+export type SelectTodo = typeof todos.$inferSelect;
