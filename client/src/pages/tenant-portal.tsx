@@ -609,3 +609,28 @@ function TenantNotificationsTab({ notifications }: any) {
     </Card>
   );
 }
+import React, { useEffect, useState } from 'react';
+
+const TenantPortalPage = ({ tenantId }) => {
+    const [qrCodeUrl, setQrCodeUrl] = useState('');
+
+    useEffect(() => {
+        const fetchQRCode = async () => {
+            const response = await fetch(`/api/generate-qrcode/${tenantId}`);
+            const data = await response.json();
+            setQrCodeUrl(data.qrCodeDataUrl);
+        };
+
+        fetchQRCode();
+    }, [tenantId]);
+
+    return (
+        <div>
+            <h1>Tenant Portal</h1>
+            {qrCodeUrl && <img src={qrCodeUrl} alt="Tenant QR Code" />}
+            {/* Other portal contents */}
+        </div>
+    );
+};
+
+export default TenantPortalPage;

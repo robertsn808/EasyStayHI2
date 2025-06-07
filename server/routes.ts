@@ -470,3 +470,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   return httpServer;
 }
+import express from 'express';
+import { generateQRCode } from './qrGenerator';
+
+const router = express.Router();
+
+router.get('/api/generate-qrcode/:tenantId', async (req, res) => {
+    const { tenantId } = req.params;
+    try {
+        const qrCodeDataUrl = await generateQRCode(tenantId);
+        res.json({ qrCodeDataUrl });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to generate QR code' });
+    }
+});
+
+export default router;

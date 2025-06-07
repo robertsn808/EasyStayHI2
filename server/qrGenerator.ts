@@ -53,3 +53,9 @@ export function verifyTenantToken(token: string): { roomId: number; tenantData: 
     return null;
   }
 }
+import QRCode from 'qrcode';
+
+export const generateQRCode = async (tenantId: string): Promise<string> => {
+    const url = `https://yourdomain.com/tenant-portal/signin/${tenantId}`;
+    return await QRCode.toDataURL(url);
+};
