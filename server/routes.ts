@@ -31,12 +31,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Public routes
-  app.get("/api/rooms", async (req, res) => {
+  app.get("/api/rooms/available-count", async (req, res) => {
     try {
-      const rooms = await storage.getRooms();
-      res.json(rooms);
+      const count = await storage.getAvailableRoomCount();
+      res.json({ availableRooms: count });
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch rooms" });
+      res.status(500).json({ message: "Failed to fetch available room count" });
     }
   });
 
