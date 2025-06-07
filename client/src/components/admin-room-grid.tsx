@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Edit, Trash2, Plus } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Edit, Plus, Calendar, Users, DollarSign, QrCode, Download } from "lucide-react";
 import type { Room } from "@shared/schema";
 
 interface AdminRoomGridProps {
@@ -53,7 +57,7 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
           Add Building
         </Button>
       </div>
-      
+
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         {rooms.map((room) => (
           <Card key={room.id} className="hover:shadow-md transition-shadow">

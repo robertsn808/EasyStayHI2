@@ -49,33 +49,87 @@ export default function AdminTabs() {
     queryKey: ["/api/admin/todos"],
   });
 
-  // Mutations
+    const { data: maintenanceRequests } = useQuery({
+    queryKey: ["/api/admin/maintenance"],
+  });
+
+  const { data: payments } = useQuery({
+    queryKey: ["/api/admin/payments"],
+  });
+
+  // Update inquiry status mutation
   const updateInquiryMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      await apiRequest("PUT", `/api/admin/inquiries/${id}`, { status });
+      const response = await apiRequest("PUT", `/api/admin/inquiries/${id}`, { status });
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/inquiries"] });
       toast({
         title: "Success",
-        description: "Inquiry updated successfully",
+        description: "Inquiry status updated successfully.",
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
+        window.location.href = "/api/login";
         return;
       }
       toast({
         title: "Error",
-        description: "Failed to update inquiry",
+        description: "Failed to update inquiry status.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update maintenance request mutation
+  const updateMaintenanceMutation = useMutation({
+    mutationFn: async ({ id, status, assignedTo }: { id: number; status: string; assignedTo?: string }) => {
+      const response = await apiRequest("PUT", `/api/admin/maintenance/${id}`, { status, assignedTo });
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/maintenance"] });
+      toast({
+        title: "Success",
+        description: "Maintenance request updated successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      if (isUnauthorizedError(error)) {
+        window.location.href = "/api/login";
+        return;
+      }
+      toast({
+        title: "Error",
+        description: "Failed to update maintenance request.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update payment status mutation
+  const updatePaymentMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const response = await apiRequest("PUT", `/api/admin/payments/${id}/status`, { status });
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/payments"] });
+      toast({
+        title: "Success",
+        description: "Payment status updated successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      if (isUnauthorizedError(error)) {
+        window.location.href = "/api/login";
+        return;
+      }
+      toast({
+        title: "Error",
+        description: "Failed to update payment status.",
         variant: "destructive",
       });
     },
@@ -143,9 +197,9 @@ export default function AdminTabs() {
 
   return (
     <Card className="shadow-sm">
-      <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <div className="border-b border-gray-200">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="inquiries" className="relative">
               Inquiries
               {newInquiriesCount > 0 && (
@@ -154,6 +208,8 @@ export default function AdminTabs() {
                 </Badge>
               )}
             </TabsTrigger>
+            <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+            <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="contacts">Contacts</TabsTrigger>
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
@@ -163,65 +219,16 @@ export default function AdminTabs() {
         </div>
 
         <TabsContent value="inquiries" className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Recent Inquiries</h3>
-            <Button size="sm">Mark All Read</Button>
-          </div>
-          <div className="space-y-4">
-            {inquiries?.map((inquiry: Inquiry) => (
-              <Card key={inquiry.id} className="hover:bg-gray-50 transition-colors">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-semibold text-gray-900">{inquiry.name}</h4>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs text-gray-500">{formatDate(inquiry.createdAt!)}</span>
-                      <Badge variant={inquiry.status === "new" ? "destructive" : "secondary"}>
-                        {inquiry.status}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="text-sm text-gray-600 mb-2">
-                    <div>{inquiry.email}</div>
-                    <div>{inquiry.phone}</div>
-                  </div>
-                  <div className="text-sm mb-3">
-                    <span className="font-medium">Interested in:</span> Room {inquiry.roomNumber} - {inquiry.rentalPeriod} rental
-                  </div>
-                  {inquiry.message && (
-                    <p className="text-sm text-gray-700 mb-3">{inquiry.message}</p>
-                  )}
-                  <div className="flex space-x-2">
-                    <Button 
-                      size="sm" 
-                      onClick={() => updateInquiryMutation.mutate({ id: inquiry.id, status: "responded" })}
-                      disabled={updateInquiryMutation.isPending}
-                    >
-                      Respond
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <UserPlus className="w-4 h-4 mr-1" />
-                      Add to Contacts
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => updateInquiryMutation.mutate({ id: inquiry.id, status: "archived" })}
-                      disabled={updateInquiryMutation.isPending}
-                    >
-                      <Archive className="w-4 h-4 mr-1" />
-                      Archive
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-            {(!inquiries || inquiries.length === 0) && (
-              <div className="text-center py-8 text-gray-500">
-                No inquiries yet.
-              </div>
-            )}
-          </div>
+          <InquiriesTab inquiries={inquiries} onUpdateStatus={updateInquiryMutation.mutate} />
         </TabsContent>
+
+        <TabsContent value="maintenance" className="p-6">
+            <MaintenanceTab requests={maintenanceRequests} onUpdate={updateMaintenanceMutation.mutate} />
+          </TabsContent>
+
+          <TabsContent value="payments" className="p-6">
+            <PaymentsTab payments={payments} onUpdateStatus={updatePaymentMutation.mutate} />
+          </TabsContent>
 
         <TabsContent value="contacts" className="p-6">
           <div className="flex justify-between items-center mb-6">
@@ -294,7 +301,7 @@ export default function AdminTabs() {
               const dayEvents = calendarEvents?.filter((event: CalendarEvent) => 
                 new Date(event.date).toDateString() === date.toDateString()
               ) || [];
-              
+
               return (
                 <Card key={index} className="min-h-32 hover:bg-gray-50 transition-colors">
                   <CardContent className="p-3">
@@ -467,5 +474,196 @@ export default function AdminTabs() {
         </TabsContent>
       </Tabs>
     </Card>
+  );
+}
+
+function InquiriesTab({ inquiries, onUpdateStatus }: { inquiries: Inquiry[], onUpdateStatus: (data: { id: number; status: string }) => void }) {
+  if (!inquiries || inquiries.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-gray-500">No inquiries yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {inquiries.map((inquiry) => (
+        <Card key={inquiry.id}>
+          <CardContent className="p-6">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="font-semibold">{inquiry.name}</h3>
+                <p className="text-sm text-gray-600">{inquiry.email}</p>
+                {inquiry.phone && <p className="text-sm text-gray-600">{inquiry.phone}</p>}
+              </div>
+              <Badge variant={inquiry.status === "new" ? "destructive" : inquiry.status === "responded" ? "default" : "secondary"}>
+                {inquiry.status}
+              </Badge>
+            </div>
+            <div className="space-y-2 mb-4">
+              <p><strong>Room:</strong> {inquiry.roomNumber || "Any available"}</p>
+              <p><strong>Rental Period:</strong> {inquiry.rentalPeriod || "Not specified"}</p>
+              <p><strong>Move-in Date:</strong> {inquiry.moveInDate ? new Date(inquiry.moveInDate).toLocaleDateString() : "Flexible"}</p>
+              {inquiry.message && <p><strong>Message:</strong> {inquiry.message}</p>}
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => onUpdateStatus({ id: inquiry.id, status: "responded" })}
+                disabled={inquiry.status === "responded"}
+              >
+                Mark as Responded
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => onUpdateStatus({ id: inquiry.id, status: "archived" })}
+                disabled={inquiry.status === "archived"}
+              >
+                <Archive className="w-4 h-4 mr-1" />
+                Archive
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function MaintenanceTab({ requests, onUpdate }: { requests: any[], onUpdate: (data: any) => void }) {
+  if (!requests || requests.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-gray-500">No maintenance requests yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {requests.map((item) => {
+        const request = item.request;
+        const room = item.room;
+        return (
+          <Card key={request.id}>
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="font-semibold">{request.title}</h3>
+                  <p className="text-sm text-gray-600">Room {room?.number} - {item.building?.name}</p>
+                  <p className="text-sm text-gray-500">Submitted: {new Date(request.createdAt).toLocaleDateString()}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Badge variant={request.priority === 'urgent' ? 'destructive' : 'secondary'}>
+                    {request.priority}
+                  </Badge>
+                  <Badge variant={request.status === 'completed' ? 'default' : 'outline'}>
+                    {request.status}
+                  </Badge>
+                </div>
+              </div>
+              <div className="space-y-2 mb-4">
+                <p><strong>Description:</strong> {request.description}</p>
+                {request.assignedTo && <p><strong>Assigned to:</strong> {request.assignedTo}</p>}
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => onUpdate({ id: request.id, status: "in_progress" })}
+                  disabled={request.status === "completed"}
+                >
+                  Start Work
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => onUpdate({ id: request.id, status: "completed" })}
+                  disabled={request.status === "completed"}
+                >
+                  <CheckCircle className="w-4 h-4 mr-1" />
+                  Complete
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
+function PaymentsTab({ payments, onUpdateStatus }: { payments: any[], onUpdateStatus: (data: { id: number; status: string }) => void }) {
+  if (!payments || payments.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-gray-500">No payment records yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {payments.map((item) => {
+        const payment = item.payment;
+        const room = item.room;
+        return (
+          <Card key={payment.id}>
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="font-semibold">${payment.amount}</h3>
+                  <p className="text-sm text-gray-600">Room {room?.number}</p>
+                  <p className="text-sm text-gray-500">Date: {new Date(payment.paymentDate).toLocaleDateString()}</p>
+                </div>
+                <Badge variant={payment.status === 'completed' ? 'default' : payment.status === 'failed' ? 'destructive' : 'outline'}>
+                  {payment.status}
+                </Badge>
+              </div>
+              <div className="space-y-2 mb-4">
+                <p><strong>Method:</strong> {payment.paymentMethod}</p>
+                {payment.notes && <p><strong>Notes:</strong> {payment.notes}</p>}
+                {payment.receiptUrl && (
+                  <p>
+                    <strong>Receipt:</strong> 
+                    <a href={payment.receiptUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+                      View Receipt
+                    </a>
+                  </p>
+                )}
+              </div>
+              {payment.status === 'pending' && (
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => onUpdateStatus({ id: payment.id, status: "completed" })}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Approve
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => onUpdateStatus({ id: payment.id, status: "failed" })}
+                  >
+                    Reject
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
   );
 }

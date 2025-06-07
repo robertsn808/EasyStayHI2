@@ -149,6 +149,10 @@ export const insertCalendarEventSchema = createInsertSchema(calendarEvents).omit
 export const insertInventorySchema = createInsertSchema(inventory).omit({ id: true, createdAt: true });
 export const insertReceiptSchema = createInsertSchema(receipts).omit({ id: true, createdAt: true });
 export const insertTodoSchema = createInsertSchema(todos).omit({ id: true, createdAt: true });
+export const insertTenantSessionSchema = createInsertSchema(tenantSessions).omit({ id: true, createdAt: true });
+export const insertMaintenanceRequestSchema = createInsertSchema(maintenanceRequests).omit({ id: true, createdAt: true, completedAt: true });
+export const insertPaymentSchema = createInsertSchema(payments).omit({ id: true, createdAt: true });
+export const insertNotificationSchema = createInsertSchema(notifications).omit({ id: true, createdAt: true });
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -179,3 +183,15 @@ export type Receipt = typeof receipts.$inferSelect;
 
 export type InsertTodo = z.infer<typeof insertTodoSchema>;
 export type Todo = typeof todos.$inferSelect;
+
+export type InsertTenantSession = z.infer<typeof insertTenantSessionSchema>;
+export type TenantSession = typeof tenantSessions.$inferSelect;
+
+export type InsertMaintenanceRequest = z.infer<typeof insertMaintenanceRequestSchema>;
+export type MaintenanceRequest = typeof maintenanceRequests.$inferSelect;
+
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+export type Payment = typeof payments.$inferSelect;
+
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type Notification = typeof notifications.$inferSelect;
