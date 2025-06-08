@@ -14,7 +14,7 @@ import backgroundImage from "@assets/image_1749351216300.png";
 import AdminTabs from "@/components/admin-tabs";
 
 type TabType = 
-  | "properties" 
+  | "rooms" 
   | "buildings"
   | "guests" 
   | "qr-codes" 
@@ -30,7 +30,7 @@ type TabType =
   | "settings";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<TabType>("properties");
+  const [activeTab, setActiveTab] = useState<TabType>("rooms");
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
   const [, setLocation] = useLocation();
@@ -243,14 +243,14 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Mobile Overview Cards */}
         <div className="lg:hidden grid grid-cols-4 gap-2 mb-6">
-          <Card className={`${activeTab === "properties" ? "bg-green-100 border-green-300" : "bg-green-50 border-green-200"} cursor-pointer`}
-            onClick={() => setActiveTab("properties")}
+          <Card className={`${activeTab === "rooms" ? "bg-green-100 border-green-300" : "bg-green-50 border-green-200"} cursor-pointer`}
+            onClick={() => setActiveTab("rooms")}
           >
             <CardContent className="p-2">
               <div className="text-center">
                 <Home className="h-4 w-4 text-green-500 mx-auto mb-1" />
-                <p className="text-xs font-medium text-green-900">Properties</p>
-                <p className="text-sm font-bold text-green-700">2</p>
+                <p className="text-xs font-medium text-green-900">Rooms</p>
+                <p className="text-sm font-bold text-green-700">{Array.isArray(rooms) ? rooms.length : 0}</p>
               </div>
             </CardContent>
           </Card>

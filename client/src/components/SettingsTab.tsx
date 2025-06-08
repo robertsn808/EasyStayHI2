@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   User, Users, Shield, Key, Plus, Edit, Trash2, 
-  Save, Eye, EyeOff, AlertTriangle, CheckCircle 
+  Save, Eye, EyeOff, AlertTriangle, CheckCircle, Home 
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -251,9 +251,10 @@ export function SettingsTab() {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile">My Profile</TabsTrigger>
           <TabsTrigger value="users">User Management</TabsTrigger>
+          <TabsTrigger value="properties">Property Management</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
 
@@ -446,6 +447,107 @@ export function SettingsTab() {
                     </AlertDescription>
                   </Alert>
                 )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="properties" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Home className="w-5 h-5 mr-2" />
+                Property Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Buildings Section */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Buildings</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <h4 className="font-medium">934 Kapahulu Ave</h4>
+                        <p className="text-sm text-gray-600">8 rooms • $100/$500/$2000 pricing</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                          <Edit className="w-4 h-4 mr-1" />
+                          Edit
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          View Rooms
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <h4 className="font-medium">949 Kawaiahao St</h4>
+                        <p className="text-sm text-gray-600">10 suites • $50/$200/$600 pricing</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                          <Edit className="w-4 h-4 mr-1" />
+                          Edit
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          View Rooms
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button className="mt-4">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add New Building
+                  </Button>
+                </div>
+
+                {/* Global Settings */}
+                <div className="pt-6 border-t">
+                  <h3 className="text-lg font-semibold mb-4">Global Settings</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="company-name">Company Name</Label>
+                      <Input
+                        id="company-name"
+                        defaultValue="EasyStay Hawaii"
+                        placeholder="Company name"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="contact-phone">Contact Phone</Label>
+                      <Input
+                        id="contact-phone"
+                        defaultValue="(808) 555-0123"
+                        placeholder="Phone number"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="contact-email">Contact Email</Label>
+                      <Input
+                        id="contact-email"
+                        defaultValue="support@easystayhi.com"
+                        placeholder="Email address"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="office-hours">Office Hours</Label>
+                      <Input
+                        id="office-hours"
+                        defaultValue="Monday - Friday, 9:00 AM - 5:00 PM HST"
+                        placeholder="Office hours"
+                      />
+                    </div>
+                  </div>
+                  
+                  <Button className="mt-4">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Settings
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
