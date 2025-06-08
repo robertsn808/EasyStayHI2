@@ -159,9 +159,10 @@ export default function GuestProfileManager() {
     }
   };
 
-  const filteredGuests = selectedRoom && selectedRoom !== "all"
-    ? guests.filter((guest: GuestProfile) => guest.roomId === parseInt(selectedRoom))
-    : guests;
+  // Add buildings query
+  const { data: buildings } = useQuery({
+    queryKey: ["/api/admin/buildings"],
+  });
 
   return (
     <div className="space-y-4">
@@ -213,33 +214,132 @@ export default function GuestProfileManager() {
       )}
 
       {/* Header and Controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-2xl font-bold">Guest Management</h2>
-          <p className="text-gray-600">Manage guest profiles and payment tracking</p>
+          <p className="text-gray-600">Manage guest profiles by building</p>
         </div>
         <Button onClick={() => setShowForm(true)} className="bg-blue-600 hover:bg-blue-700">
           Add Guest
         </Button>
       </div>
 
-      {/* Room Filter */}
-      <div className="flex gap-4">
-        <div className="w-64">
-          <Label>Filter by Room</Label>
-          <Select value={selectedRoom} onValueChange={setSelectedRoom}>
-            <SelectTrigger>
-              <SelectValue placeholder="All rooms" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All rooms</SelectItem>
-              {rooms.map((room) => (
-                <SelectItem key={room.id} value={room.id.toString()}>
-                  Room {room.number}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {/* Side-by-side building layout */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* 934 Kapahulu Ave */}
+        <div>
+          <div className="mb-3 p-2 bg-blue-50 rounded border-l-4 border-blue-400">
+            <h3 className="font-medium text-blue-800">934 Kapahulu Ave</h3>
+            <p className="text-xs text-blue-600">$100/$500/$2000</p>
+          </div>
+          <div className="grid gap-2">
+            {Array.isArray(guests) && guests
+              .filter((guest: GuestProfile) => {
+                const room = Array.isArray(rooms) ? rooms.find((r: any) => r.id === guest.roomId) : null;
+                const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room?.buildingId) : null;
+                return building?.name === "934 Kapahulu Ave";
+              })
+              .map((guest: GuestProfile) => {
+                const room = Array.isArray(rooms) ? rooms.find((r: any) => r.id === guest.roomId) : null;
+                return (
+                  <Card key={guest.id} className="hover:shadow-sm transition-shadow border-l-4 border-l-blue-400 bg-blue-50/30">
+                    <CardContent className="p-3">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-blue-800">{guest.guestName}</h4>
+                          <p className="text-sm text-blue-700">Room #{room?.number}</p>
+                        </div>
+                        <Badge variant={guest.paymentStatus === 'paid' ? 'default' : guest.paymentStatus === 'overdue' ? 'destructive' : 'secondary'} className="text-xs">
+                          {guest.paymentStatus}
+                        </Badge>
+                      </div>
+                      
+                      <div className="text-xs text-blue-700 space-y-1">
+                        <p><strong>Type:</strong> {guest.bookingType}</p>
+                        <p><strong>Amount:</strong> ${guest.paymentAmount}</p>
+                        <p><strong>Next Due:</strong> {new Date(guest.nextPaymentDue).toLocaleDateString()}</p>
+                        {guest.phone && <p><strong>Phone:</strong> {guest.phone}</p>}
+                      </div>
+                      
+                      <div className="flex gap-1 mt-2">
+                        <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-6 flex-1 border-blue-300 text-blue-700 hover:bg-blue-100">
+                          Edit
+                        </Button>
+                        {guest.paymentStatus !== 'paid' && (
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-xs px-2 py-1 h-6 flex-1 border-green-300 text-green-700 hover:bg-green-100"
+                            onClick={() => markPaymentMutation.mutate(guest.id)}
+                            disabled={markPaymentMutation.isPending}
+                          >
+                            Mark Paid
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+          </div>
+        </div>
+
+        {/* 949 Kawaiahao St */}
+        <div>
+          <div className="mb-3 p-2 bg-purple-50 rounded border-l-4 border-purple-400">
+            <h3 className="font-medium text-purple-800">949 Kawaiahao St</h3>
+            <p className="text-xs text-purple-600">$50/$200/$600</p>
+          </div>
+          <div className="grid gap-2">
+            {Array.isArray(guests) && guests
+              .filter((guest: GuestProfile) => {
+                const room = Array.isArray(rooms) ? rooms.find((r: any) => r.id === guest.roomId) : null;
+                const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room?.buildingId) : null;
+                return building?.name === "949 Kawaiahao St";
+              })
+              .map((guest: GuestProfile) => {
+                const room = Array.isArray(rooms) ? rooms.find((r: any) => r.id === guest.roomId) : null;
+                return (
+                  <Card key={guest.id} className="hover:shadow-sm transition-shadow border-l-4 border-l-purple-400 bg-purple-50/30">
+                    <CardContent className="p-3">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-purple-800">{guest.guestName}</h4>
+                          <p className="text-sm text-purple-700">Room #{room?.number}</p>
+                        </div>
+                        <Badge variant={guest.paymentStatus === 'paid' ? 'default' : guest.paymentStatus === 'overdue' ? 'destructive' : 'secondary'} className="text-xs">
+                          {guest.paymentStatus}
+                        </Badge>
+                      </div>
+                      
+                      <div className="text-xs text-purple-700 space-y-1">
+                        <p><strong>Type:</strong> {guest.bookingType}</p>
+                        <p><strong>Amount:</strong> ${guest.paymentAmount}</p>
+                        <p><strong>Next Due:</strong> {new Date(guest.nextPaymentDue).toLocaleDateString()}</p>
+                        {guest.phone && <p><strong>Phone:</strong> {guest.phone}</p>}
+                      </div>
+                      
+                      <div className="flex gap-1 mt-2">
+                        <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-6 flex-1 border-purple-300 text-purple-700 hover:bg-purple-100">
+                          Edit
+                        </Button>
+                        {guest.paymentStatus !== 'paid' && (
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-xs px-2 py-1 h-6 flex-1 border-green-300 text-green-700 hover:bg-green-100"
+                            onClick={() => markPaymentMutation.mutate(guest.id)}
+                            disabled={markPaymentMutation.isPending}
+                          >
+                            Mark Paid
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+          </div>
         </div>
       </div>
 
@@ -365,81 +465,6 @@ export default function GuestProfileManager() {
           </CardContent>
         </Card>
       )}
-
-      {/* Guest List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Guest Profiles ({filteredGuests.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loadingGuests ? (
-            <div className="text-center py-8">Loading guests...</div>
-          ) : filteredGuests.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No guests found</div>
-          ) : (
-            <div className="grid gap-4">
-              {filteredGuests.map((guest: GuestProfile) => (
-                <div key={guest.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <User className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <h3 className="font-medium">{guest.guestName}</h3>
-                        <p className="text-sm text-gray-500">
-                          Room {rooms.find(r => r.id === guest.roomId)?.number} • 
-                          Check-in: {new Date(guest.checkInDate).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className={getBookingTypeColor(guest.bookingType)}>
-                        {guest.bookingType}
-                      </Badge>
-                      <Badge className={getPaymentStatusColor(guest.paymentStatus)}>
-                        {guest.paymentStatus}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-3 grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-500">Payment Amount</p>
-                      <p className="font-medium">${guest.paymentAmount}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Next Payment Due</p>
-                      <p className="font-medium">{new Date(guest.nextPaymentDue).toLocaleDateString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Last Payment</p>
-                      <p className="font-medium">
-                        {guest.lastPaymentDate 
-                          ? new Date(guest.lastPaymentDate).toLocaleDateString()
-                          : 'None'
-                        }
-                      </p>
-                    </div>
-                  </div>
-
-                  {guest.paymentStatus === 'pending' && guest.nextPaymentDue === new Date().toISOString().split('T')[0] && (
-                    <div className="mt-3 flex justify-end">
-                      <Button
-                        size="sm"
-                        onClick={() => markPaymentMutation.mutate(guest.id)}
-                        disabled={markPaymentMutation.isPending}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        Mark Payment Received
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }
