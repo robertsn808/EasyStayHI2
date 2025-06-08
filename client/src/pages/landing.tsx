@@ -17,7 +17,7 @@ export default function Landing() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <h1 className="text-xl font-bold text-primary">Bayview Property Management</h1>
+                <h1 className="text-xl font-bold text-primary">EasyStay Hawaii</h1>
               </div>
               <div className="hidden md:block ml-10">
                 <div className="flex items-baseline space-x-4">
