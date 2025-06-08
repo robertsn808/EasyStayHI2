@@ -298,9 +298,9 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(schema.buildings, eq(schema.rooms.buildingId, schema.buildings.id));
 
     if (roomId) {
-      return await query.where(eq(schema.maintenanceRequests.roomId, roomId)).all();
+      return await query.where(eq(schema.maintenanceRequests.roomId, roomId));
     }
-    return await query.all();
+    return await query;
   }
 
   async updateMaintenanceRequest(id: number, data: Partial<schema.InsertMaintenanceRequest>) {
@@ -331,9 +331,9 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(schema.rooms, eq(schema.payments.roomId, schema.rooms.id));
 
     if (roomId) {
-      return await query.where(eq(schema.payments.roomId, roomId)).all();
+      return await query.where(eq(schema.payments.roomId, roomId));
     }
-    return await query.all();
+    return await query;
   }
 
   async updatePaymentStatus(id: number, status: string) {
@@ -361,7 +361,7 @@ export class DatabaseStorage implements IStorage {
       query = query.where(eq(schema.notifications.tenantSessionId, tenantSessionId));
     }
 
-    return await query.orderBy(desc(schema.notifications.createdAt)).all();
+    return await query.orderBy(desc(schema.notifications.createdAt));
   }
 
   async markNotificationRead(id: number) {
