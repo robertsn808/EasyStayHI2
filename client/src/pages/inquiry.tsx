@@ -227,8 +227,8 @@ export default function InquiryPage() {
                 <div className="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
                   <h4 className="font-semibold text-blue-900 mb-2">Payment & Contact Information:</h4>
                   <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• <strong>Payment:</strong> Send payment to Cashapp: $selarazmami</li>
-                    <li>• Management will call or text the number listed once payment is confirmed</li>
+                    <li>• Management will contact you to confirm your inquiry request</li>
+                    <li>• <strong>Payment:</strong> Send payment to Cashapp: $selarazmami after management confirms</li>
                     <li>• You will receive the front door and room access codes after payment</li>
                     <li>• $100 security deposit required (+$50 per pet)</li>
                     <li>• Security deposit will be returned upon checkout</li>
