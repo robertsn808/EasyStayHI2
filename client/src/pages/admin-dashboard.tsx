@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,16 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [authToken, setAuthToken] = useState<string | null>(null);
+
+  // Check for existing auth token on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    if (token) {
+      setAuthToken(token);
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +38,11 @@ export default function AdminDashboard() {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        const token = data.token;
+        setAuthToken(token);
         setIsAuthenticated(true);
+        localStorage.setItem("adminToken", token);
         toast({
           title: "Login Successful",
           description: "Welcome to the admin dashboard!",
@@ -55,6 +69,8 @@ export default function AdminDashboard() {
     setIsAuthenticated(false);
     setUsername("");
     setPassword("");
+    setAuthToken(null);
+    localStorage.removeItem("adminToken");
     toast({
       title: "Logged Out",
       description: "You have been logged out successfully",

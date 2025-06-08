@@ -267,17 +267,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const { username, password } = req.body;
     
     if (username === "admin" && password === "admin123") {
-      (req.session as any).isAdmin = true;
-      (req.session as any).user = { id: "admin", email: "admin@easystay.com", role: "admin" };
-      res.json({ success: true, user: (req.session as any).user });
+      // Set a simple admin token in session
+      (req.session as any).adminToken = "admin-authenticated";
+      res.json({ 
+        success: true, 
+        user: { id: "admin", email: "admin@easystay.com", role: "admin" },
+        token: "admin-authenticated"
+      });
     } else {
       res.status(401).json({ error: "Invalid credentials" });
     }
   });
 
-  // Admin auth middleware
+  // Admin auth middleware - simplified check
   const adminAuth = (req: any, res: any, next: any) => {
-    if ((req.session as any)?.isAdmin) {
+    const authHeader = req.headers.authorization;
+    const sessionToken = (req.session as any)?.adminToken;
+    
+    if (authHeader === "Bearer admin-authenticated" || sessionToken === "admin-authenticated") {
       next();
     } else {
       res.status(401).json({ message: "Unauthorized" });
