@@ -416,43 +416,58 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "payment-tracker" ? "bg-green-100 border-green-300" : "bg-green-50 border-green-200"} cursor-pointer`}
+              <Card className={`${activeTab === "payment-tracker" ? "bg-gradient-to-br from-emerald-100 to-emerald-50 border-emerald-300 shadow-lg" : "bg-white/90 backdrop-blur-sm border-slate-200/60 hover:shadow-lg"} cursor-pointer transition-all duration-300 group`}
                 onClick={() => setActiveTab("payment-tracker")}
               >
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-3">
-                    <DollarSign className="h-4 w-4 text-green-500 flex-shrink-0" />
-                    <div>
-                      <h3 className="text-xs font-semibold text-green-900">Payment Tracker</h3>
-                      <p className="text-lg font-bold text-green-700">{Array.isArray(payments) ? payments.length : 0}</p>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                      <DollarSign className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-bold text-emerald-900">Payment Tracker</h3>
+                      <div className="flex justify-between items-center mt-1">
+                        <p className="text-xl font-bold text-emerald-700">{Array.isArray(payments) ? payments.length : 0}</p>
+                        <span className="text-xs text-emerald-600 font-medium">active</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "maintenance" ? "bg-orange-100 border-orange-300" : "bg-orange-50 border-orange-200"} cursor-pointer`}
+              <Card className={`${activeTab === "maintenance" ? "bg-gradient-to-br from-orange-100 to-orange-50 border-orange-300 shadow-lg" : "bg-white/90 backdrop-blur-sm border-slate-200/60 hover:shadow-lg"} cursor-pointer transition-all duration-300 group`}
                 onClick={() => setActiveTab("maintenance")}
               >
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-3">
-                    <Wrench className="h-4 w-4 text-orange-500 flex-shrink-0" />
-                    <div>
-                      <h3 className="text-xs font-semibold text-orange-900">Maintenance</h3>
-                      <p className="text-lg font-bold text-orange-700">{Array.isArray(maintenanceRequests) ? maintenanceRequests.length : 0}</p>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                      <Wrench className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-bold text-orange-900">Maintenance</h3>
+                      <div className="flex justify-between items-center mt-1">
+                        <p className="text-xl font-bold text-orange-700">{Array.isArray(maintenanceRequests) ? maintenanceRequests.length : 0}</p>
+                        <span className="text-xs text-orange-600 font-medium">requests</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "inquiries" ? "bg-cyan-100 border-cyan-300" : "bg-cyan-50 border-cyan-200"} cursor-pointer`}
+              <Card className={`${activeTab === "inquiries" ? "bg-gradient-to-br from-cyan-100 to-cyan-50 border-cyan-300 shadow-lg" : "bg-white/90 backdrop-blur-sm border-slate-200/60 hover:shadow-lg"} cursor-pointer transition-all duration-300 group`}
                 onClick={() => setActiveTab("inquiries")}
               >
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-3">
-                    <MessageSquare className="h-4 w-4 text-cyan-500 flex-shrink-0" />
-                    <div>
-                      <h3 className="text-xs font-semibold text-cyan-900">Inquiries</h3>
-                      <p className="text-lg font-bold text-cyan-700">{Array.isArray(inquiries) ? inquiries.length : 0}</p>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                      <MessageSquare className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-bold text-cyan-900">Inquiries</h3>
+                      <div className="flex justify-between items-center mt-1">
+                        <p className="text-xl font-bold text-cyan-700">{Array.isArray(inquiries) ? inquiries.length : 0}</p>
+                        <span className="text-xs text-cyan-600 font-medium">pending</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -585,9 +600,13 @@ export default function AdminDashboard() {
             </Card>
           </div>
 
-          {/* Main Content Area */}
-          <div className="flex-1 space-y-4 lg:space-y-8">
-            <AdminTabs activeTab={activeTab} setActiveTab={(tab: string) => setActiveTab(tab as TabType)} />
+          {/* Premium Main Content Area */}
+          <div className="flex-1 space-y-6">
+            <div className="bg-white/95 backdrop-blur-sm shadow-xl border border-slate-200/60 rounded-2xl ring-1 ring-slate-200/50 overflow-hidden">
+              <div className="p-8">
+                <AdminTabs activeTab={activeTab} setActiveTab={(tab: string) => setActiveTab(tab as TabType)} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
