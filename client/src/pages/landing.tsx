@@ -195,7 +195,7 @@ export default function Landing() {
         {/* Contact Information */}
         <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-4 sm:p-6 lg:p-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-4 sm:mb-6 lg:mb-8">Contact Us</h2>
-          <div className="grid sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 text-center">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 text-center">
             <div>
               <MapPin className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 sm:mb-4 text-blue-600" />
               <h3 className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base">Visit Us</h3>
@@ -205,11 +205,6 @@ export default function Landing() {
               <Phone className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 sm:mb-4 text-green-600" />
               <h3 className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base">Call Us</h3>
               <p className="text-sm sm:text-base text-gray-600">(808) 219-6562</p>
-            </div>
-            <div>
-              <Mail className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 sm:mb-4 text-purple-600" />
-              <h3 className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base">Email Us</h3>
-              <p className="text-sm sm:text-base text-gray-600">info@easystay-hawaii.com</p>
             </div>
           </div>
         </div>
