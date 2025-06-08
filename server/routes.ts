@@ -15,7 +15,8 @@ import {
   insertTenantSessionSchema,
   insertMaintenanceRequestSchema,
   insertPaymentSchema,
-  insertNotificationSchema
+  insertNotificationSchema,
+  insertGuestProfileSchema
 } from "@shared/schema";
 import { generateTenantQRCode, generateTenantToken, verifyTenantToken } from "./qrGenerator";
 
@@ -849,6 +850,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(room);
     } catch (error) {
       res.status(400).json({ message: "Failed to update room status" });
+    }
+  });
+
+  // Guest Profile Management Routes
+  app.post("/api/admin/guests", isAuthenticated, async (req, res) => {
+    try {
+      const validatedData = insertGuestProfileSchema.parse(req.body);
+      
+      // Calculate next payment due date based on booking type
+      const checkInDate = new Date(validatedData.checkInDate);
+      let nextPaymentDue: string;
+      let paymentDueDay: number | undefined;
+
+      if (validatedData.bookingType === 'daily') {
+        // Daily guests: payment due tomorrow
+        const tomorrow = new Date(checkInDate);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        nextPaymentDue = tomorrow.toISOString().split('T')[0];
+      } else if (validatedData.bookingType === 'weekly') {
+        // Weekly guests: payment due next week on same day
+        const nextWeek = new Date(checkInDate);
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        nextPaymentDue = nextWeek.toISOString().split('T')[0];
+        paymentDueDay = checkInDate.getDay(); // 0-6 (Sunday-Saturday)
+      } else { // monthly
+        // Monthly guests: payment due next month on same day
+        const nextMonth = new Date(checkInDate);
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        nextPaymentDue = nextMonth.toISOString().split('T')[0];
+        paymentDueDay = checkInDate.getDate(); // 1-31
+      }
+
+      const guestData = {
+        ...validatedData,
+        nextPaymentDue,
+        paymentDueDay,
+        paymentStatus: 'pending'
+      };
+
+      const guest = await storage.createGuestProfile(guestData);
+      res.json(guest);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid guest profile data" });
+    }
+  });
+
+  app.get("/api/admin/guests", isAuthenticated, async (req, res) => {
+    try {
+      const guests = await storage.getGuestProfiles();
+      res.json(guests);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch guest profiles" });
+    }
+  });
+
+  app.get("/api/admin/guests/payment-due", isAuthenticated, async (req, res) => {
+    try {
+      const paymentDueGuests = await storage.getTodaysPaymentDueGuests();
+      res.json(paymentDueGuests);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch payment due guests" });
+    }
+  });
+
+  app.post("/api/admin/guests/:id/payment-received", isAuthenticated, async (req, res) => {
+    try {
+      const guestId = parseInt(req.params.id);
+      const updatedGuest = await storage.markPaymentReceived(guestId);
+      res.json(updatedGuest);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to mark payment received" });
+    }
+  });
+
+  app.get("/api/admin/guests/room/:roomId", isAuthenticated, async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const guests = await storage.getGuestProfilesByRoom(roomId);
+      res.json(guests);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch guests for room" });
     }
   });
 

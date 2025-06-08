@@ -15,6 +15,7 @@ import { InventoryTab } from "@/components/InventoryTab";
 import { ReceiptsTab } from "@/components/ReceiptsTab";
 import { TodosTab } from "@/components/TodosTab";
 import QRCodeManager from "@/components/QRCodeManager";
+import GuestProfileManager from "@/components/GuestProfileManager";
 
 
 export default function AdminTabs() {
@@ -74,6 +75,7 @@ export default function AdminTabs() {
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="receipts">Receipts</TabsTrigger>
             <TabsTrigger value="todos">Todo List</TabsTrigger>
+            <TabsTrigger value="guests">Guest Management</TabsTrigger>
             <TabsTrigger value="qrcodes">QR Codes</TabsTrigger>
           </TabsList>
         </div>

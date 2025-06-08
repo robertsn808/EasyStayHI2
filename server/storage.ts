@@ -402,6 +402,113 @@ export class DatabaseStorage implements IStorage {
       .from(schema.rooms)
       .where(eq(schema.rooms.status, status));
   }
+
+  // Guest Profile Operations
+  async createGuestProfile(data: InsertGuestProfile): Promise<GuestProfile> {
+    const [result] = await db.insert(guestProfiles).values(data).returning();
+    return result;
+  }
+
+  async getGuestProfiles(): Promise<GuestProfile[]> {
+    return await db.select().from(guestProfiles).where(eq(guestProfiles.isActive, true));
+  }
+
+  async getGuestProfilesByRoom(roomId: number): Promise<GuestProfile[]> {
+    return await db
+      .select()
+      .from(guestProfiles)
+      .where(and(eq(guestProfiles.roomId, roomId), eq(guestProfiles.isActive, true)));
+  }
+
+  async updateGuestProfile(id: number, data: Partial<InsertGuestProfile>): Promise<GuestProfile> {
+    const [result] = await db
+      .update(guestProfiles)
+      .set(data)
+      .where(eq(guestProfiles.id, id))
+      .returning();
+    return result;
+  }
+
+  async markPaymentReceived(guestId: number): Promise<GuestProfile> {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Get the guest profile to calculate next payment date
+    const [guest] = await db
+      .select()
+      .from(guestProfiles)
+      .where(eq(guestProfiles.id, guestId));
+
+    if (!guest) {
+      throw new Error('Guest profile not found');
+    }
+
+    let nextPaymentDue: string;
+    const currentDate = new Date();
+
+    // Calculate next payment date based on booking type
+    if (guest.bookingType === 'daily') {
+      // Next payment due tomorrow
+      const tomorrow = new Date(currentDate);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      nextPaymentDue = tomorrow.toISOString().split('T')[0];
+    } else if (guest.bookingType === 'weekly') {
+      // Next payment due next week on the same day
+      const nextWeek = new Date(currentDate);
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      nextPaymentDue = nextWeek.toISOString().split('T')[0];
+    } else { // monthly
+      // Next payment due next month on the same day
+      const nextMonth = new Date(currentDate);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      nextPaymentDue = nextMonth.toISOString().split('T')[0];
+    }
+
+    const [result] = await db
+      .update(guestProfiles)
+      .set({
+        lastPaymentDate: today,
+        nextPaymentDue,
+        paymentStatus: 'paid',
+        updatedAt: new Date(),
+      })
+      .where(eq(guestProfiles.id, guestId))
+      .returning();
+    
+    return result;
+  }
+
+  async getPaymentDueGuests(): Promise<GuestProfile[]> {
+    const today = new Date().toISOString().split('T')[0];
+    return await db
+      .select()
+      .from(guestProfiles)
+      .where(
+        and(
+          eq(guestProfiles.isActive, true),
+          eq(guestProfiles.nextPaymentDue, today)
+        )
+      );
+  }
+
+  async getTodaysPaymentDueGuests(): Promise<GuestProfile[]> {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const dayOfMonth = today.getDate();
+
+    return await db
+      .select()
+      .from(guestProfiles)
+      .where(
+        and(
+          eq(guestProfiles.isActive, true),
+          // Either specific date match or recurring payment day match
+          // For daily: every day, for weekly: same day of week, for monthly: same day of month
+          // This is simplified - in production you'd want more sophisticated date logic
+          eq(guestProfiles.nextPaymentDue, todayStr)
+        )
+      );
+  }
 }
 
 export const storage = new DatabaseStorage();
