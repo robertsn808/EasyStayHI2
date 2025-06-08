@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Edit, Settings } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { InquiriesTab } from "@/components/InquiriesTab";
 import { MaintenanceTab } from "@/components/MaintenanceTab";
 import { PaymentsTab } from "@/components/PaymentsTab";
@@ -26,6 +32,10 @@ interface AdminTabsProps {
 
 export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTabsProps) {
   const [selectedTab, setSelectedTab] = useState(activeTab);
+  const [editingRoom, setEditingRoom] = useState<any>(null);
+  const [showRoomDialog, setShowRoomDialog] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     setSelectedTab(activeTab);
@@ -83,6 +93,63 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
     queryKey: ["/api/admin/buildings"],
     enabled: isAdminAuthenticated,
   });
+
+  // Room update mutation
+  const updateRoomMutation = useMutation({
+    mutationFn: async (roomData: any) => {
+      return await apiRequest(`/api/admin/rooms/${roomData.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(roomData),
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-token": "admin123"
+        }
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/rooms"] });
+      setShowRoomDialog(false);
+      setEditingRoom(null);
+      toast({
+        title: "Success",
+        description: "Room updated successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update room",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleEditRoom = (room: any) => {
+    setEditingRoom(room);
+    setShowRoomDialog(true);
+  };
+
+  const handleUpdateRoom = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingRoom) return;
+
+    const formData = new FormData(e.target as HTMLFormElement);
+    const roomData = {
+      id: editingRoom.id,
+      status: formData.get('status') as string,
+      accessPin: formData.get('accessPin') as string,
+      tenantName: formData.get('tenantName') as string,
+      tenantEmail: formData.get('tenantEmail') as string,
+      tenantPhone: formData.get('tenantPhone') as string,
+    };
+
+    updateRoomMutation.mutate(roomData);
+  };
+
+  const generateNewPin = () => {
+    const newPin = Math.floor(1000 + Math.random() * 9000).toString();
+    setEditingRoom({ ...editingRoom, accessPin: newPin });
+  };
 
   const { data: rooms } = useQuery({
     queryKey: ["/api/rooms"],
@@ -234,7 +301,12 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                               )}
                               
                               <div className="flex gap-1">
-                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="text-xs px-1 py-0 h-5 flex-1"
+                                  onClick={() => handleEditRoom(room)}
+                                >
                                   Edit
                                 </Button>
                                 <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1">
@@ -287,7 +359,12 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                               )}
                               
                               <div className="flex gap-1">
-                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="text-xs px-1 py-0 h-5 flex-1"
+                                  onClick={() => handleEditRoom(room)}
+                                >
                                   Edit
                                 </Button>
                                 <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1">
@@ -301,6 +378,102 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                   </div>
                 </div>
               </div>
+
+              {/* Room Edit Dialog */}
+              <Dialog open={showRoomDialog} onOpenChange={setShowRoomDialog}>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Edit Room #{editingRoom?.number}</DialogTitle>
+                  </DialogHeader>
+                  
+                  {editingRoom && (
+                    <form onSubmit={handleUpdateRoom} className="space-y-4">
+                      <div>
+                        <Label htmlFor="status">Room Status</Label>
+                        <Select name="status" defaultValue={editingRoom.status}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="available">Available</SelectItem>
+                            <SelectItem value="occupied">Occupied</SelectItem>
+                            <SelectItem value="needs_cleaning">Needs Cleaning</SelectItem>
+                            <SelectItem value="maintenance">Maintenance</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="accessPin">Access PIN</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            name="accessPin"
+                            value={editingRoom.accessPin || ''}
+                            onChange={(e) => setEditingRoom({...editingRoom, accessPin: e.target.value})}
+                            placeholder="4-digit PIN"
+                            maxLength={4}
+                            pattern="[0-9]{4}"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={generateNewPin}
+                            className="px-3"
+                          >
+                            Generate
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="tenantName">Tenant Name</Label>
+                        <Input
+                          name="tenantName"
+                          defaultValue={editingRoom.tenantName || ''}
+                          placeholder="Enter tenant name"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="tenantEmail">Tenant Email</Label>
+                        <Input
+                          name="tenantEmail"
+                          type="email"
+                          defaultValue={editingRoom.tenantEmail || ''}
+                          placeholder="Enter tenant email"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="tenantPhone">Tenant Phone</Label>
+                        <Input
+                          name="tenantPhone"
+                          defaultValue={editingRoom.tenantPhone || ''}
+                          placeholder="Enter tenant phone"
+                        />
+                      </div>
+
+                      <div className="flex gap-2 pt-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setShowRoomDialog(false)}
+                          className="flex-1"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="submit"
+                          disabled={updateRoomMutation.isPending}
+                          className="flex-1"
+                        >
+                          {updateRoomMutation.isPending ? 'Updating...' : 'Update Room'}
+                        </Button>
+                      </div>
+                    </form>
+                  )}
+                </DialogContent>
+              </Dialog>
             </div>
           )}
           {selectedTab === "maintenance" && <MaintenanceTab requests={maintenanceRequests as any[]} />}

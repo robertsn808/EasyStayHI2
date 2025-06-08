@@ -639,6 +639,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For updates, we only validate the fields that are being updated
       const updateData = req.body;
       
+      // Validate PIN format if provided
+      if (updateData.accessPin && !/^\d{4}$/.test(updateData.accessPin)) {
+        return res.status(400).json({ message: "PIN must be exactly 4 digits" });
+      }
+      
       // Convert floor to integer if provided
       if (updateData.floor !== undefined) {
         updateData.floor = parseInt(updateData.floor);
@@ -650,6 +655,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       if (updateData.nextPaymentDue === '') {
         updateData.nextPaymentDue = null;
+      }
+      
+      const room = await storage.updateRoom(id, updateData);
+      res.json(room);
+    } catch (error) {
+      console.error("Room update error:", error);
+      res.status(400).json({ message: "Failed to update room", error: error.message });
+    }
+  });
+
+  app.patch("/api/admin/rooms/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updateData = req.body;
+      
+      // Validate PIN format if provided
+      if (updateData.accessPin && !/^\d{4}$/.test(updateData.accessPin)) {
+        return res.status(400).json({ message: "PIN must be exactly 4 digits" });
       }
       
       const room = await storage.updateRoom(id, updateData);
