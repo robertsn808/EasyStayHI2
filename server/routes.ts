@@ -505,7 +505,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const inquiries = await storage.getInquiries();
       res.json(inquiries);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch inquiries" });
+      console.error("Error fetching inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch inquiries", error: error.message });
     }
   });
 
