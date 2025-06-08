@@ -133,124 +133,86 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                 </Button>
               </div>
               
-              {/* Summary Cards by Building */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                {/* 934 Kapahulu Ave Summary */}
-                <Card className="p-4 bg-blue-50 border-blue-200">
-                  <h4 className="font-semibold text-blue-800 mb-3">934 Kapahulu Ave Overview</h4>
-                  <div className="grid grid-cols-4 gap-2">
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-green-700">
+              {/* Compact Summary */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                <Card className="p-3 bg-blue-50 border-blue-200">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium text-blue-800">934 Kapahulu Ave</h4>
+                    <div className="flex gap-3 text-xs">
+                      <span className="text-green-700 font-semibold">
                         {Array.isArray(rooms) && Array.isArray(buildings) ? 
                           rooms.filter((r: any) => {
                             const building = buildings.find((b: any) => b.id === r.buildingId);
                             return building?.name === "934 Kapahulu Ave" && r.status === 'available';
-                          }).length : 0}
-                      </div>
-                      <div className="text-xs text-green-600">Available</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-red-700">
+                          }).length : 0}A
+                      </span>
+                      <span className="text-red-700 font-semibold">
                         {Array.isArray(rooms) && Array.isArray(buildings) ? 
                           rooms.filter((r: any) => {
                             const building = buildings.find((b: any) => b.id === r.buildingId);
                             return building?.name === "934 Kapahulu Ave" && r.status === 'occupied';
-                          }).length : 0}
-                      </div>
-                      <div className="text-xs text-red-600">Occupied</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-orange-700">
+                          }).length : 0}O
+                      </span>
+                      <span className="text-orange-700 font-semibold">
                         {Array.isArray(rooms) && Array.isArray(buildings) ? 
                           rooms.filter((r: any) => {
                             const building = buildings.find((b: any) => b.id === r.buildingId);
                             return building?.name === "934 Kapahulu Ave" && r.status === 'needs_cleaning';
-                          }).length : 0}
-                      </div>
-                      <div className="text-xs text-orange-600">Cleaning</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-blue-700">
-                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
-                          rooms.filter((r: any) => {
-                            const building = buildings.find((b: any) => b.id === r.buildingId);
-                            return building?.name === "934 Kapahulu Ave";
-                          }).length : 0}
-                      </div>
-                      <div className="text-xs text-blue-600">Total</div>
+                          }).length : 0}C
+                      </span>
                     </div>
                   </div>
                 </Card>
-
-                {/* 949 Kawaiahao St Summary */}
-                <Card className="p-4 bg-purple-50 border-purple-200">
-                  <h4 className="font-semibold text-purple-800 mb-3">949 Kawaiahao St Overview</h4>
-                  <div className="grid grid-cols-4 gap-2">
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-green-700">
+                <Card className="p-3 bg-purple-50 border-purple-200">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium text-purple-800">949 Kawaiahao St</h4>
+                    <div className="flex gap-3 text-xs">
+                      <span className="text-green-700 font-semibold">
                         {Array.isArray(rooms) && Array.isArray(buildings) ? 
                           rooms.filter((r: any) => {
                             const building = buildings.find((b: any) => b.id === r.buildingId);
                             return building?.name === "949 Kawaiahao St" && r.status === 'available';
-                          }).length : 0}
-                      </div>
-                      <div className="text-xs text-green-600">Available</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-red-700">
+                          }).length : 0}A
+                      </span>
+                      <span className="text-red-700 font-semibold">
                         {Array.isArray(rooms) && Array.isArray(buildings) ? 
                           rooms.filter((r: any) => {
                             const building = buildings.find((b: any) => b.id === r.buildingId);
                             return building?.name === "949 Kawaiahao St" && r.status === 'occupied';
-                          }).length : 0}
-                      </div>
-                      <div className="text-xs text-red-600">Occupied</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-orange-700">
+                          }).length : 0}O
+                      </span>
+                      <span className="text-orange-700 font-semibold">
                         {Array.isArray(rooms) && Array.isArray(buildings) ? 
                           rooms.filter((r: any) => {
                             const building = buildings.find((b: any) => b.id === r.buildingId);
                             return building?.name === "949 Kawaiahao St" && r.status === 'needs_cleaning';
-                          }).length : 0}
-                      </div>
-                      <div className="text-xs text-orange-600">Cleaning</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-purple-700">
-                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
-                          rooms.filter((r: any) => {
-                            const building = buildings.find((b: any) => b.id === r.buildingId);
-                            return building?.name === "949 Kawaiahao St";
-                          }).length : 0}
-                      </div>
-                      <div className="text-xs text-purple-600">Total</div>
+                          }).length : 0}C
+                      </span>
                     </div>
                   </div>
                 </Card>
               </div>
 
-              {/* Buildings Separated Layout */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Condensed Buildings Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* 934 Kapahulu Ave */}
                 <div>
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-800">934 Kapahulu Ave</h3>
-                    <p className="text-sm text-gray-600">8 rooms • $100/$500/$2000 pricing</p>
+                  <div className="mb-3 p-2 bg-blue-50 rounded border-l-4 border-blue-400">
+                    <h3 className="font-medium text-blue-800">934 Kapahulu Ave</h3>
+                    <p className="text-xs text-blue-600">$100/$500/$2000</p>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     {Array.isArray(rooms) && rooms
                       .filter((room: any) => {
                         const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
                         return building?.name === "934 Kapahulu Ave";
                       })
                       .map((room: any) => {
-                        const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
                         return (
-                          <Card key={room.id} className="hover:shadow-md transition-shadow">
-                            <CardContent className="p-3">
-                              <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-bold text-base">#{room.number}</h3>
+                          <Card key={room.id} className="hover:shadow-sm transition-shadow">
+                            <CardContent className="p-2">
+                              <div className="flex justify-between items-center mb-1">
+                                <h3 className="font-bold text-sm">#{room.number}</h3>
                                 <Badge 
                                   variant={
                                     room.status === 'occupied' ? 'destructive' :
@@ -258,23 +220,24 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                                     room.status === 'needs_cleaning' ? 'secondary' :
                                     'outline'
                                   }
-                                  className="text-xs"
+                                  className="text-xs px-1 py-0"
                                 >
-                                  {room.status?.replace('_', ' ')}
+                                  {room.status?.charAt(0).toUpperCase()}
                                 </Badge>
                               </div>
                               
-                              <div className="space-y-1 text-xs text-gray-600 mb-2">
-                                {room.size && <p><strong>Size:</strong> {room.size}</p>}
-                                {room.tenantName && <p><strong>Tenant:</strong> {room.tenantName}</p>}
-                                {room.accessPin && <p><strong>PIN:</strong> {room.accessPin}</p>}
-                              </div>
+                              {(room.tenantName || room.accessPin) && (
+                                <div className="text-xs text-gray-600 mb-1">
+                                  {room.tenantName && <p className="truncate">{room.tenantName}</p>}
+                                  {room.accessPin && <p>PIN: {room.accessPin}</p>}
+                                </div>
+                              )}
                               
                               <div className="flex gap-1">
-                                <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-6 flex-1">
+                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1">
                                   Edit
                                 </Button>
-                                <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-6 flex-1">
+                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1">
                                   Status
                                 </Button>
                               </div>
@@ -287,23 +250,22 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
 
                 {/* 949 Kawaiahao St */}
                 <div>
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-800">949 Kawaiahao St</h3>
-                    <p className="text-sm text-gray-600">10 suites • $50/$200/$600 pricing</p>
+                  <div className="mb-3 p-2 bg-purple-50 rounded border-l-4 border-purple-400">
+                    <h3 className="font-medium text-purple-800">949 Kawaiahao St</h3>
+                    <p className="text-xs text-purple-600">$50/$200/$600</p>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     {Array.isArray(rooms) && rooms
                       .filter((room: any) => {
                         const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
                         return building?.name === "949 Kawaiahao St";
                       })
                       .map((room: any) => {
-                        const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
                         return (
-                          <Card key={room.id} className="hover:shadow-md transition-shadow">
-                            <CardContent className="p-3">
-                              <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-bold text-base">#{room.number}</h3>
+                          <Card key={room.id} className="hover:shadow-sm transition-shadow">
+                            <CardContent className="p-2">
+                              <div className="flex justify-between items-center mb-1">
+                                <h3 className="font-bold text-sm">#{room.number}</h3>
                                 <Badge 
                                   variant={
                                     room.status === 'occupied' ? 'destructive' :
@@ -311,23 +273,24 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                                     room.status === 'needs_cleaning' ? 'secondary' :
                                     'outline'
                                   }
-                                  className="text-xs"
+                                  className="text-xs px-1 py-0"
                                 >
-                                  {room.status?.replace('_', ' ')}
+                                  {room.status?.charAt(0).toUpperCase()}
                                 </Badge>
                               </div>
                               
-                              <div className="space-y-1 text-xs text-gray-600 mb-2">
-                                {room.size && <p><strong>Size:</strong> {room.size}</p>}
-                                {room.tenantName && <p><strong>Tenant:</strong> {room.tenantName}</p>}
-                                {room.accessPin && <p><strong>PIN:</strong> {room.accessPin}</p>}
-                              </div>
+                              {(room.tenantName || room.accessPin) && (
+                                <div className="text-xs text-gray-600 mb-1">
+                                  {room.tenantName && <p className="truncate">{room.tenantName}</p>}
+                                  {room.accessPin && <p>PIN: {room.accessPin}</p>}
+                                </div>
+                              )}
                               
                               <div className="flex gap-1">
-                                <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-6 flex-1">
+                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1">
                                   Edit
                                 </Button>
-                                <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-6 flex-1">
+                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1">
                                   Status
                                 </Button>
                               </div>
