@@ -2,15 +2,18 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Button, Badge, Card, CardHeader, CardTitle, CardContent, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
-import { InquiriesTab } from "./InquiriesTab";
-import { MaintenanceTab } from "./MaintenanceTab";
-import { PaymentsTab } from "./PaymentsTab";
-import { ContactsTab } from "./ContactsTab";
-import { CalendarTab } from "./CalendarTab";
-import { InventoryTab } from "./InventoryTab";
-import { ReceiptsTab } from "./ReceiptsTab";
-import { TodosTab } from "./TodosTab";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { InquiriesTab } from "@/components/InquiriesTab";
+import { MaintenanceTab } from "@/components/MaintenanceTab";
+import { PaymentsTab } from "@/components/PaymentsTab";
+import { ContactsTab } from "@/components/ContactsTab";
+import { CalendarTab } from "@/components/CalendarTab";
+import { InventoryTab } from "@/components/InventoryTab";
+import { ReceiptsTab } from "@/components/ReceiptsTab";
+import { TodosTab } from "@/components/TodosTab";
 
 export default function AdminTabs() {
   const { toast } = useToast();
@@ -53,7 +56,7 @@ export default function AdminTabs() {
     <Card className="shadow-sm">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <div className="border-b border-gray-200">
-          <TabsList className="grid w-full grid-cols-11">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="inquiries" className="relative">
               Inquiries
               {inquiries?.length > 0 && (
