@@ -271,18 +271,18 @@ export function QuickAccessTab({
           </div>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-96">
+          <ScrollArea className="h-48">
             {!Array.isArray(notifications) || notifications.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No notifications</p>
+              <div className="text-center py-6 text-muted-foreground">
+                <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No notifications</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {notifications.map((notification: any) => (
                   <div
                     key={notification.id}
-                    className={`border-l-4 p-3 rounded-r-lg ${getNotificationColor(notification.color)} ${
+                    className={`border-l-3 p-2 rounded-r-md ${getNotificationColor(notification.color)} ${
                       !notification.isRead ? "ring-1 ring-gray-200" : "opacity-75"
                     }`}
                   >
@@ -291,33 +291,33 @@ export function QuickAccessTab({
                         {getNotificationIcon(notification.type, notification.priority)}
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
-                            <h4 className="font-medium text-sm">{notification.title}</h4>
+                            <h4 className="font-medium text-xs">{notification.title}</h4>
                             {notification.priority === "urgent" && (
-                              <Badge variant="destructive" className="text-xs">Urgent</Badge>
+                              <Badge variant="destructive" className="text-xs py-0 px-1">!</Badge>
                             )}
                             {!notification.isRead && (
-                              <Badge variant="secondary" className="text-xs">New</Badge>
+                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                             )}
                           </div>
-                          <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
-                          <div className="flex items-center space-x-2 mt-2">
+                          <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
+                          <div className="flex items-center space-x-2 mt-1">
                             <span className="text-xs text-gray-500">
-                              {new Date(notification.createdAt).toLocaleString()}
+                              {new Date(notification.createdAt).toLocaleTimeString()}
                             </span>
                             {notification.actionType && (
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleNotificationAction(notification)}
-                                className="text-xs h-6"
+                                className="text-xs h-5 px-2"
                               >
                                 {notification.actionType === "unlock_portal" ? (
                                   <>
-                                    <Key className="h-3 w-3 mr-1" />
-                                    Unlock Portal
+                                    <Key className="h-2 w-2 mr-1" />
+                                    Unlock
                                   </>
                                 ) : (
-                                  "Take Action"
+                                  "Action"
                                 )}
                               </Button>
                             )}

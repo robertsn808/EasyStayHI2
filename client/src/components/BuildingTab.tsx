@@ -291,40 +291,57 @@ export function BuildingTab({ buildingName, buildingId, rooms = [], guests = [],
         </CardContent>
       </Card>
 
-      {/* Active Guests */}
+      {/* Room Management */}
       <Card>
         <CardHeader>
-          <CardTitle>Active Guests ({buildingGuests.length})</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Home className="w-5 h-5" />
+            Room Management ({buildingRooms.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          {buildingGuests.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">No active guests</p>
-          ) : (
-            <div className="space-y-3">
-              {buildingGuests.map((guest) => {
-                const room = buildingRooms.find(r => r.id === guest.roomId);
-                return (
-                  <div key={guest.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded ${colorClasses[color].bg} flex items-center justify-center text-white text-xs font-medium`}>
-                        {room?.number}
-                      </div>
-                      <div>
-                        <p className="font-medium">{guest.guestName}</p>
-                        <p className="text-sm text-gray-600">{guest.email || guest.phone}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant={guest.paymentStatus === 'paid' ? 'default' : 'destructive'}>
-                        {guest.paymentStatus}
-                      </Badge>
-                      <p className="text-xs text-gray-500 mt-1">{guest.bookingType}</p>
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {buildingRooms.map((room) => (
+              <div
+                key={room.id}
+                className="flex items-center justify-between p-3 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => {
+                  setSelectedRoom(room);
+                  setIsDialogOpen(true);
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-10 h-10 rounded-lg ${getRoomStatusColor(room.status)} flex items-center justify-center text-white font-medium`}
+                  >
+                    {room.number}
                   </div>
-                );
-              })}
-            </div>
-          )}
+                  <div>
+                    <p className="font-medium">Room {room.number}</p>
+                    <p className="text-sm text-gray-600 capitalize">{room.status}</p>
+                    {room.tenantName && (
+                      <p className="text-xs text-gray-500">{room.tenantName}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedRoom(room);
+                      setIsDialogOpen(true);
+                    }}
+                  >
+                    <Edit className="w-3 h-3 mr-1" />
+                    Update
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
 
