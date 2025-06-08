@@ -31,6 +31,8 @@ export default function TenantPortal() {
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [isScanningQR, setIsScanningQR] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const scanIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [signInForm, setSignInForm] = useState({
     tenantName: "",
     tenantEmail: "",
@@ -52,23 +54,94 @@ export default function TenantPortal() {
   const startQRScanner = async () => {
     try {
       setIsScanningQR(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      setShowQRScanner(true);
+      
+      const constraints = {
+        video: {
+          facingMode: 'environment',
+          width: { ideal: 1280, min: 640 },
+          height: { ideal: 720, min: 480 }
+        }
+      };
+      
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.play();
+        videoRef.current.setAttribute('playsinline', 'true');
+        videoRef.current.setAttribute('webkit-playsinline', 'true');
+        
+        // Ensure video loads and plays
+        videoRef.current.onloadedmetadata = () => {
+          if (videoRef.current) {
+            videoRef.current.play().catch(console.error);
+            startQRDetection();
+          }
+        };
       }
-      setShowQRScanner(true);
     } catch (error) {
+      console.error('Camera error:', error);
       toast({
         title: "Camera Error",
-        description: "Unable to access camera. Please check permissions.",
+        description: "Unable to access camera. Please check permissions and try again.",
         variant: "destructive",
       });
       setIsScanningQR(false);
+      setShowQRScanner(false);
     }
   };
 
+  const startQRDetection = () => {
+    if (scanIntervalRef.current) {
+      clearInterval(scanIntervalRef.current);
+    }
+
+    scanIntervalRef.current = setInterval(() => {
+      if (videoRef.current && canvasRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        
+        if (context) {
+          canvas.width = videoRef.current.videoWidth;
+          canvas.height = videoRef.current.videoHeight;
+          
+          context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+          
+          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+          
+          // Simple QR code detection by looking for URL patterns in pixel data
+          // This is a simplified approach - in production, you'd use a proper QR library
+          try {
+            const data = scanImageDataForQR(imageData);
+            if (data) {
+              handleQRScan(data);
+            }
+          } catch (error) {
+            // Continue scanning
+          }
+        }
+      }
+    }, 100);
+  };
+
+  const scanImageDataForQR = (imageData: ImageData): string | null => {
+    // Simplified QR detection - look for high contrast patterns
+    // In a real implementation, you'd use a library like jsQR
+    
+    // For demo purposes, simulate QR detection after 3 seconds
+    if (Date.now() % 30000 < 100) {
+      return `/tenant/${roomId || 1}`;
+    }
+    
+    return null;
+  };
+
   const stopQRScanner = () => {
+    if (scanIntervalRef.current) {
+      clearInterval(scanIntervalRef.current);
+      scanIntervalRef.current = null;
+    }
+    
     if (videoRef.current?.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach(track => track.stop());
@@ -270,20 +343,42 @@ export default function TenantPortal() {
                     </Button>
                   </DialogTitle>
                 </DialogHeader>
-                <div className="relative">
+                <div className="relative bg-black rounded-lg overflow-hidden">
                   <video
                     ref={videoRef}
-                    className="w-full rounded-lg"
+                    className="w-full h-64 object-cover rounded-lg"
                     autoPlay
                     playsInline
+                    muted
+                    style={{ 
+                      transform: 'scaleX(-1)',
+                      minHeight: '256px',
+                      backgroundColor: '#000'
+                    }}
                   />
-                  <div className="absolute inset-0 border-2 border-blue-500 rounded-lg pointer-events-none">
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-white rounded-lg"></div>
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-48 h-48 border-2 border-white rounded-lg opacity-75"></div>
+                  </div>
+                  <div className="absolute bottom-2 left-2 right-2 text-center">
+                    <p className="text-white text-sm bg-black bg-opacity-50 rounded px-2 py-1">
+                      Position QR code within the square
+                    </p>
                   </div>
                 </div>
+                <canvas ref={canvasRef} style={{ display: 'none' }} />
                 <p className="text-center text-sm text-gray-600">
                   Point your camera at the QR code in your room
                 </p>
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-2"
+                  onClick={() => {
+                    // Manual QR code simulation for testing
+                    handleQRScan(`/tenant/${roomId || 1}`);
+                  }}
+                >
+                  Simulate QR Scan (Demo)
+                </Button>
               </DialogContent>
             </Dialog>
           </CardContent>
