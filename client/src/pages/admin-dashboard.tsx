@@ -1,126 +1,46 @@
 import { useState, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bell, LogOut } from "lucide-react";
-import AdminTabs from "@/components/admin-tabs";
+import { useLocation } from "wouter";
 import WeeklyCalendar from "@/components/WeeklyCalendar";
+import AdminTabs from "@/components/admin-tabs";
 import backgroundImage from "@assets/image_1749351216300.png";
 
 export default function AdminDashboard() {
-  const { toast } = useToast();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("properties");
 
-  // Check for existing auth token on component mount
+  // Check for admin authentication
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ["/api/auth/user"],
+  });
+
   useEffect(() => {
-    const token = localStorage.getItem("admin-authenticated");
-    if (token) {
-      setAuthToken(token);
-      setIsAuthenticated(true);
+    if (!isLoading && (!user || error)) {
+      setLocation("/admin-login");
     }
-  }, []);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Use fixed admin token for this demo system
-        const token = "admin-authenticated";
-        setAuthToken(token);
-        setIsAuthenticated(true);
-        localStorage.setItem("admin-authenticated", token);
-        toast({
-          title: "Login Successful",
-          description: "Welcome to the admin dashboard!",
-        });
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid username or password",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to connect to server",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [user, isLoading, error, setLocation]);
 
   const handleLogout = async () => {
-    setIsAuthenticated(false);
-    setUsername("");
-    setPassword("");
-    setAuthToken(null);
-    localStorage.removeItem("adminToken");
-    toast({
-      title: "Logged Out",
-      description: "You have been logged out successfully",
-    });
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      setLocation("/admin-login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
-  if (!isAuthenticated) {
+  if (isLoading) {
     return (
-      <div 
-        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      >
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center">Admin Login</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <Input
-                  type="text"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <Input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
-              </Button>
-            </form>
-            <div className="mt-4 text-sm text-gray-600 text-center">
-              Demo credentials: admin / admin123
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="max-w-md mx-auto mt-20">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -129,29 +49,123 @@ export default function AdminDashboard() {
       className="min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
+      {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Admin Dashboard</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="icon">
-                <Bell className="h-4 w-4" />
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+                <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
+              <Button variant="outline" onClick={handleLogout} className="text-xs sm:text-sm">
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Logout</span>
               </Button>
             </div>
           </div>
         </div>
       </div>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
-          {/* Sidebar with Quick Overview Cards */}
-          <div className="w-80 space-y-4 flex-shrink-0">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+          
+          {/* Mobile Overview Cards (2x2 grid on mobile) */}
+          <div className="lg:hidden">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Overview</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+                <CardContent className="p-3">
+                  <div className="space-y-2">
+                    <div className="text-center">
+                      <Bell className="h-4 w-4 mx-auto text-blue-500 mb-1" />
+                      <h3 className="text-xs font-semibold text-blue-900">Inquiries</h3>
+                      <p className="text-lg font-bold text-blue-700">3</p>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="w-full text-xs h-6"
+                      onClick={() => setActiveTab("inquiries")}
+                    >
+                      View
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
+                <CardContent className="p-3">
+                  <div className="space-y-2">
+                    <div className="text-center">
+                      <svg className="h-4 w-4 mx-auto text-green-500 mb-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7l-10-5z"/>
+                      </svg>
+                      <h3 className="text-xs font-semibold text-green-900">Properties</h3>
+                      <p className="text-lg font-bold text-green-700">2</p>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      className="w-full bg-green-600 hover:bg-green-700 text-xs h-6"
+                      onClick={() => setActiveTab("properties")}
+                    >
+                      Manage
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-orange-50 to-orange-100 border-orange-200">
+                <CardContent className="p-3">
+                  <div className="space-y-2">
+                    <div className="text-center">
+                      <svg className="h-4 w-4 mx-auto text-orange-500 mb-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <h3 className="text-xs font-semibold text-orange-900">Maintenance</h3>
+                      <p className="text-lg font-bold text-orange-700">7</p>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="w-full text-xs h-6"
+                      onClick={() => setActiveTab("maintenance")}
+                    >
+                      View
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-red-50 to-red-100 border-red-200">
+                <CardContent className="p-3">
+                  <div className="space-y-2">
+                    <div className="text-center">
+                      <svg className="h-4 w-4 mx-auto text-red-500 mb-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      </svg>
+                      <h3 className="text-xs font-semibold text-red-900">Payments</h3>
+                      <p className="text-lg font-bold text-red-700">5</p>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="w-full text-xs h-6"
+                      onClick={() => setActiveTab("guests")}
+                    >
+                      Track
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Desktop Sidebar with Quick Overview Cards */}
+          <div className="hidden lg:block w-80 space-y-4 flex-shrink-0">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Overview</h2>
             
             <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
@@ -261,7 +275,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Main Content Area */}
-          <div className="flex-1 space-y-8">
+          <div className="flex-1 space-y-4 lg:space-y-8">
             {/* Weekly Calendar */}
             <WeeklyCalendar />
             
@@ -269,5 +283,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+    </div>
   );
 }
