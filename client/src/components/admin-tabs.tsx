@@ -97,7 +97,7 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
   // Room update mutation
   const updateRoomMutation = useMutation({
     mutationFn: async (roomData: any) => {
-      return await apiRequest(`/api/admin/rooms/${roomData.id}`, {
+      const response = await fetch(`/api/admin/rooms/${roomData.id}`, {
         method: "PATCH",
         body: JSON.stringify(roomData),
         headers: {
@@ -105,8 +105,15 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
           "x-admin-token": "admin123"
         }
       });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to update room: ${response.statusText}`);
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/rooms"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/rooms"] });
       setShowRoomDialog(false);
       setEditingRoom(null);
@@ -134,14 +141,33 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
     if (!editingRoom) return;
 
     const formData = new FormData(e.target as HTMLFormElement);
-    const roomData = {
+    const roomData: any = {
       id: editingRoom.id,
-      status: formData.get('status') as string,
-      accessPin: formData.get('accessPin') as string,
-      tenantName: formData.get('tenantName') as string,
-      tenantEmail: formData.get('tenantEmail') as string,
-      tenantPhone: formData.get('tenantPhone') as string,
     };
+
+    // Only add fields that have values
+    const status = formData.get('status') as string;
+    if (status) roomData.status = status;
+    
+    const accessPin = formData.get('accessPin') as string;
+    if (accessPin) roomData.accessPin = accessPin;
+    
+    const tenantName = formData.get('tenantName') as string;
+    if (tenantName) roomData.tenantName = tenantName;
+    
+    const tenantPhone = formData.get('tenantPhone') as string;
+    if (tenantPhone) roomData.tenantPhone = tenantPhone;
+    
+    const lastCleaned = formData.get('lastCleaned') as string;
+    if (lastCleaned) roomData.lastCleaned = lastCleaned;
+    
+    const nextPaymentDue = formData.get('nextPaymentDue') as string;
+    if (nextPaymentDue) roomData.nextPaymentDue = nextPaymentDue;
+
+    // Auto-set lastCleaned if status changed to "available" or "needs_cleaning"
+    if (status && (status === 'available' || status === 'needs_cleaning') && editingRoom.status !== status) {
+      roomData.lastCleaned = new Date().toISOString().split('T')[0];
+    }
 
     updateRoomMutation.mutate(roomData);
   };
@@ -450,6 +476,24 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                           name="tenantPhone"
                           defaultValue={editingRoom.tenantPhone || ''}
                           placeholder="Enter tenant phone"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="lastCleaned">Last Cleaned Date</Label>
+                        <Input
+                          name="lastCleaned"
+                          type="date"
+                          defaultValue={editingRoom.lastCleaned || ''}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="nextPaymentDue">Next Payment Due</Label>
+                        <Input
+                          name="nextPaymentDue"
+                          type="date"
+                          defaultValue={editingRoom.nextPaymentDue || ''}
                         />
                       </div>
 
