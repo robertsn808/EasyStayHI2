@@ -84,6 +84,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Protected admin routes
+  app.get("/api/buildings", async (req, res) => {
+    try {
+      const buildings = await storage.getBuildings();
+      res.json(buildings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch buildings" });
+    }
+  });
+
+  app.post("/api/buildings", isAuthenticated, async (req, res) => {
+    try {
+      const validatedData = insertBuildingSchema.parse(req.body);
+      const building = await storage.createBuilding(validatedData);
+      res.json(building);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid building data" });
+    }
+  });
+
+  app.get("/api/rooms", async (req, res) => {
+    try {
+      const rooms = await storage.getRooms();
+      res.json(rooms);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch rooms" });
+    }
+  });
+
+  app.post("/api/rooms", isAuthenticated, async (req, res) => {
+    try {
+      const validatedData = insertRoomSchema.parse(req.body);
+      const room = await storage.createRoom(validatedData);
+      res.json(room);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid room data" });
+    }
+  });
+
   app.get("/api/admin/rooms", isAuthenticated, async (req, res) => {
     try {
       const rooms = await storage.getRooms();

@@ -25,7 +25,7 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
   const [showRoomDialog, setShowRoomDialog] = useState(false);
 
   // Fetch buildings for room creation
-  const { data: buildings = [] } = useQuery({
+  const { data: buildings = [] } = useQuery<any[]>({
     queryKey: ["/api/buildings"],
   });
 
@@ -228,7 +228,7 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
                       <SelectValue placeholder="Select a building" />
                     </SelectTrigger>
                     <SelectContent>
-                      {buildings?.map((building: any) => (
+                      {(buildings as any[]).map((building: any) => (
                         <SelectItem key={building.id} value={building.id.toString()}>
                           {building.name}
                         </SelectItem>
