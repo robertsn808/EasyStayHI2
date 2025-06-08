@@ -22,26 +22,26 @@ export default function Landing() {
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-blue-600/80 to-green-600/80 text-white">
         <div className="absolute inset-0 bg-black/40"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6">
               Welcome to EasyStay HI
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 max-w-3xl mx-auto px-2">
               Premium accommodations in the heart of Honolulu. Find your perfect home away from home.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
               <Button 
                 onClick={() => window.location.href = '/tenant'}
                 size="lg" 
-                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3"
+                className="bg-white text-blue-600 hover:bg-gray-100 px-6 sm:px-8 py-3 text-sm sm:text-base"
               >
                 Tenant Portal
               </Button>
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-white text-yellow-300 hover:bg-white hover:text-blue-600 px-8 py-3"
+                className="border-white text-yellow-300 hover:bg-white hover:text-blue-600 px-6 sm:px-8 py-3 text-sm sm:text-base"
                 onClick={() => window.location.href = '/admin'}
               >
                 Management Portal
@@ -51,41 +51,41 @@ export default function Landing() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         
         {/* Property Cards */}
-        <div id="properties" className="grid lg:grid-cols-2 gap-12 mb-16">
+        <div id="properties" className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12 lg:mb-16">
           {/* Property 934 */}
-          <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300">
-            <div className="h-64 bg-gradient-to-br from-blue-100 to-green-100 flex items-center justify-center">
+          <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-blue-100 to-green-100 flex items-center justify-center">
               <div className="text-center">
-                <div className="text-6xl mb-4">🏢</div>
-                <h3 className="text-2xl font-bold text-gray-800">Property 934</h3>
-                <p className="text-gray-600">934 Kapahulu Ave</p>
+                <div className="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-4">🏢</div>
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">Property 934</h3>
+                <p className="text-sm sm:text-base text-gray-600">934 Kapahulu Ave</p>
               </div>
             </div>
-            <CardHeader>
-              <CardTitle className="text-xl">934 Kapahulu Ave, Honolulu, HI</CardTitle>
-              <CardDescription>
+            <CardHeader className="pb-3 sm:pb-4">
+              <CardTitle className="text-lg sm:text-xl">934 Kapahulu Ave, Honolulu, HI</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
                 Modern residential units perfect for long-term stays and monthly rentals.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-900">$100</div>
+            <CardContent className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+                <div className="p-2 sm:p-3 bg-blue-50 rounded-lg">
+                  <div className="text-lg sm:text-2xl font-bold text-blue-900">$100</div>
                   <div className="text-xs text-blue-700">Daily</div>
                 </div>
-                <div className="p-3 bg-green-50 rounded-lg border-2 border-green-400">
-                  <div className="text-2xl font-bold text-green-900">$500</div>
+                <div className="p-2 sm:p-3 bg-green-50 rounded-lg border-2 border-green-400">
+                  <div className="text-lg sm:text-2xl font-bold text-green-900">$500</div>
                   <div className="text-xs text-green-700">Weekly</div>
                 </div>
-                <div className="p-3 bg-orange-50 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-900">$2,000</div>
+                <div className="p-2 sm:p-3 bg-orange-50 rounded-lg">
+                  <div className="text-lg sm:text-2xl font-bold text-orange-900">$2,000</div>
                   <div className="text-xs text-orange-700">Monthly</div>
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1 sm:space-y-2 text-sm sm:text-base">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Available Rooms:</span>
                   <span className="font-semibold text-green-600">{availableRooms || 3}</span>

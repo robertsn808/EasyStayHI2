@@ -756,6 +756,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Building Management Routes
+  app.get("/api/admin/buildings", simpleAdminAuth, async (req, res) => {
+    try {
+      const buildings = await storage.getBuildings();
+      res.json(buildings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch buildings" });
+    }
+  });
+
   app.post("/api/admin/buildings", simpleAdminAuth, async (req, res) => {
     try {
       const validatedData = insertBuildingSchema.parse(req.body);
@@ -763,6 +773,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(building);
     } catch (error) {
       res.status(400).json({ message: "Invalid building data" });
+    }
+  });
+
+  app.put("/api/admin/buildings/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const building = await storage.updateBuilding(id, req.body);
+      res.json(building);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update building" });
+    }
+  });
+
+  app.delete("/api/admin/buildings/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteBuilding(id);
+      res.json({ message: "Building deleted successfully" });
+    } catch (error) {
+      res.status(400).json({ message: "Failed to delete building" });
     }
   });
 

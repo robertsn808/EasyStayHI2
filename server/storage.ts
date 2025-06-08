@@ -47,6 +47,8 @@ export interface IStorage {
   // Building operations
   createBuilding(building: InsertBuilding): Promise<Building>;
   getBuildings(): Promise<Building[]>;
+  updateBuilding(id: number, building: Partial<InsertBuilding>): Promise<Building>;
+  deleteBuilding(id: number): Promise<void>;
 
   // Room operations
   createRoom(room: InsertRoom): Promise<Room>;
@@ -154,6 +156,22 @@ export class DatabaseStorage implements IStorage {
 
   async getBuildings(): Promise<Building[]> {
     return await db.select().from(buildings);
+  }
+
+  async updateBuilding(id: number, buildingData: Partial<InsertBuilding>): Promise<Building> {
+    const [building] = await db
+      .update(buildings)
+      .set({
+        ...buildingData,
+        updatedAt: new Date(),
+      })
+      .where(eq(buildings.id, id))
+      .returning();
+    return building;
+  }
+
+  async deleteBuilding(id: number): Promise<void> {
+    await db.delete(buildings).where(eq(buildings.id, id));
   }
 
   // Room operations
