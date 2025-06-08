@@ -16,11 +16,9 @@ import { ReceiptsTab } from "@/components/ReceiptsTab";
 import { TodosTab } from "@/components/TodosTab";
 import QRCodeManager from "@/components/QRCodeManager";
 import GuestProfileManager from "@/components/GuestProfileManager";
-
-
 export default function AdminTabs() {
   const { toast } = useToast();
-  const [selectedTab, setSelectedTab] = useState("inquiries");
+  const [selectedTab, setSelectedTab] = useState("properties");
 
   // Fetch data for each tab
   const { data: inquiries } = useQuery({
@@ -80,6 +78,42 @@ export default function AdminTabs() {
             <TabsTrigger value="qrcodes">QR Codes</TabsTrigger>
           </TabsList>
         </div>
+
+        <TabsContent value="properties" className="p-6">
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Property Management</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-4">934 Kapahulu Ave</h3>
+                <div className="space-y-2">
+                  <p className="text-gray-600">8 Rooms Available</p>
+                  <p className="text-sm">Daily: $100 | Weekly: $500 | Monthly: $2000</p>
+                  <div className="grid grid-cols-4 gap-2 mt-4">
+                    {Array.from({ length: 8 }, (_, i) => (
+                      <div key={i} className="p-2 border rounded text-center bg-green-100">
+                        {String(i + 1).padStart(3, '0')}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-4">949 Kawaiahao St</h3>
+                <div className="space-y-2">
+                  <p className="text-gray-600">10 Suites Available</p>
+                  <p className="text-sm">Daily: $50 | Weekly: $200 | Monthly: $600</p>
+                  <div className="grid grid-cols-5 gap-2 mt-4">
+                    {Array.from({ length: 10 }, (_, i) => (
+                      <div key={i} className="p-2 border rounded text-center bg-blue-100">
+                        {String(i + 1).padStart(3, '0')}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
 
         <TabsContent value="inquiries" className="p-6">
           <InquiriesTab inquiries={inquiries} />
