@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, LogOut, Plus } from "lucide-react";
 import AdminRoomGrid from "@/components/admin-room-grid";
 import AdminTabs from "@/components/admin-tabs";
@@ -137,43 +138,335 @@ export default function AdminDashboard() {
         {/* Room Management Grid */}
         <AdminRoomGrid rooms={rooms || []} />
 
-        {/* Announcement Management */}
+        {/* Property 934 Section */}
         <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm p-6 mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Manage Property Announcements</h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-medium text-gray-700 mb-2">Property 934 Announcements</h4>
-              <p className="text-sm text-gray-600 mb-3">Current announcements visible on the 934 property page</p>
-              <Button 
-                onClick={() => window.open('/', '_blank')} 
-                variant="outline" 
-                className="mr-2"
-              >
-                View 934 Page
-              </Button>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-semibold text-gray-900">Property 934 - Kapahulu</h3>
+            <Button 
+              onClick={() => window.open('/', '_blank')} 
+              variant="outline"
+            >
+              View Property Page
+            </Button>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-blue-900 mb-2">Property Details</h4>
+              <p className="text-sm text-blue-800">Address: 934 Kapahulu Ave</p>
+              <p className="text-sm text-blue-800">Type: Multi-unit Residential</p>
+              <p className="text-sm text-blue-800">Status: Active</p>
             </div>
-            <div>
-              <h4 className="font-medium text-gray-700 mb-2">Property 949 Announcements</h4>
-              <p className="text-sm text-gray-600 mb-3">Current announcements visible on the 949 property page</p>
-              <Button 
-                onClick={() => window.open('/949', '_blank')} 
-                variant="outline"
-              >
-                View 949 Page
-              </Button>
+            <div className="bg-green-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-green-900 mb-2">Occupancy</h4>
+              <p className="text-sm text-green-800">Available Rooms: {availableRooms}</p>
+              <p className="text-sm text-green-800">Total Rooms: {rooms?.length || 0}</p>
+              <p className="text-sm text-green-800">Occupancy Rate: 85%</p>
+            </div>
+            <div className="bg-yellow-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-yellow-900 mb-2">Revenue</h4>
+              <p className="text-sm text-yellow-800">Monthly: $12,500</p>
+              <p className="text-sm text-yellow-800">YTD: $145,000</p>
+              <p className="text-sm text-yellow-800">Target: $150,000</p>
             </div>
           </div>
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Note:</strong> Announcements are currently managed through the database. 
-              The current announcement system displays the same announcements on both properties. 
-              To edit announcements, you can modify them directly in the database or contact your developer.
-            </p>
+
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-4">Recent Tenant Requests</h4>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">Maintenance Request - Room 2A</p>
+                  <p className="text-sm text-gray-600">AC unit not cooling properly</p>
+                </div>
+                <span className="px-3 py-1 bg-red-100 text-red-800 text-xs rounded-full">Urgent</span>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">Payment Inquiry - Room 1B</p>
+                  <p className="text-sm text-gray-600">Question about next month's rent</p>
+                </div>
+                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Dashboard Tabs */}
-        <AdminTabs />
+        {/* Property 949 Section */}
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm p-6 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-semibold text-gray-900">Property 949 - Luxury Suites</h3>
+            <Button 
+              onClick={() => window.open('/949', '_blank')} 
+              variant="outline"
+            >
+              View Property Page
+            </Button>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6 mb-6">
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-purple-900 mb-2">Property Details</h4>
+              <p className="text-sm text-purple-800">Address: 949 Luxury Ave</p>
+              <p className="text-sm text-purple-800">Type: Premium Suites</p>
+              <p className="text-sm text-purple-800">Status: Active</p>
+            </div>
+            <div className="bg-emerald-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-emerald-900 mb-2">Occupancy</h4>
+              <p className="text-sm text-emerald-800">Available Rooms: 2</p>
+              <p className="text-sm text-emerald-800">Total Rooms: 10</p>
+              <p className="text-sm text-emerald-800">Occupancy Rate: 80%</p>
+            </div>
+            <div className="bg-orange-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-orange-900 mb-2">Revenue</h4>
+              <p className="text-sm text-orange-800">Monthly: $18,750</p>
+              <p className="text-sm text-orange-800">YTD: $220,000</p>
+              <p className="text-sm text-orange-800">Target: $225,000</p>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-4">Recent Tenant Requests</h4>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">Service Request - Suite 5</p>
+                  <p className="text-sm text-gray-600">Request for additional towels and amenities</p>
+                </div>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">In Progress</span>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">Extension Request - Suite 3</p>
+                  <p className="text-sm text-gray-600">Tenant requesting 2-week extension</p>
+                </div>
+                <span className="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">Approved</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Calendar and Todo Section */}
+        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Weekly Calendar</h3>
+            <div className="space-y-3">
+              <div className="grid grid-cols-7 gap-2 text-center text-sm font-medium text-gray-600 mb-4">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+              </div>
+              <div className="grid grid-cols-7 gap-2">
+                {Array.from({ length: 7 }, (_, i) => (
+                  <div key={i} className="aspect-square p-2 text-center border rounded hover:bg-gray-50 cursor-pointer">
+                    <div className="text-sm">{i + 8}</div>
+                    {i === 2 && <div className="w-2 h-2 bg-blue-500 rounded-full mx-auto mt-1"></div>}
+                    {i === 4 && <div className="w-2 h-2 bg-red-500 rounded-full mx-auto mt-1"></div>}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center text-sm">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                  <span>Room inspection - Property 934</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                  <span>Maintenance scheduled - Property 949</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Todo List</h3>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <input type="checkbox" className="rounded border-gray-300" />
+                <span className="text-sm">Review tenant applications for Property 934</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <input type="checkbox" className="rounded border-gray-300" />
+                <span className="text-sm">Schedule maintenance for Suite 7 - Property 949</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <input type="checkbox" className="rounded border-gray-300" defaultChecked />
+                <span className="text-sm line-through text-gray-500">Update property listing photos</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <input type="checkbox" className="rounded border-gray-300" />
+                <span className="text-sm">Process rent payments for June</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <input type="checkbox" className="rounded border-gray-300" />
+                <span className="text-sm">Send welcome package to new tenant</span>
+              </div>
+            </div>
+            <Button variant="outline" className="w-full mt-4">
+              Add New Task
+            </Button>
+          </div>
+        </div>
+
+        {/* Management Tabs Section */}
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm p-6">
+          <Tabs defaultValue="payments" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="payments">Payments & Receipts</TabsTrigger>
+              <TabsTrigger value="inventory">Inventory</TabsTrigger>
+              <TabsTrigger value="guests">Guests</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="payments" className="mt-6">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Recent Payments</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <p className="font-medium">Room 2A - Property 934</p>
+                        <p className="text-sm text-gray-600">Monthly rent payment</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-green-600">$1,200</p>
+                        <p className="text-sm text-gray-500">June 1, 2025</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <p className="font-medium">Suite 5 - Property 949</p>
+                        <p className="text-sm text-gray-600">Weekly payment</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-green-600">$750</p>
+                        <p className="text-sm text-gray-500">June 7, 2025</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Receipts & Documents</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <p className="font-medium">Utility Bill - Property 934</p>
+                        <p className="text-sm text-gray-600">Electric company - May 2025</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-red-600">$456</p>
+                        <Button variant="outline" size="sm">View Receipt</Button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <p className="font-medium">Maintenance Service - Property 949</p>
+                        <p className="text-sm text-gray-600">HVAC repair service</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-red-600">$280</p>
+                        <Button variant="outline" size="sm">View Receipt</Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="inventory" className="mt-6">
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Property Inventory</h4>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-3">Property 934 - Items</h5>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <span className="text-sm">Bed Linens</span>
+                        <span className="text-sm font-medium">15 sets</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <span className="text-sm">Towels</span>
+                        <span className="text-sm font-medium">24 pieces</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <span className="text-sm">Cleaning Supplies</span>
+                        <span className="text-sm font-medium text-red-600">Low Stock</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-3">Property 949 - Items</h5>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <span className="text-sm">Premium Linens</span>
+                        <span className="text-sm font-medium">8 sets</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <span className="text-sm">Luxury Amenities</span>
+                        <span className="text-sm font-medium">12 kits</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <span className="text-sm">Coffee Supplies</span>
+                        <span className="text-sm font-medium">6 packages</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="guests" className="mt-6">
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Current Guests</h4>
+                <div className="space-y-4">
+                  <div className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h5 className="font-medium">John Smith</h5>
+                        <p className="text-sm text-gray-600">Room 2A, Property 934</p>
+                      </div>
+                      <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Active</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-600">Check-in: May 15, 2025</p>
+                        <p className="text-gray-600">Check-out: June 15, 2025</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Duration: 31 days</p>
+                        <p className="text-gray-600">Rate: $1,200/month</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h5 className="font-medium">Maria Rodriguez</h5>
+                        <p className="text-sm text-gray-600">Suite 5, Property 949</p>
+                      </div>
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Extended</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-600">Check-in: June 1, 2025</p>
+                        <p className="text-gray-600">Check-out: June 21, 2025</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Duration: 3 weeks</p>
+                        <p className="text-gray-600">Rate: $750/week</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );
