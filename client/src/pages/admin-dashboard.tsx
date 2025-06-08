@@ -14,6 +14,7 @@ import backgroundImage from "@assets/image_1749351216300.png";
 import AdminTabs from "@/components/admin-tabs";
 
 type TabType = 
+  | "quick-access"
   | "934" 
   | "949"
   | "payment-tracker" 

@@ -1192,6 +1192,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // System Notifications API
+  app.get("/api/admin/notifications", simpleAdminAuth, async (req, res) => {
+    try {
+      const buildingId = req.query.buildingId ? parseInt(req.query.buildingId as string) : undefined;
+      const notifications = await storage.getSystemNotifications(buildingId);
+      res.json(notifications);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.post("/api/admin/notifications", simpleAdminAuth, async (req, res) => {
+    try {
+      const notification = await storage.createSystemNotification(req.body);
+      res.json(notification);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create notification" });
+    }
+  });
+
+  app.patch("/api/admin/notifications/:id/read", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const notification = await storage.markNotificationRead(id);
+      res.json(notification);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  app.delete("/api/admin/notifications/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteNotification(id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(400).json({ message: "Failed to delete notification" });
+    }
+  });
+
+  app.delete("/api/admin/notifications", simpleAdminAuth, async (req, res) => {
+    try {
+      const buildingId = req.query.buildingId ? parseInt(req.query.buildingId as string) : undefined;
+      await storage.clearAllNotifications(buildingId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(400).json({ message: "Failed to clear notifications" });
+    }
+  });
+
+  // Portal Security API
+  app.post("/api/admin/portal/unlock/:roomId", simpleAdminAuth, async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const portalSecurity = await storage.unlockPortal(roomId);
+      res.json(portalSecurity);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to unlock portal" });
+    }
+  });
+
+  app.get("/api/admin/portal/status/:roomId", simpleAdminAuth, async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const portalSecurity = await storage.getPortalSecurity(roomId);
+      res.json(portalSecurity || { isLocked: false, failedAttempts: 0 });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch portal status" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

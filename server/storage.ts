@@ -10,6 +10,8 @@ import {
   receipts,
   todos,
   guestProfiles,
+  portalSecurity,
+  systemNotifications,
   type User,
   type UpsertUser,
   type Building,
@@ -32,6 +34,10 @@ import {
   type InsertTodo,
   type GuestProfile,
   type InsertGuestProfile,
+  type PortalSecurity,
+  type InsertPortalSecurity,
+  type SystemNotification,
+  type InsertSystemNotification,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc, asc } from "drizzle-orm";
