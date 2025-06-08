@@ -35,9 +35,8 @@ export default function QRCodeManager() {
 
   const generateQRMutation = useMutation({
     mutationFn: async (buildingId: number) => {
-      return apiRequest(`/api/buildings/${buildingId}/qr-codes`, {
-        method: "GET",
-      });
+      const response = await fetch(`/api/buildings/${buildingId}/qr-codes`);
+      return response.json();
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["/api/buildings", selectedBuilding, "qr-codes"], data);
@@ -50,6 +49,30 @@ export default function QRCodeManager() {
       toast({
         title: "Error",
         description: "Failed to generate QR codes",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const seedPropertiesMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/admin/seed-properties", {
+        method: "POST",
+        credentials: "include",
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/buildings"] });
+      toast({
+        title: "Properties Seeded",
+        description: "Created 934 Kapahulu Ave (8 rooms) and 949 Kawaiahao St (10 rooms)",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to seed properties",
         variant: "destructive",
       });
     },
@@ -84,6 +107,18 @@ export default function QRCodeManager() {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">QR Code Manager</h2>
         <div className="flex space-x-2">
+          <Button 
+            onClick={() => seedPropertiesMutation.mutate()}
+            disabled={seedPropertiesMutation.isPending}
+            variant="outline"
+          >
+            {seedPropertiesMutation.isPending ? (
+              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4 mr-2" />
+            )}
+            Seed Properties
+          </Button>
           {qrData?.qrCodes && (
             <Button onClick={downloadAllQRCodes} variant="outline">
               <Download className="h-4 w-4 mr-2" />
