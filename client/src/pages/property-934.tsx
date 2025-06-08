@@ -17,6 +17,9 @@ export default function Property934() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   const [showAddRoom, setShowAddRoom] = useState(false);
+  const [showAddMaintenance, setShowAddMaintenance] = useState(false);
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  const [showAddGuest, setShowAddGuest] = useState(false);
 
   // Sample data for Property 934
   const propertyData = {
@@ -70,6 +73,73 @@ export default function Property934() {
     }
   };
 
+  const handleAddRoom = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
+    toast({
+      title: "Room Added",
+      description: `Room ${formData.get("roomNumber")} has been added successfully.`,
+    });
+    setShowAddRoom(false);
+  };
+
+  const handleEditRoom = (roomId: number) => {
+    toast({
+      title: "Edit Room",
+      description: "Room editing functionality will be implemented here.",
+    });
+  };
+
+  const handleUpdateMaintenanceStatus = (requestId: number, newStatus: string) => {
+    toast({
+      title: "Status Updated",
+      description: `Maintenance request #${requestId} status updated to ${newStatus}.`,
+    });
+  };
+
+  const handleViewMaintenanceDetails = (requestId: number) => {
+    toast({
+      title: "View Details",
+      description: `Viewing details for maintenance request #${requestId}.`,
+    });
+  };
+
+  const handleRecordPayment = (paymentId: number) => {
+    toast({
+      title: "Payment Recorded",
+      description: `Payment #${paymentId} has been recorded.`,
+    });
+  };
+
+  const handleUpdatePaymentStatus = (paymentId: number) => {
+    toast({
+      title: "Payment Status Updated",
+      description: `Payment #${paymentId} status has been updated.`,
+    });
+  };
+
+  const handleSendReminder = (tenantName: string) => {
+    toast({
+      title: "Reminder Sent",
+      description: `Payment reminder sent to ${tenantName}.`,
+    });
+  };
+
+  const handleContactGuest = (tenantName: string) => {
+    toast({
+      title: "Contact Guest",
+      description: `Opening contact form for ${tenantName}.`,
+    });
+  };
+
+  const handleEditGuest = (tenantName: string) => {
+    toast({
+      title: "Edit Guest",
+      description: `Editing information for ${tenantName}.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Header */}
@@ -103,7 +173,7 @@ export default function Property934() {
                   <DialogHeader>
                     <DialogTitle>Add New Room</DialogTitle>
                   </DialogHeader>
-                  <form className="space-y-4">
+                  <form onSubmit={handleAddRoom} className="space-y-4">
                     <div>
                       <Label htmlFor="roomNumber">Room Number</Label>
                       <Input id="roomNumber" name="roomNumber" required />
@@ -209,7 +279,7 @@ export default function Property934() {
                         <Badge variant="outline" className={room.status === 'occupied' ? 'text-green-600 border-green-600' : 'text-gray-600'}>
                           {room.status}
                         </Badge>
-                        <Button size="sm" variant="outline">Edit</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleEditRoom(room.id)}>Edit</Button>
                       </div>
                     </div>
                   ))}
@@ -223,7 +293,7 @@ export default function Property934() {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Maintenance Requests</CardTitle>
-                  <Button className="bg-orange-600 hover:bg-orange-700">
+                  <Button className="bg-orange-600 hover:bg-orange-700" onClick={() => setShowAddMaintenance(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     New Request
                   </Button>
@@ -249,8 +319,8 @@ export default function Property934() {
                         </div>
                       </div>
                       <div className="flex gap-2 mt-3">
-                        <Button size="sm" variant="outline">Update Status</Button>
-                        <Button size="sm" variant="outline">View Details</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleUpdateMaintenanceStatus(request.id, 'in-progress')}>Update Status</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleViewMaintenanceDetails(request.id)}>View Details</Button>
                       </div>
                     </div>
                   ))}
@@ -264,7 +334,7 @@ export default function Property934() {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Payment Status</CardTitle>
-                  <Button className="bg-green-600 hover:bg-green-700">
+                  <Button className="bg-green-600 hover:bg-green-700" onClick={() => setShowAddPayment(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Record Payment
                   </Button>
