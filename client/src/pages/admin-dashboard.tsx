@@ -195,14 +195,24 @@ export default function AdminDashboard() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-semibold text-orange-900">Total Rooms</h3>
-                  <p className="text-2xl font-bold text-orange-700">18</p>
-                  <p className="text-xs text-orange-600">8 rooms + 10 suites</p>
+                  <h3 className="text-sm font-semibold text-orange-900">Maintenance Requests</h3>
+                  <p className="text-2xl font-bold text-orange-700">7</p>
+                  <p className="text-xs text-orange-600">Pending repairs</p>
                 </div>
-                <div className="text-orange-500">
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7l-10-5z"/>
-                  </svg>
+                <div className="flex flex-col items-end gap-2">
+                  <div className="text-orange-500">
+                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-xs h-7 px-2"
+                    onClick={() => setActiveTab("maintenance")}
+                  >
+                    View Requests
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -239,7 +249,7 @@ export default function AdminDashboard() {
         {/* Weekly Calendar */}
         <WeeklyCalendar />
         
-        <AdminTabs />
+        <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
     </div>
   );

@@ -17,9 +17,19 @@ import { TodosTab } from "@/components/TodosTab";
 import QRCodeManager from "@/components/QRCodeManager";
 import GuestProfileManager from "@/components/GuestProfileManager";
 import WeeklyCalendar from "@/components/WeeklyCalendar";
-export default function AdminTabs() {
+interface AdminTabsProps {
+  activeTab?: string;
+  setActiveTab?: (tab: string) => void;
+}
+
+export default function AdminTabs({ activeTab = "properties", setActiveTab }: AdminTabsProps) {
   const { toast } = useToast();
-  const [selectedTab, setSelectedTab] = useState("properties");
+  const [selectedTab, setSelectedTab] = useState(activeTab);
+
+  // Sync with external activeTab changes
+  useEffect(() => {
+    setSelectedTab(activeTab);
+  }, [activeTab]);
 
   // Fetch data for each tab
   const { data: inquiries } = useQuery({
