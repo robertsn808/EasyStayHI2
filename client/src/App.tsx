@@ -32,6 +32,7 @@ function Router() {
       <Route path="/property-949" component={Property949} />
       <Route path="/property-934" component={Property934} />
       <Route path="/949" component={Property949} />
+      <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/admin" component={AdminDashboard} />
       {isAuthenticated ? (
         <Route path="/" component={AdminDashboard} />
