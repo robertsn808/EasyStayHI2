@@ -76,7 +76,8 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/inquiries'] });
       toast({ title: "Success", description: "Inquiry deleted successfully" });
     },
-    onError: () => {
+    onError: (error: Error) => {
+      console.error('Delete error:', error);
       toast({ title: "Error", description: "Failed to delete inquiry", variant: "destructive" });
     }
   });
@@ -197,7 +198,7 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
   };
 
   // Filter available rooms
-  const availableRooms = rooms ? rooms.filter((room: any) => room.status === 'available') : [];
+  const availableRooms = Array.isArray(rooms) ? rooms.filter((room: any) => room.status === 'available') : [];
   
   return (
     <div className="space-y-6">
@@ -258,7 +259,7 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Property Inquiries</h3>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary">{inquiries.length} total</Badge>
+          <Badge variant="secondary">{Array.isArray(inquiries) ? inquiries.length : 0} total</Badge>
           <Button size="sm" variant="outline" onClick={() => setAssignRoomDialogOpen(true)}>
             <Home className="w-4 h-4 mr-1" />
             Assign from Inquiries
