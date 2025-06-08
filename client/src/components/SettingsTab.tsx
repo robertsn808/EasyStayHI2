@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -363,7 +363,7 @@ export function SettingsTab() {
           <TabsTrigger value="profile">My Profile</TabsTrigger>
           <TabsTrigger value="users">User Management</TabsTrigger>
           <TabsTrigger value="properties">Property Management</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="api">Public API</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
@@ -657,81 +657,88 @@ export function SettingsTab() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="security" className="space-y-6">
+        <TabsContent value="api" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Key className="w-5 h-5 mr-2" />
-                Security Settings
+                Public API Access
               </CardTitle>
+              <CardDescription>
+                Manage API keys and integrations for custom applications
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Alert>
-                <CheckCircle className="h-4 w-4" />
-                <AlertDescription>
-                  System is secured with admin authentication tokens. Regular password changes are recommended.
-                </AlertDescription>
-              </Alert>
-              
-              <div className="flex justify-between items-center p-4 border rounded-lg">
-                <div>
-                  <h4 className="font-medium">Change Password</h4>
-                  <p className="text-sm text-gray-600">Update your login password</p>
+              <div className="space-y-2">
+                <Label htmlFor="api-key">API Key</Label>
+                <div className="flex space-x-2">
+                  <Input 
+                    id="api-key" 
+                    type="text" 
+                    value="easystay_api_key_2024_..." 
+                    readOnly
+                    className="font-mono text-sm"
+                  />
+                  <Button variant="outline" size="sm">Copy</Button>
                 </div>
-                <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline">
-                      <Key className="w-4 h-4 mr-2" />
-                      Change Password
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Change Password</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="current-password">Current Password</Label>
-                        <Input
-                          id="current-password"
-                          type="password"
-                          value={passwordData.currentPassword}
-                          onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="new-password-change">New Password</Label>
-                        <Input
-                          id="new-password-change"
-                          type="password"
-                          value={passwordData.newPassword}
-                          onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="confirm-password-change">Confirm New Password</Label>
-                        <Input
-                          id="confirm-password-change"
-                          type="password"
-                          value={passwordData.confirmPassword}
-                          onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                        />
-                      </div>
-                      <div className="flex justify-end space-x-2">
-                        <Button variant="outline" onClick={() => setShowPasswordDialog(false)}>
-                          Cancel
-                        </Button>
-                        <Button 
-                          onClick={handlePasswordChange}
-                          disabled={changePasswordMutation.isPending}
-                        >
-                          {changePasswordMutation.isPending ? "Updating..." : "Update Password"}
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                <p className="text-sm text-muted-foreground">
+                  Use this key to authenticate API requests to the EasyStay system
+                </p>
               </div>
+              
+              <div className="space-y-2">
+                <Label>API Endpoints</Label>
+                <div className="bg-muted p-4 rounded-lg font-mono text-sm space-y-2">
+                  <div>GET /api/public/rooms - List available rooms</div>
+                  <div>GET /api/public/buildings - List properties</div>
+                  <div>POST /api/public/inquiries - Submit inquiry</div>
+                  <div>GET /api/public/announcements - Get announcements</div>
+                </div>
+              </div>
+              
+              <div className="flex space-x-2">
+                <Button>Generate New Key</Button>
+                <Button variant="outline">View Documentation</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Webhook Settings</CardTitle>
+              <CardDescription>
+                Configure webhooks for real-time notifications
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="webhook-url">Webhook URL</Label>
+                <Input 
+                  id="webhook-url" 
+                  type="url" 
+                  placeholder="https://your-app.com/webhook/easystay" 
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Events to Subscribe</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input type="checkbox" id="new-inquiry" className="rounded" />
+                    <Label htmlFor="new-inquiry">New Inquiry Received</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input type="checkbox" id="room-booked" className="rounded" />
+                    <Label htmlFor="room-booked">Room Booking Confirmed</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input type="checkbox" id="payment-received" className="rounded" />
+                    <Label htmlFor="payment-received">Payment Received</Label>
+                  </div>
+                </div>
+              </div>
+              
+              <Button>Save Webhook Settings</Button>
             </CardContent>
           </Card>
         </TabsContent>
