@@ -112,6 +112,10 @@ export default function AdminTabs() {
           <TodosTab todos={todos} />
         </TabsContent>
 
+        <TabsContent value="guests" className="p-6">
+          <GuestProfileManager />
+        </TabsContent>
+
         <TabsContent value="qrcodes" className="p-6">
           <QRCodeManager />
         </TabsContent>
