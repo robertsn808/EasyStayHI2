@@ -316,7 +316,11 @@ export default function Property949() {
                         <Badge variant="outline" className={room.status === 'occupied' ? 'text-green-600 border-green-600' : 'text-gray-600'}>
                           {room.status}
                         </Badge>
-                        <Button size="sm" variant="outline">Edit</Button>
+                        <Button size="sm" variant="outline" onClick={() => generateSuiteQRCode(room.id)}>
+                          <QrCode className="w-4 h-4 mr-1" />
+                          QR Code
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleEditSuite(room.id)}>Edit</Button>
                       </div>
                     </div>
                   ))}
@@ -438,6 +442,39 @@ export default function Property949() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* QR Code Modal */}
+        <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Suite QR Code</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col items-center space-y-4">
+              {qrCodeData && (
+                <>
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold mb-2">
+                      {rooms.find(r => r.id === qrCodeData.roomId)?.number}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Scan this QR code to access the tenant portal
+                    </p>
+                  </div>
+                  <div className="p-4 bg-white border rounded-lg">
+                    <img 
+                      src={qrCodeData.qrCode} 
+                      alt="Suite QR Code" 
+                      className="w-48 h-48"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 text-center max-w-sm">
+                    Tenants can scan this code with their phone camera to access the tenant portal for this suite
+                  </p>
+                </>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
