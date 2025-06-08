@@ -25,6 +25,16 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
   const [showRoomDialog, setShowRoomDialog] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [newRoom, setNewRoom] = useState({
+    number: "",
+    buildingId: 0,
+    status: "available",
+    rentalRate: "2000",
+    rentalPeriod: "monthly",
+    floor: 1
+  });
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch buildings for room creation
   const { data: buildings = [] } = useQuery<any[]>({
@@ -198,7 +208,10 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">Room Status Overview</h3>
+        <div>
+          <h3 className="text-2xl font-bold text-gray-900">Property Management</h3>
+          <p className="text-gray-600">Manage rooms across all EasyStay properties</p>
+        </div>
         <div className="flex space-x-2">
           <Dialog open={showBuildingDialog} onOpenChange={setShowBuildingDialog}>
             <DialogTrigger asChild>
@@ -406,59 +419,167 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
         </div>
       </div>
 
-      {/* Simplified Room Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-        {rooms.map((room) => (
-          <Card key={room.id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleEditRoom(room)}>
-            <CardContent className="p-3">
-              <div className="text-center">
-                <h4 className="font-bold text-lg mb-2">{room.number}</h4>
-                <Badge className={`px-2 py-1 text-xs rounded-full ${getStatusColor(room.status)} mb-2 block`}>
-                  {getStatusText(room.status)}
-                </Badge>
-                {room.tenantName && (
-                  <div className="text-xs text-gray-600 mb-1 truncate">
-                    {room.tenantName}
-                  </div>
-                )}
-                <div className="text-xs text-gray-500">
-                  ${room.rentalRate || '2000'}/mo
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Room Statistics Summary */}
-      <div className="mt-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-green-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {rooms.filter(r => r.status === 'available').length}
-            </div>
-            <div className="text-sm text-green-700">Available</div>
-          </div>
-          <div className="bg-red-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-red-600">
-              {rooms.filter(r => r.status === 'occupied').length}
-            </div>
-            <div className="text-sm text-red-700">Occupied</div>
-          </div>
-          <div className="bg-orange-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-orange-600">
-              {rooms.filter(r => r.status === 'needs_cleaning').length}
-            </div>
-            <div className="text-sm text-orange-700">Needs Cleaning</div>
-          </div>
-          <div className="bg-yellow-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-yellow-600">
-              {rooms.filter(r => r.status === 'out_of_service').length}
-            </div>
-            <div className="text-sm text-yellow-700">Maintenance</div>
-          </div>
+      {/* Search and Filter Controls */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex-1">
+          <Input
+            placeholder="Search rooms by number or tenant name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full"
+          />
+        </div>
+        <div className="flex gap-2">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Rooms</SelectItem>
+              <SelectItem value="available">Available</SelectItem>
+              <SelectItem value="occupied">Occupied</SelectItem>
+              <SelectItem value="needs_cleaning">Needs Cleaning</SelectItem>
+              <SelectItem value="out_of_service">Maintenance</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setSearchTerm("");
+              setStatusFilter("all");
+            }}
+          >
+            Clear
+          </Button>
         </div>
       </div>
+
+      {/* Property Overview Statistics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-green-50 p-4 rounded-lg text-center">
+          <div className="text-2xl font-bold text-green-600">
+            {rooms.filter(r => r.status === 'available').length}
+          </div>
+          <div className="text-sm text-green-700">Available</div>
+        </div>
+        <div className="bg-red-50 p-4 rounded-lg text-center">
+          <div className="text-2xl font-bold text-red-600">
+            {rooms.filter(r => r.status === 'occupied').length}
+          </div>
+          <div className="text-sm text-red-700">Occupied</div>
+        </div>
+        <div className="bg-orange-50 p-4 rounded-lg text-center">
+          <div className="text-2xl font-bold text-orange-600">
+            {rooms.filter(r => r.status === 'needs_cleaning').length}
+          </div>
+          <div className="text-sm text-orange-700">Needs Cleaning</div>
+        </div>
+        <div className="bg-yellow-50 p-4 rounded-lg text-center">
+          <div className="text-2xl font-bold text-yellow-600">
+            {rooms.filter(r => r.status === 'out_of_service').length}
+          </div>
+          <div className="text-sm text-yellow-700">Maintenance</div>
+        </div>
+      </div>
+
+      {/* Buildings Grid - Separated by Property */}
+      <div className="space-y-8">
+        {buildings.map((building) => {
+          const buildingRooms = rooms.filter(room => room.buildingId === building.id);
+          const availableRooms = buildingRooms.filter(r => r.status === 'available').length;
+          const occupiedRooms = buildingRooms.filter(r => r.status === 'occupied').length;
+          
+          return (
+            <div key={building.id} className="bg-white border rounded-xl p-6 shadow-sm">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h4 className="text-xl font-bold text-gray-900">{building.name}</h4>
+                  <p className="text-gray-600">{building.address}</p>
+                  <div className="flex gap-4 mt-2 text-sm">
+                    <span className="text-green-600 font-medium">{availableRooms} Available</span>
+                    <span className="text-red-600 font-medium">{occupiedRooms} Occupied</span>
+                    <span className="text-gray-500">{buildingRooms.length} Total Rooms</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setNewRoom(prev => ({ ...prev, buildingId: building.id }));
+                      setShowRoomDialog(true);
+                    }}
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    Add Room
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open(`/qr-codes?building=${building.id}`, '_blank')}
+                  >
+                    QR Codes
+                  </Button>
+                </div>
+              </div>
+              
+              {buildingRooms.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No rooms in this building yet.</p>
+                  <Button 
+                    variant="outline" 
+                    className="mt-2"
+                    onClick={() => {
+                      setNewRoom(prev => ({ ...prev, buildingId: building.id }));
+                      setShowRoomDialog(true);
+                    }}
+                  >
+                    Add First Room
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                  {buildingRooms.map((room) => (
+                    <Card 
+                      key={room.id} 
+                      className="hover:shadow-md transition-shadow cursor-pointer border-2 hover:border-blue-300" 
+                      onClick={() => handleEditRoom(room)}
+                    >
+                      <CardContent className="p-3">
+                        <div className="text-center">
+                          <h5 className="font-bold text-lg mb-2">{room.number}</h5>
+                          <Badge className={`px-2 py-1 text-xs rounded-full ${getStatusColor(room.status)} mb-2 block`}>
+                            {getStatusText(room.status)}
+                          </Badge>
+                          {room.tenantName && (
+                            <div className="text-xs text-gray-600 mb-1 truncate" title={room.tenantName}>
+                              {room.tenantName}
+                            </div>
+                          )}
+                          <div className="text-xs text-gray-500">
+                            ${room.rentalRate || '2000'}/mo
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {buildings.length === 0 && (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <h4 className="text-lg font-medium text-gray-900 mb-2">No Buildings Yet</h4>
+          <p className="text-gray-600 mb-4">Create your first building to start managing rooms.</p>
+          <Button onClick={() => setShowBuildingDialog(true)} className="bg-primary text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            Create First Building
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
