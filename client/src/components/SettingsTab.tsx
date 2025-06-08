@@ -73,13 +73,7 @@ export function SettingsTab() {
   // Change password mutation
   const changePasswordMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("/api/admin/change-password", {
-        method: "POST",
-        body: data,
-        headers: {
-          "x-admin-token": "admin-authenticated"
-        }
-      });
+      return await apiRequest("/api/admin/change-password", "POST", data);
     },
     onSuccess: () => {
       toast({
@@ -101,13 +95,7 @@ export function SettingsTab() {
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("/api/admin/update-profile", {
-        method: "POST",
-        body: data,
-        headers: {
-          "x-admin-token": "admin-authenticated"
-        }
-      });
+      return await apiRequest("/api/admin/update-profile", "POST", data);
     },
     onSuccess: () => {
       toast({
@@ -128,13 +116,7 @@ export function SettingsTab() {
   // Create user mutation
   const createUserMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("/api/admin/create-user", {
-        method: "POST",
-        body: data,
-        headers: {
-          "x-admin-token": "admin-authenticated"
-        }
-      });
+      return await apiRequest("/api/admin/create-user", "POST", data);
     },
     onSuccess: () => {
       toast({
@@ -461,12 +443,12 @@ export function SettingsTab() {
                       </DialogHeader>
                       <div className="space-y-4">
                         <div>
-                          <Label htmlFor="new-username">Username</Label>
+                          <Label htmlFor="create-username">Login Username</Label>
                           <Input
-                            id="new-username"
+                            id="create-username"
                             value={userData.username}
                             onChange={(e) => setUserData(prev => ({ ...prev, username: e.target.value }))}
-                            placeholder="Enter username"
+                            placeholder="Enter login username"
                           />
                         </div>
                         <div>
