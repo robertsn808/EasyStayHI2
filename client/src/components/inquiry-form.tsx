@@ -21,12 +21,7 @@ import { insertInquirySchema, type InsertInquiry } from "@shared/schema";
 
 export default function InquiryForm() {
   const { toast } = useToast();
-  const [selectedRoom, setSelectedRoom] = useState("");
   const [selectedPeriod, setSelectedPeriod] = useState("");
-
-  const { data: rooms } = useQuery({
-    queryKey: ["/api/rooms"],
-  });
 
   const form = useForm<InsertInquiry>({
     resolver: zodResolver(insertInquirySchema),
@@ -34,8 +29,6 @@ export default function InquiryForm() {
       name: "",
       email: "",
       phone: "",
-      roomNumber: "",
-      rentalPeriod: "",
       message: "",
     },
   });
@@ -50,7 +43,6 @@ export default function InquiryForm() {
         description: "We'll contact you soon about your rental inquiry.",
       });
       form.reset();
-      setSelectedRoom("");
       setSelectedPeriod("");
     },
     onError: (error) => {
@@ -65,14 +57,10 @@ export default function InquiryForm() {
   const onSubmit = (data: InsertInquiry) => {
     const formData = {
       ...data,
-      roomNumber: selectedRoom,
-      rentalPeriod: selectedPeriod,
-      moveInDate: data.moveInDate ? new Date(data.moveInDate as any).toISOString().split('T')[0] : undefined,
+      message: `${data.message || ''} | Rental Period: ${selectedPeriod}`,
     };
     mutation.mutate(formData);
   };
-
-  const availableRooms = rooms?.filter((room: any) => room.status === "available") || [];
 
   return (
     <Card className="shadow-sm" id="inquiry-form">
@@ -121,24 +109,6 @@ export default function InquiryForm() {
           
           <div>
             <Label className="block text-sm font-medium text-gray-700 mb-2">
-              Interested Room
-            </Label>
-            <Select value={selectedRoom} onValueChange={setSelectedRoom} required>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a room..." />
-              </SelectTrigger>
-              <SelectContent>
-                {availableRooms.map((room: any) => (
-                  <SelectItem key={room.id} value={room.number}>
-                    Room {room.number} - Available
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <Label className="block text-sm font-medium text-gray-700 mb-2">
               Rental Period
             </Label>
             <Select value={selectedPeriod} onValueChange={setSelectedPeriod} required>
@@ -146,9 +116,14 @@ export default function InquiryForm() {
                 <SelectValue placeholder="Select rental period..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="daily">Daily ($100/day)</SelectItem>
-                <SelectItem value="weekly">Weekly ($500/week)</SelectItem>
-                <SelectItem value="monthly">Monthly ($2000/month)</SelectItem>
+                <SelectItem value="1day">1 Day</SelectItem>
+                <SelectItem value="2days">2 Days</SelectItem>
+                <SelectItem value="3days">3 Days</SelectItem>
+                <SelectItem value="4days">4 Days</SelectItem>
+                <SelectItem value="1week">1 Week</SelectItem>
+                <SelectItem value="2weeks+">2 Weeks+</SelectItem>
+                <SelectItem value="month">Month</SelectItem>
+                <SelectItem value="2months+">2 Months+</SelectItem>
               </SelectContent>
             </Select>
           </div>
