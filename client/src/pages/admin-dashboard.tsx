@@ -150,43 +150,85 @@ export default function AdminDashboard() {
             </Button>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6 mb-6">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-blue-900 mb-2">Property Details</h4>
-              <p className="text-sm text-blue-800">Address: 934 Kapahulu Ave</p>
-              <p className="text-sm text-blue-800">Type: Multi-unit Residential</p>
-              <p className="text-sm text-blue-800">Status: Active</p>
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="bg-blue-50 p-3 rounded-lg text-center">
+              <div className="text-2xl mb-1">🏠</div>
+              <div className="text-2xl font-bold text-blue-900">{availableRooms}</div>
+              <div className="text-xs text-blue-700">Available Rooms</div>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-green-900 mb-2">Occupancy</h4>
-              <p className="text-sm text-green-800">Available Rooms: {availableRooms}</p>
-              <p className="text-sm text-green-800">Total Rooms: {rooms?.length || 0}</p>
-              <p className="text-sm text-green-800">Occupancy Rate: 85%</p>
+            <div className="bg-green-50 p-3 rounded-lg text-center">
+              <div className="text-2xl mb-1">👤</div>
+              <div className="text-2xl font-bold text-green-900">{(rooms?.length || 0) - availableRooms}</div>
+              <div className="text-xs text-green-700">Occupied Rooms</div>
             </div>
-            <div className="bg-yellow-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-yellow-900 mb-2">Revenue</h4>
-              <p className="text-sm text-yellow-800">Monthly: $12,500</p>
-              <p className="text-sm text-yellow-800">YTD: $145,000</p>
-              <p className="text-sm text-yellow-800">Target: $150,000</p>
+            <div className="bg-orange-50 p-3 rounded-lg text-center">
+              <div className="text-2xl mb-1">🔧</div>
+              <div className="text-2xl font-bold text-orange-900">2</div>
+              <div className="text-xs text-orange-700">Under Maintenance</div>
+            </div>
+            <div className="bg-yellow-50 p-3 rounded-lg text-center">
+              <div className="text-2xl mb-1">💰</div>
+              <div className="text-2xl font-bold text-yellow-900">$12,500</div>
+              <div className="text-xs text-yellow-700">Monthly Revenue</div>
             </div>
           </div>
 
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Recent Tenant Requests</h4>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">Maintenance Request - Room 2A</p>
-                  <p className="text-sm text-gray-600">AC unit not cooling properly</p>
+          <div className="grid lg:grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">Room Manager</h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="font-medium">Room 1A</span>
+                    <span className="text-sm text-gray-600">John Smith</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">View</Button>
+                    <Button variant="outline" size="sm">Edit</Button>
+                  </div>
                 </div>
-                <span className="px-3 py-1 bg-red-100 text-red-800 text-xs rounded-full">Urgent</span>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span className="font-medium">Room 2A</span>
+                    <span className="text-sm text-gray-600">Maintenance</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">View</Button>
+                    <Button variant="outline" size="sm">Edit</Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <span className="font-medium">Room 1B</span>
+                    <span className="text-sm text-gray-600">Available</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">View</Button>
+                    <Button variant="outline" size="sm">Edit</Button>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">Payment Inquiry - Room 1B</p>
-                  <p className="text-sm text-gray-600">Question about next month's rent</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">Recent Tenant Requests</h4>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">Maintenance Request - Room 2A</p>
+                    <p className="text-sm text-gray-600">AC unit not cooling properly</p>
+                  </div>
+                  <span className="px-3 py-1 bg-red-100 text-red-800 text-xs rounded-full">Urgent</span>
                 </div>
-                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">Payment Inquiry - Room 1B</p>
+                    <p className="text-sm text-gray-600">Question about next month's rent</p>
+                  </div>
+                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>
+                </div>
               </div>
             </div>
           </div>
@@ -204,43 +246,96 @@ export default function AdminDashboard() {
             </Button>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6 mb-6">
-            <div className="bg-purple-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-purple-900 mb-2">Property Details</h4>
-              <p className="text-sm text-purple-800">Address: 949 Luxury Ave</p>
-              <p className="text-sm text-purple-800">Type: Premium Suites</p>
-              <p className="text-sm text-purple-800">Status: Active</p>
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="bg-blue-50 p-3 rounded-lg text-center">
+              <div className="text-2xl mb-1">🏠</div>
+              <div className="text-2xl font-bold text-blue-900">2</div>
+              <div className="text-xs text-blue-700">Available Rooms</div>
             </div>
-            <div className="bg-emerald-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-emerald-900 mb-2">Occupancy</h4>
-              <p className="text-sm text-emerald-800">Available Rooms: 2</p>
-              <p className="text-sm text-emerald-800">Total Rooms: 10</p>
-              <p className="text-sm text-emerald-800">Occupancy Rate: 80%</p>
+            <div className="bg-green-50 p-3 rounded-lg text-center">
+              <div className="text-2xl mb-1">👤</div>
+              <div className="text-2xl font-bold text-green-900">8</div>
+              <div className="text-xs text-green-700">Occupied Rooms</div>
             </div>
-            <div className="bg-orange-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-orange-900 mb-2">Revenue</h4>
-              <p className="text-sm text-orange-800">Monthly: $18,750</p>
-              <p className="text-sm text-orange-800">YTD: $220,000</p>
-              <p className="text-sm text-orange-800">Target: $225,000</p>
+            <div className="bg-orange-50 p-3 rounded-lg text-center">
+              <div className="text-2xl mb-1">🔧</div>
+              <div className="text-2xl font-bold text-orange-900">0</div>
+              <div className="text-xs text-orange-700">Under Maintenance</div>
+            </div>
+            <div className="bg-yellow-50 p-3 rounded-lg text-center">
+              <div className="text-2xl mb-1">💰</div>
+              <div className="text-2xl font-bold text-yellow-900">$18,750</div>
+              <div className="text-xs text-yellow-700">Monthly Revenue</div>
             </div>
           </div>
 
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Recent Tenant Requests</h4>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">Service Request - Suite 5</p>
-                  <p className="text-sm text-gray-600">Request for additional towels and amenities</p>
+          <div className="grid lg:grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">Room Manager</h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="font-medium">Suite 1</span>
+                    <span className="text-sm text-gray-600">Maria Rodriguez</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">View</Button>
+                    <Button variant="outline" size="sm">Edit</Button>
+                  </div>
                 </div>
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">In Progress</span>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="font-medium">Suite 3</span>
+                    <span className="text-sm text-gray-600">David Chen</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">View</Button>
+                    <Button variant="outline" size="sm">Edit</Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <span className="font-medium">Suite 7</span>
+                    <span className="text-sm text-gray-600">Available</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">View</Button>
+                    <Button variant="outline" size="sm">Edit</Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <span className="font-medium">Suite 9</span>
+                    <span className="text-sm text-gray-600">Available</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">View</Button>
+                    <Button variant="outline" size="sm">Edit</Button>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">Extension Request - Suite 3</p>
-                  <p className="text-sm text-gray-600">Tenant requesting 2-week extension</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-4">Recent Tenant Requests</h4>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">Service Request - Suite 5</p>
+                    <p className="text-sm text-gray-600">Request for additional towels and amenities</p>
+                  </div>
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">In Progress</span>
                 </div>
-                <span className="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">Approved</span>
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">Extension Request - Suite 3</p>
+                    <p className="text-sm text-gray-600">Tenant requesting 2-week extension</p>
+                  </div>
+                  <span className="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">Approved</span>
+                </div>
               </div>
             </div>
           </div>
