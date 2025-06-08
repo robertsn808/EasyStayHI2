@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -81,6 +81,7 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
             <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="contacts">Contacts</TabsTrigger>
+            <TabsTrigger value="vendors">Vendors</TabsTrigger>
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="receipts">Receipts</TabsTrigger>
@@ -140,6 +141,35 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
 
         <TabsContent value="contacts" className="p-6">
           <ContactsTab contacts={contacts} />
+        </TabsContent>
+
+        <TabsContent value="vendors" className="p-6">
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Vendor Management</h2>
+              <Button>Add New Vendor</Button>
+            </div>
+            <div className="grid gap-4">
+              <Card className="p-4">
+                <h3 className="font-semibold">Hawaiian Cleaning Services</h3>
+                <p className="text-sm text-gray-600">Cleaning & Maintenance</p>
+                <p className="text-sm">Contact: (808) 555-0123</p>
+                <div className="flex gap-2 mt-2">
+                  <Button size="sm" variant="outline">Contact</Button>
+                  <Button size="sm" variant="outline">Edit</Button>
+                </div>
+              </Card>
+              <Card className="p-4">
+                <h3 className="font-semibold">Aloha Repairs LLC</h3>
+                <p className="text-sm text-gray-600">Plumbing & Electrical</p>
+                <p className="text-sm">Contact: (808) 555-0456</p>
+                <div className="flex gap-2 mt-2">
+                  <Button size="sm" variant="outline">Contact</Button>
+                  <Button size="sm" variant="outline">Edit</Button>
+                </div>
+              </Card>
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="calendar" className="p-6">
