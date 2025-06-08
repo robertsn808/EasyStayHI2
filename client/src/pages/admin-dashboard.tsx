@@ -191,7 +191,10 @@ export default function AdminDashboard() {
                     <Button 
                       size="sm" 
                       className="w-full bg-green-600 hover:bg-green-700 text-xs h-6"
-                      onClick={() => setActiveTab("properties")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("properties");
+                      }}
                     >
                       Manage
                     </Button>
@@ -211,7 +214,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("guests")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("guests");
+                      }}
                     >
                       View
                     </Button>
@@ -231,7 +237,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("qr-codes")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("qr-codes");
+                      }}
                     >
                       View
                     </Button>
@@ -251,7 +260,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("maintenance")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("maintenance");
+                      }}
                     >
                       View
                     </Button>
@@ -271,7 +283,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("inquiries")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("inquiries");
+                      }}
                     >
                       View
                     </Button>
@@ -291,7 +306,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("payments")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("payments");
+                      }}
                     >
                       View
                     </Button>
@@ -311,7 +329,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("announcements")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("announcements");
+                      }}
                     >
                       View
                     </Button>
@@ -331,7 +352,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("calendar")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("calendar");
+                      }}
                     >
                       View
                     </Button>
@@ -351,7 +375,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("contacts")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("contacts");
+                      }}
                     >
                       View
                     </Button>
@@ -371,7 +398,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("inventory")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("inventory");
+                      }}
                     >
                       View
                     </Button>
@@ -391,7 +421,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("receipts")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("receipts");
+                      }}
                     >
                       View
                     </Button>
@@ -411,7 +444,10 @@ export default function AdminDashboard() {
                       size="sm" 
                       variant="outline" 
                       className="w-full text-xs h-6"
-                      onClick={() => setActiveTab("todos")}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTab("todos");
+                      }}
                     >
                       View
                     </Button>
@@ -440,7 +476,10 @@ export default function AdminDashboard() {
                   <Button 
                     size="sm" 
                     className="w-full bg-green-600 hover:bg-green-700 text-xs h-8"
-                    onClick={() => setActiveTab("properties")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("properties");
+                    }}
                   >
                     Manage Properties
                   </Button>
@@ -464,7 +503,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("guests")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("guests");
+                    }}
                   >
                     Manage Guests
                   </Button>
@@ -488,7 +530,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("qr-codes")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("qr-codes");
+                    }}
                   >
                     View QR Codes
                   </Button>
@@ -512,7 +557,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("maintenance")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("maintenance");
+                    }}
                   >
                     View Requests
                   </Button>
@@ -536,7 +584,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("inquiries")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("inquiries");
+                    }}
                   >
                     View Inquiries
                   </Button>
@@ -560,7 +611,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("payments")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("payments");
+                    }}
                   >
                     View Payments
                   </Button>
@@ -584,7 +638,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("announcements")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("announcements");
+                    }}
                   >
                     View Announcements
                   </Button>
@@ -608,7 +665,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("calendar")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("calendar");
+                    }}
                   >
                     View Calendar
                   </Button>
@@ -632,7 +692,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("contacts")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("contacts");
+                    }}
                   >
                     View Contacts
                   </Button>
@@ -656,7 +719,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("inventory")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("inventory");
+                    }}
                   >
                     View Inventory
                   </Button>
@@ -680,7 +746,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("receipts")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("receipts");
+                    }}
                   >
                     View Receipts
                   </Button>
@@ -704,7 +773,10 @@ export default function AdminDashboard() {
                     size="sm" 
                     variant="outline" 
                     className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("todos")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("todos");
+                    }}
                   >
                     View Todos
                   </Button>
