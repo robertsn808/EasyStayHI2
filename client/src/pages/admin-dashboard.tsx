@@ -544,60 +544,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Today's Overview */}
-            <Card className="bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200">
-              <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-amber-900 mb-3">Today's Overview</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <AlertTriangle className="h-4 w-4 text-amber-600" />
-                      <span className="text-xs text-amber-800">Payment Due</span>
-                    </div>
-                    <span className="text-sm font-bold text-amber-700">{todaysPaymentDue}</span>
-                  </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-amber-600" />
-                      <span className="text-xs text-amber-800">Pending Tasks</span>
-                    </div>
-                    <span className="text-sm font-bold text-amber-700">{incompleteTodos}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-4 w-4 text-amber-600" />
-                      <span className="text-xs text-amber-800">Available Rooms</span>
-                    </div>
-                    <span className="text-sm font-bold text-amber-700">{roomStats.available}</span>
-                  </div>
-
-                  {calendarEvents && calendarEvents.length > 0 && (
-                    <div className="pt-2 border-t border-amber-200">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Calendar className="h-4 w-4 text-amber-600" />
-                        <span className="text-xs text-amber-800">Today's Events</span>
-                      </div>
-                      {calendarEvents.slice(0, 2).map((event: any) => (
-                        <div key={event.id} className="text-xs text-amber-700 mb-1">
-                          • {event.title}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="w-full text-xs h-8"
-                    onClick={() => setActiveTab("calendar")}
-                  >
-                    View Full Schedule
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Premium Main Content Area */}

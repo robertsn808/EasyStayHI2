@@ -236,22 +236,25 @@ export function BuildingTab({ buildingName, buildingId, rooms = [], guests = [],
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-4">
+      {/* Compact Header */}
       <div className="flex justify-between items-center">
-        <div>
-          <h2 className={`text-2xl font-bold ${colorClasses[color].header}`}>{buildingName}</h2>
-          <p className="text-gray-600">{buildingRooms.length} rooms • {inquiriesCount} inquiries pending</p>
+        <div className="flex items-center gap-3">
+          <div className={`w-3 h-8 rounded-full ${colorClasses[color].bg}`}></div>
+          <div>
+            <h2 className={`text-xl font-bold ${colorClasses[color].header}`}>{buildingName}</h2>
+            <p className="text-sm text-gray-600">{buildingRooms.length} rooms • {inquiriesCount} inquiries</p>
+          </div>
         </div>
       </div>
 
-      {/* Room Status Visual */}
+      {/* Compact Room Status Grid */}
       <Card>
-        <CardHeader>
-          <CardTitle>Room Status Overview</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Room Status</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-4 md:grid-cols-8 gap-2 mb-4">
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-6 md:grid-cols-10 gap-1.5 mb-3">
             {buildingRooms.map((room) => (
               <div
                 key={room.id}
@@ -263,28 +266,28 @@ export function BuildingTab({ buildingName, buildingId, rooms = [], guests = [],
                 title={`Room ${room.number} - ${room.status}${room.tenantName ? ` - ${room.tenantName}` : ''}`}
               >
                 <div
-                  className={`w-12 h-12 rounded ${getRoomStatusColor(room.status)} flex items-center justify-center text-white text-xs font-medium hover:scale-105 transition-transform`}
+                  className={`w-8 h-8 rounded-md ${getRoomStatusColor(room.status)} flex items-center justify-center text-white text-xs font-medium hover:scale-105 transition-transform`}
                 >
                   {room.number}
                 </div>
               </div>
             ))}
           </div>
-          <div className="flex flex-wrap gap-4 text-xs">
+          <div className="flex flex-wrap gap-3 text-xs">
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-green-500 rounded"></div>
+              <div className="w-2 h-2 bg-green-500 rounded"></div>
               <span>Available</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-red-500 rounded"></div>
+              <div className="w-2 h-2 bg-red-500 rounded"></div>
               <span>Occupied</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+              <div className="w-2 h-2 bg-yellow-500 rounded"></div>
               <span>Maintenance</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-blue-500 rounded"></div>
+              <div className="w-2 h-2 bg-blue-500 rounded"></div>
               <span>Cleaning</span>
             </div>
           </div>
