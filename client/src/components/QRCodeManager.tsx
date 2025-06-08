@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Download, QrCode, RefreshCw } from "lucide-react";
+import { Download, QrCode, RefreshCw, Plus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface QRCodeData {

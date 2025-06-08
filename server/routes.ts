@@ -267,9 +267,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const { username, password } = req.body;
     
     if (username === "admin" && password === "admin123") {
-      req.session.isAdmin = true;
-      req.session.user = { id: "admin", email: "admin@easystay.com", role: "admin" };
-      res.json({ success: true, user: req.session.user });
+      (req.session as any).isAdmin = true;
+      (req.session as any).user = { id: "admin", email: "admin@easystay.com", role: "admin" };
+      res.json({ success: true, user: (req.session as any).user });
     } else {
       res.status(401).json({ error: "Invalid credentials" });
     }
@@ -277,7 +277,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Admin auth middleware
   const adminAuth = (req: any, res: any, next: any) => {
-    if (req.session?.isAdmin) {
+    if ((req.session as any)?.isAdmin) {
       next();
     } else {
       res.status(401).json({ message: "Unauthorized" });
