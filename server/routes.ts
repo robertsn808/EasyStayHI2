@@ -396,9 +396,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/announcements/:id", simpleAdminAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const validatedData = insertAnnouncementSchema.parse(req.body);
-      // For simplicity, we'll use create and delete pattern since there's no update method
-      res.status(501).json({ message: "Update not implemented yet" });
+      const announcement = await storage.updateAnnouncement(id, req.body);
+      res.json(announcement);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update announcement" });
+    }
+  });
+
+  app.patch("/api/admin/announcements/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const announcement = await storage.updateAnnouncement(id, req.body);
+      res.json(announcement);
     } catch (error) {
       res.status(400).json({ message: "Failed to update announcement" });
     }
@@ -407,8 +416,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/admin/announcements/:id", simpleAdminAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      // For simplicity, we'll return not implemented
-      res.status(501).json({ message: "Delete not implemented yet" });
+      await storage.deleteAnnouncement(id);
+      res.json({ success: true });
     } catch (error) {
       res.status(400).json({ message: "Failed to delete announcement" });
     }

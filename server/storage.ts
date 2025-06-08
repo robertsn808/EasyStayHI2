@@ -67,6 +67,8 @@ export interface IStorage {
   createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
   getAllAnnouncements(): Promise<Announcement[]>;
   getActiveAnnouncements(): Promise<Announcement[]>;
+  updateAnnouncement(id: number, announcement: Partial<InsertAnnouncement>): Promise<Announcement>;
+  deleteAnnouncement(id: number): Promise<void>;
 
   // Calendar operations
   createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent>;
@@ -211,6 +213,15 @@ export class DatabaseStorage implements IStorage {
 
   async getActiveAnnouncements(): Promise<Announcement[]> {
     return await db.select().from(announcements).where(eq(announcements.isActive, true));
+  }
+
+  async updateAnnouncement(id: number, announcement: Partial<InsertAnnouncement>): Promise<Announcement> {
+    const [result] = await db.update(announcements).set(announcement).where(eq(announcements.id, id)).returning();
+    return result;
+  }
+
+  async deleteAnnouncement(id: number): Promise<void> {
+    await db.delete(announcements).where(eq(announcements.id, id));
   }
 
   // Calendar operations

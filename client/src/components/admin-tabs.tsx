@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -15,9 +16,10 @@ import { CalendarTab } from "@/components/CalendarTab";
 import { InventoryTab } from "@/components/InventoryTab";
 import { ReceiptsTab } from "@/components/ReceiptsTab";
 import { TodosTab } from "@/components/TodosTab";
+import { AnnouncementsTab } from "@/components/AnnouncementsTab";
 import QRCodeManager from "@/components/QRCodeManager";
 import GuestProfileManager from "@/components/GuestProfileManager";
-import WeeklyCalendar from "@/components/WeeklyCalendar";
+
 interface AdminTabsProps {
   activeTab?: string;
   setActiveTab?: (tab: string) => void;
@@ -76,33 +78,63 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
     enabled: isAdminAuthenticated,
   });
 
+  const { data: announcements } = useQuery({
+    queryKey: ["/api/admin/announcements"],
+    enabled: isAdminAuthenticated,
+  });
+
   const { data: rooms } = useQuery({
     queryKey: ["/api/rooms"],
     enabled: isAdminAuthenticated,
   });
 
+  const { data: buildings } = useQuery({
+    queryKey: ["/api/buildings"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: guestProfiles } = useQuery({
+    queryKey: ["/api/admin/guests"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const handleTabChange = (tab: string) => {
+    setSelectedTab(tab);
+    if (setActiveTab) {
+      setActiveTab(tab);
+    }
+  };
+
   return (
-    <Card className="shadow-sm">
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-        <div className="border-b border-gray-200">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="properties">Properties</TabsTrigger>
-            <TabsTrigger value="payments">Payments</TabsTrigger>
-            <TabsTrigger value="contacts">Contacts</TabsTrigger>
-            <TabsTrigger value="inventory">Inventory</TabsTrigger>
-            <TabsTrigger value="receipts">Receipts</TabsTrigger>
-            <TabsTrigger value="current-guests">Current Guests</TabsTrigger>
-          </TabsList>
-        </div>
+    <Card className="w-full">
+      <Tabs value={selectedTab} onValueChange={handleTabChange}>
+        <TabsList className="grid w-full grid-cols-6 lg:grid-cols-11">
+          <TabsTrigger value="properties">Properties</TabsTrigger>
+          <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
+          <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+          <TabsTrigger value="payments">Payments</TabsTrigger>
+          <TabsTrigger value="guests">Guests</TabsTrigger>
+          <TabsTrigger value="announcements">Announcements</TabsTrigger>
+          <TabsTrigger value="calendar">Calendar</TabsTrigger>
+          <TabsTrigger value="contacts">Contacts</TabsTrigger>
+          <TabsTrigger value="inventory">Inventory</TabsTrigger>
+          <TabsTrigger value="receipts">Receipts</TabsTrigger>
+          <TabsTrigger value="todos">Tasks</TabsTrigger>
+        </TabsList>
 
         <TabsContent value="properties" className="p-6">
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Property Management</h2>
-              <Button onClick={() => setSelectedTab("manage-rooms")}>
-                <Plus className="h-4 w-4 mr-2" />
-                Manage Rooms
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={() => handleTabChange("qr-codes")}>
+                  QR Codes
+                </Button>
+                <Button onClick={() => handleTabChange("manage-rooms")}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Manage Rooms
+                </Button>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="p-6">
@@ -118,159 +150,124 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
                         key={room.id} 
                         className={`p-2 border rounded text-center text-xs ${
                           room.status === 'occupied' ? 'bg-red-100 text-red-800' :
-                          room.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
+                          room.status === 'available' ? 'bg-green-100 text-green-800' :
+                          room.status === 'needs_cleaning' ? 'bg-orange-100 text-orange-800' :
+                          'bg-yellow-100 text-yellow-800'
                         }`}
                       >
                         {room.number}
-                        <div className="text-[10px] mt-1 capitalize">{room.status}</div>
                       </div>
                     ))}
                   </div>
                 </div>
               </Card>
+
               <Card className="p-6">
                 <h3 className="text-xl font-semibold mb-4">949 Kawaiahao St</h3>
                 <div className="space-y-2">
                   <p className="text-gray-600">
-                    {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11 && room.status === 'available').length : 0} of {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 0} Suites Available
+                    {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11 && room.status === 'available').length : 0} of {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 0} Rooms Available
                   </p>
-                  <p className="text-sm">Daily: $50 | Weekly: $200 | Monthly: $600</p>
+                  <p className="text-sm">Daily: $50 | Weekly: $300 | Monthly: $1200</p>
                   <div className="grid grid-cols-5 gap-2 mt-4">
                     {Array.isArray(rooms) && rooms.filter((room: any) => room.buildingId === 11).map((room: any) => (
                       <div 
                         key={room.id} 
                         className={`p-2 border rounded text-center text-xs ${
                           room.status === 'occupied' ? 'bg-red-100 text-red-800' :
-                          room.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-blue-100 text-blue-800'
+                          room.status === 'available' ? 'bg-green-100 text-green-800' :
+                          room.status === 'needs_cleaning' ? 'bg-orange-100 text-orange-800' :
+                          'bg-yellow-100 text-yellow-800'
                         }`}
                       >
                         {room.number}
-                        <div className="text-[10px] mt-1 capitalize">{room.status}</div>
                       </div>
                     ))}
                   </div>
                 </div>
               </Card>
             </div>
+
+            {/* Property Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {Array.isArray(rooms) ? rooms.filter((room: any) => room.status === 'available').length : 0}
+                  </div>
+                  <div className="text-sm text-gray-600">Available Rooms</div>
+                </div>
+              </Card>
+              <Card className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">
+                    {Array.isArray(rooms) ? rooms.filter((room: any) => room.status === 'occupied').length : 0}
+                  </div>
+                  <div className="text-sm text-gray-600">Occupied Rooms</div>
+                </div>
+              </Card>
+              <Card className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-600">
+                    {Array.isArray(maintenanceRequests) ? maintenanceRequests.length : 0}
+                  </div>
+                  <div className="text-sm text-gray-600">Maintenance Requests</div>
+                </div>
+              </Card>
+              <Card className="p-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {Array.isArray(guestProfiles) ? guestProfiles.length : 0}
+                  </div>
+                  <div className="text-sm text-gray-600">Active Guests</div>
+                </div>
+              </Card>
+            </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="inquiries" className="p-6">
+          <InquiriesTab inquiries={inquiries} />
+        </TabsContent>
+
+        <TabsContent value="maintenance" className="p-6">
+          <MaintenanceTab requests={maintenanceRequests} />
         </TabsContent>
 
         <TabsContent value="payments" className="p-6">
           <PaymentsTab payments={payments} />
         </TabsContent>
 
+        <TabsContent value="guests" className="p-6">
+          <GuestProfileManager />
+        </TabsContent>
+
+        <TabsContent value="announcements" className="p-6">
+          <AnnouncementsTab announcements={announcements} />
+        </TabsContent>
+
+        <TabsContent value="calendar" className="p-6">
+          <CalendarTab events={calendarEvents} />
+        </TabsContent>
+
         <TabsContent value="contacts" className="p-6">
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Contacts Management</h2>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => toast({ title: "Filter applied", description: "Showing vendors only" })}>
-                  Show Vendors Only
-                </Button>
-                <Button onClick={() => toast({ title: "Add Contact", description: "Contact form would open here" })}>Add New Contact</Button>
-              </div>
-            </div>
-            <ContactsTab contacts={contacts} />
-          </div>
+          <ContactsTab contacts={contacts} />
         </TabsContent>
 
         <TabsContent value="inventory" className="p-6">
-          <InventoryTab items={inventory} />
+          <InventoryTab inventory={inventory} />
         </TabsContent>
 
         <TabsContent value="receipts" className="p-6">
           <ReceiptsTab receipts={receipts} />
         </TabsContent>
 
-        <TabsContent value="manage-rooms" className="p-6">
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Room Management</h2>
-              <Button onClick={() => toast({ title: "Add Room", description: "Room creation form would open here" })}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Room
-              </Button>
-            </div>
-            <div className="grid gap-4">
-              {Array.isArray(rooms) && rooms.map((room: any) => (
-                <Card key={room.id} className="p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold">Room {room.number}</h3>
-                      <p className="text-sm text-gray-600">
-                        Building ID: {room.buildingId} | Status: {room.status}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => toast({ title: "Edit Room", description: `Editing room ${room.number}` })}>
-                        Edit
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => toast({ title: "View Details", description: `Viewing details for room ${room.number}` })}>
-                        View Details
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
+        <TabsContent value="qr-codes" className="p-6">
+          <QRCodeManager />
         </TabsContent>
 
-        <TabsContent value="current-guests" className="p-6">
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Current Guests</h2>
-              <div className="text-sm text-gray-600">
-                Showing guests currently checked in
-              </div>
-            </div>
-            <div className="grid gap-4">
-              <Card className="p-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold">John Smith</h3>
-                    <p className="text-sm text-gray-600">Room 001 - 934 Kapahulu</p>
-                    <p className="text-sm">Check-in: Dec 1, 2024</p>
-                    <p className="text-sm">Monthly Rate: $2000</p>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Badge className="bg-green-100 text-green-800">Active</Badge>
-                    <Badge variant="outline">Payment Due: Dec 15</Badge>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold">Maria Garcia</h3>
-                    <p className="text-sm text-gray-600">Room 003 - 949 Kawaiahao</p>
-                    <p className="text-sm">Check-in: Nov 28, 2024</p>
-                    <p className="text-sm">Weekly Rate: $200</p>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Badge className="bg-green-100 text-green-800">Active</Badge>
-                    <Badge className="bg-orange-100 text-orange-800">Payment Overdue</Badge>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold">David Chen</h3>
-                    <p className="text-sm text-gray-600">Room 005 - 934 Kapahulu</p>
-                    <p className="text-sm">Check-in: Dec 5, 2024</p>
-                    <p className="text-sm">Daily Rate: $100</p>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Badge className="bg-green-100 text-green-800">Active</Badge>
-                    <Badge className="bg-green-100 text-green-800">Payment Current</Badge>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </div>
+        <TabsContent value="todos" className="p-6">
+          <TodosTab todos={todos} />
         </TabsContent>
       </Tabs>
     </Card>
