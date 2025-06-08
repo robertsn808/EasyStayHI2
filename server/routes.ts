@@ -73,6 +73,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/admin/announcements", isAuthenticated, async (req, res) => {
+    try {
+      const announcements = await storage.getAllAnnouncements();
+      res.json(announcements);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch announcements" });
+    }
+  });
+
+  app.post("/api/admin/announcements", isAuthenticated, async (req, res) => {
+    try {
+      const validatedData = insertAnnouncementSchema.parse(req.body);
+      const announcement = await storage.createAnnouncement(validatedData);
+      res.json(announcement);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid announcement data" });
+    }
+  });
+
+  app.put("/api/admin/announcements/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = insertAnnouncementSchema.parse(req.body);
+      // For simplicity, we'll use create and delete pattern since there's no update method
+      res.status(501).json({ message: "Update not implemented yet" });
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update announcement" });
+    }
+  });
+
+  app.delete("/api/admin/announcements/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      // For simplicity, we'll return not implemented
+      res.status(501).json({ message: "Delete not implemented yet" });
+    } catch (error) {
+      res.status(400).json({ message: "Failed to delete announcement" });
+    }
+  });
+
   app.post("/api/inquiries", async (req, res) => {
     try {
       const validatedData = insertInquirySchema.parse(req.body);

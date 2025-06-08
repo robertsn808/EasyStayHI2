@@ -53,15 +53,11 @@ export default function AdminTabs() {
     queryKey: ["/api/admin/todos"],
   });
 
-  const { data: announcements } = useQuery({
-    queryKey: ["/api/admin/announcements"],
-  });
-
   return (
     <Card className="shadow-sm">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <div className="border-b border-gray-200">
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="inquiries" className="relative">
               Inquiries
               {inquiries?.length > 0 && (
@@ -77,7 +73,6 @@ export default function AdminTabs() {
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="receipts">Receipts</TabsTrigger>
             <TabsTrigger value="todos">Todo List</TabsTrigger>
-            <TabsTrigger value="announcements">Announcements</TabsTrigger>
           </TabsList>
         </div>
 
@@ -111,10 +106,6 @@ export default function AdminTabs() {
 
         <TabsContent value="todos" className="p-6">
           <TodosTab todos={todos} />
-        </TabsContent>
-
-        <TabsContent value="announcements" className="p-6">
-          <AnnouncementsTab announcements={announcements} />
         </TabsContent>
       </Tabs>
     </Card>

@@ -137,6 +137,41 @@ export default function AdminDashboard() {
         {/* Room Management Grid */}
         <AdminRoomGrid rooms={rooms || []} />
 
+        {/* Announcement Management */}
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm p-6 mb-8">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">Manage Property Announcements</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-medium text-gray-700 mb-2">Property 934 Announcements</h4>
+              <p className="text-sm text-gray-600 mb-3">Current announcements visible on the 934 property page</p>
+              <Button 
+                onClick={() => window.open('/', '_blank')} 
+                variant="outline" 
+                className="mr-2"
+              >
+                View 934 Page
+              </Button>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-700 mb-2">Property 949 Announcements</h4>
+              <p className="text-sm text-gray-600 mb-3">Current announcements visible on the 949 property page</p>
+              <Button 
+                onClick={() => window.open('/949', '_blank')} 
+                variant="outline"
+              >
+                View 949 Page
+              </Button>
+            </div>
+          </div>
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> Announcements are currently managed through the database. 
+              The current announcement system displays the same announcements on both properties. 
+              To edit announcements, you can modify them directly in the database or contact your developer.
+            </p>
+          </div>
+        </div>
+
         {/* Dashboard Tabs */}
         <AdminTabs />
       </div>
