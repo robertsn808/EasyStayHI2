@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   Home, Users, QrCode, Wrench, MessageSquare, Calendar, 
   DollarSign, Megaphone, Contact, Package, Receipt, Bell,
-  CheckCircle, AlertTriangle, Clock, User, Settings, Building
+  CheckCircle, AlertTriangle, Clock, User, Settings, Building, LogOut
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import backgroundImage from "@assets/image_1749351216300.png";
 import AdminTabs from "@/components/admin-tabs";
 
@@ -28,19 +31,63 @@ type TabType =
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>("properties");
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
+  const [, setLocation] = useLocation();
 
-  // Fetch all data
-  const { data: rooms } = useQuery({ queryKey: ["/api/rooms"] });
-  const { data: guests } = useQuery({ queryKey: ["/api/admin/guests"] });
-  const { data: maintenanceRequests } = useQuery({ queryKey: ["/api/admin/maintenance"] });
-  const { data: inquiries } = useQuery({ queryKey: ["/api/admin/inquiries"] });
-  const { data: payments } = useQuery({ queryKey: ["/api/admin/payments"] });
-  const { data: announcements } = useQuery({ queryKey: ["/api/admin/announcements"] });
-  const { data: calendarEvents } = useQuery({ queryKey: ["/api/admin/calendar"] });
-  const { data: contacts } = useQuery({ queryKey: ["/api/admin/contacts"] });
-  const { data: inventory } = useQuery({ queryKey: ["/api/admin/inventory"] });
-  const { data: receipts } = useQuery({ queryKey: ["/api/admin/receipts"] });
-  const { data: todos } = useQuery({ queryKey: ["/api/admin/todos"] });
+  // Check admin authentication on component mount
+  useEffect(() => {
+    const adminAuth = localStorage.getItem('admin-authenticated');
+    if (adminAuth === 'true') {
+      setIsAdminAuthenticated(true);
+    }
+  }, []);
+
+  // Fetch all data - only when authenticated
+  const { data: rooms } = useQuery({ 
+    queryKey: ["/api/rooms"],
+    enabled: isAdminAuthenticated
+  });
+  const { data: guests } = useQuery({ 
+    queryKey: ["/api/admin/guests"],
+    enabled: isAdminAuthenticated
+  });
+  const { data: maintenanceRequests } = useQuery({ 
+    queryKey: ["/api/admin/maintenance"],
+    enabled: isAdminAuthenticated
+  });
+  const { data: inquiries } = useQuery({ 
+    queryKey: ["/api/admin/inquiries"],
+    enabled: isAdminAuthenticated
+  });
+  const { data: payments } = useQuery({ 
+    queryKey: ["/api/admin/payments"],
+    enabled: isAdminAuthenticated
+  });
+  const { data: announcements } = useQuery({ 
+    queryKey: ["/api/admin/announcements"],
+    enabled: isAdminAuthenticated
+  });
+  const { data: calendarEvents } = useQuery({ 
+    queryKey: ["/api/admin/calendar"],
+    enabled: isAdminAuthenticated
+  });
+  const { data: contacts } = useQuery({ 
+    queryKey: ["/api/admin/contacts"],
+    enabled: isAdminAuthenticated
+  });
+  const { data: inventory } = useQuery({ 
+    queryKey: ["/api/admin/inventory"],
+    enabled: isAdminAuthenticated
+  });
+  const { data: receipts } = useQuery({ 
+    queryKey: ["/api/admin/receipts"],
+    enabled: isAdminAuthenticated
+  });
+  const { data: todos } = useQuery({ 
+    queryKey: ["/api/admin/todos"],
+    enabled: isAdminAuthenticated
+  });
 
   // Calculate room statistics
   const roomStats = rooms ? {
@@ -61,6 +108,77 @@ export default function AdminDashboard() {
 
   // Count incomplete todos
   const incompleteTodos = todos ? todos.filter((todo: any) => !todo.isCompleted).length : 0;
+
+  // Admin login handlers
+  const handleAdminLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simple admin check - matches server credentials
+    if (adminCredentials.username === 'admin' && adminCredentials.password === 'admin123') {
+      localStorage.setItem('admin-authenticated', 'true');
+      setIsAdminAuthenticated(true);
+    } else {
+      alert('Invalid credentials. Use username: admin, password: admin123');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem('admin-authenticated');
+      setIsAdminAuthenticated(false);
+      setLocation("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  // Show login form if not authenticated
+  if (!isAdminAuthenticated) {
+    return (
+      <div 
+        className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <Card className="w-full max-w-md mx-4">
+          <CardContent className="p-6">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Login</h1>
+              <p className="text-gray-600">Enter your credentials to access the dashboard</p>
+            </div>
+            <form onSubmit={handleAdminLogin} className="space-y-4">
+              <div>
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={adminCredentials.username}
+                  onChange={(e) => setAdminCredentials(prev => ({...prev, username: e.target.value}))}
+                  placeholder="Enter username"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={adminCredentials.password}
+                  onChange={(e) => setAdminCredentials(prev => ({...prev, password: e.target.value}))}
+                  placeholder="Enter password"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                Login
+              </Button>
+              <div className="text-xs text-gray-500 text-center mt-4">
+                Demo credentials: admin / admin123
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // If loading initial data, show loading state
   if (!rooms) {
@@ -107,6 +225,15 @@ export default function AdminDashboard() {
                 </div>
                 <span className="text-sm font-medium text-gray-700 hidden sm:block">Sesa</span>
               </div>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-8 w-8 sm:h-10 sm:w-10"
+                onClick={handleLogout}
+                title="Logout"
+              >
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
             </div>
           </div>
         </div>
