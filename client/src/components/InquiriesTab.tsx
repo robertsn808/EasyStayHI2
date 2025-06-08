@@ -148,6 +148,10 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
         <h3 className="text-lg font-semibold">Property Inquiries</h3>
         <div className="flex items-center gap-2">
           <Badge variant="secondary">{inquiries.length} total</Badge>
+          <Button size="sm" variant="outline" onClick={() => setAssignRoomDialogOpen(true)}>
+            <Home className="w-4 h-4 mr-1" />
+            Assign from Inquiries
+          </Button>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm">

@@ -23,6 +23,8 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
   const { toast } = useToast();
   const [showBuildingDialog, setShowBuildingDialog] = useState(false);
   const [showRoomDialog, setShowRoomDialog] = useState(false);
+  const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
   // Fetch buildings for room creation
   const { data: buildings = [] } = useQuery<any[]>({
@@ -107,12 +109,55 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
     },
   });
 
+  // Update room status mutation
+  const updateRoomMutation = useMutation({
+    mutationFn: async ({ roomId, status }: { roomId: number; status: string }) => {
+      const response = await fetch(`/api/admin/rooms/${roomId}/status`, {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "x-admin-token": "admin-authenticated"
+        },
+        body: JSON.stringify({ status }),
+      });
+      if (!response.ok) throw new Error("Failed to update room status");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Room status updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/rooms"] });
+      setShowEditDialog(false);
+      setEditingRoom(null);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update room status",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleBuildingSubmit = (data: InsertBuilding) => {
     createBuildingMutation.mutate(data);
   };
 
   const handleRoomSubmit = (data: InsertRoom) => {
     createRoomMutation.mutate(data);
+  };
+
+  const handleEditRoom = (room: Room) => {
+    setEditingRoom(room);
+    setShowEditDialog(true);
+  };
+
+  const handleStatusUpdate = (status: string) => {
+    if (editingRoom) {
+      updateRoomMutation.mutate({ roomId: editingRoom.id, status });
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -297,6 +342,67 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
               </form>
             </DialogContent>
           </Dialog>
+
+          {/* Edit Room Status Dialog */}
+          <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Room {editingRoom?.number}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label>Current Status</Label>
+                  <div className="mt-2">
+                    <Badge className={`px-2 py-1 text-sm rounded-full ${getStatusColor(editingRoom?.status || '')}`}>
+                      {getStatusText(editingRoom?.status || '')}
+                    </Badge>
+                  </div>
+                </div>
+                <div>
+                  <Label>Change Status To</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <Button
+                      variant={editingRoom?.status === "available" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleStatusUpdate("available")}
+                      disabled={updateRoomMutation.isPending}
+                    >
+                      Available
+                    </Button>
+                    <Button
+                      variant={editingRoom?.status === "occupied" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleStatusUpdate("occupied")}
+                      disabled={updateRoomMutation.isPending}
+                    >
+                      Occupied
+                    </Button>
+                    <Button
+                      variant={editingRoom?.status === "needs_cleaning" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleStatusUpdate("needs_cleaning")}
+                      disabled={updateRoomMutation.isPending}
+                    >
+                      Needs Cleaning
+                    </Button>
+                    <Button
+                      variant={editingRoom?.status === "out_of_service" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleStatusUpdate("out_of_service")}
+                      disabled={updateRoomMutation.isPending}
+                    >
+                      Out of Service
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button type="button" variant="outline" onClick={() => setShowEditDialog(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -306,7 +412,7 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="font-semibold text-lg">Room {room.number}</h4>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => handleEditRoom(room)}>
                   <Edit className="w-4 h-4" />
                 </Button>
               </div>
@@ -321,7 +427,7 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
                 <div>Next payment: {formatDate(room.nextPaymentDue)}</div>
               </div>
               <div className="flex space-x-2">
-                <Button size="sm" className="flex-1 bg-primary text-white hover:bg-blue-700">
+                <Button size="sm" className="flex-1 bg-primary text-white hover:bg-blue-700" onClick={() => handleEditRoom(room)}>
                   Edit
                 </Button>
                 <Button size="sm" variant="outline" className="flex-1">
