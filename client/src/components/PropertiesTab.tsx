@@ -31,6 +31,7 @@ interface Room {
   buildingId: number;
   status: string;
   tenantName?: string;
+  tenantPhone?: string;
   nextPaymentDue?: string;
   rentalRate?: string;
   rentalPeriod?: string;

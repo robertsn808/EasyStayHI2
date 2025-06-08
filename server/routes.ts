@@ -607,6 +607,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updateData.floor = parseInt(updateData.floor);
       }
       
+      // Handle empty date fields by converting them to null
+      if (updateData.lastCleaned === '') {
+        updateData.lastCleaned = null;
+      }
+      if (updateData.nextPaymentDue === '') {
+        updateData.nextPaymentDue = null;
+      }
+      
       const room = await storage.updateRoom(id, updateData);
       res.json(room);
     } catch (error) {

@@ -53,6 +53,7 @@ export const rooms = pgTable("rooms", {
   floor: integer("floor").default(1),
   lastCleaned: date("last_cleaned"),
   tenantName: varchar("tenant_name", { length: 255 }),
+  tenantPhone: varchar("tenant_phone", { length: 50 }),
   nextPaymentDue: date("next_payment_due"),
   rentalRate: numeric("rental_rate", { precision: 10, scale: 2 }),
   rentalPeriod: varchar("rental_period", { length: 20 }), // daily, weekly, monthly
