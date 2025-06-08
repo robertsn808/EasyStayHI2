@@ -485,9 +485,28 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
       {/* Buildings Grid - Separated by Property */}
       <div className="space-y-8">
         {buildings.map((building) => {
-          const buildingRooms = rooms.filter(room => room.buildingId === building.id);
-          const availableRooms = buildingRooms.filter(r => r.status === 'available').length;
-          const occupiedRooms = buildingRooms.filter(r => r.status === 'occupied').length;
+          let buildingRooms = rooms.filter(room => room.buildingId === building.id);
+          
+          // Apply filters
+          if (statusFilter !== "all") {
+            buildingRooms = buildingRooms.filter(room => room.status === statusFilter);
+          }
+          
+          if (searchTerm) {
+            buildingRooms = buildingRooms.filter(room => 
+              room.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              (room.tenantName && room.tenantName.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+          }
+          
+          const allBuildingRooms = rooms.filter(room => room.buildingId === building.id);
+          const availableRooms = allBuildingRooms.filter(r => r.status === 'available').length;
+          const occupiedRooms = allBuildingRooms.filter(r => r.status === 'occupied').length;
+          
+          // Don't show building if no rooms match filters
+          if (buildingRooms.length === 0 && (statusFilter !== "all" || searchTerm)) {
+            return null;
+          }
           
           return (
             <div key={building.id} className="bg-white border rounded-xl p-6 shadow-sm">
@@ -518,7 +537,16 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
                     size="sm"
                     onClick={() => window.open(`/qr-codes?building=${building.id}`, '_blank')}
                   >
+                    <QrCode className="w-3 h-3 mr-1" />
                     QR Codes
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open(`/guest-profiles?building=${building.id}`, '_blank')}
+                  >
+                    <Users className="w-3 h-3 mr-1" />
+                    Tenants
                   </Button>
                 </div>
               </div>
