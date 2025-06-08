@@ -220,6 +220,33 @@ export const todos = pgTable("todos", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const portalSecurity = pgTable("portal_security", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  roomNumber: varchar("room_number", { length: 10 }).notNull(),
+  failedAttempts: integer("failed_attempts").default(0),
+  isLocked: boolean("is_locked").default(false),
+  lockedAt: timestamp("locked_at"),
+  lastAttemptAt: timestamp("last_attempt_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const systemNotifications = pgTable("system_notifications", {
+  id: serial("id").primaryKey(),
+  type: varchar("type", { length: 50 }).notNull(), // guest_checkout, new_inquiry, maintenance_request, security_alert
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  buildingId: integer("building_id").references(() => buildings.id),
+  roomId: integer("room_id").references(() => rooms.id),
+  priority: varchar("priority", { length: 20 }).default("normal"), // urgent, normal, low
+  color: varchar("color", { length: 20 }).default("blue"), // red, yellow, blue, green
+  isRead: boolean("is_read").default(false),
+  actionType: varchar("action_type", { length: 50 }), // unlock_portal, view_inquiry, etc.
+  actionData: text("action_data"), // JSON data for actions
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Type definitions for inserts
 export type InsertUser = typeof users.$inferSelect;
 export type InsertBuilding = typeof buildings.$inferInsert;
@@ -236,6 +263,8 @@ export type InsertReceipt = typeof receipts.$inferInsert;
 export type InsertInquiry = typeof inquiries.$inferInsert;
 export type InsertTodo = typeof todos.$inferInsert;
 export type InsertGuestProfile = typeof guestProfiles.$inferInsert;
+export type InsertPortalSecurity = typeof portalSecurity.$inferInsert;
+export type InsertSystemNotification = typeof systemNotifications.$inferInsert;
 
 // Type definitions for selects
 export type SelectUser = typeof users.$inferSelect;
@@ -253,6 +282,8 @@ export type SelectReceipt = typeof receipts.$inferSelect;
 export type SelectInquiry = typeof inquiries.$inferSelect;
 export type SelectTodo = typeof todos.$inferSelect;
 export type SelectGuestProfile = typeof guestProfiles.$inferSelect;
+export type SelectPortalSecurity = typeof portalSecurity.$inferSelect;
+export type SelectSystemNotification = typeof systemNotifications.$inferSelect;
 
 // Type aliases for compatibility
 export type User = SelectUser;
@@ -271,6 +302,8 @@ export type InventoryItem = SelectInventory;
 export type Receipt = SelectReceipt;
 export type Todo = SelectTodo;
 export type GuestProfile = SelectGuestProfile;
+export type PortalSecurity = SelectPortalSecurity;
+export type SystemNotification = SelectSystemNotification;
 
 // Validation schemas (simplified - using the insert types as schemas)
 export const insertInquirySchema = {

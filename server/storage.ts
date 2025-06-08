@@ -124,6 +124,20 @@ export interface IStorage {
   markPaymentReceived(guestId: number): Promise<GuestProfile>;
   getPaymentDueGuests(): Promise<GuestProfile[]>;
   getTodaysPaymentDueGuests(): Promise<GuestProfile[]>;
+
+  // Portal Security Operations
+  createPortalSecurity(data: InsertPortalSecurity): Promise<PortalSecurity>;
+  getPortalSecurity(roomId: number): Promise<PortalSecurity | undefined>;
+  updatePortalSecurity(roomId: number, data: Partial<InsertPortalSecurity>): Promise<PortalSecurity>;
+  unlockPortal(roomId: number): Promise<PortalSecurity>;
+  recordFailedAttempt(roomId: number, roomNumber: string): Promise<PortalSecurity>;
+
+  // System Notification Operations
+  createSystemNotification(data: InsertSystemNotification): Promise<SystemNotification>;
+  getSystemNotifications(buildingId?: number): Promise<SystemNotification[]>;
+  markNotificationRead(id: number): Promise<SystemNotification>;
+  deleteNotification(id: number): Promise<void>;
+  clearAllNotifications(buildingId?: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -554,6 +568,138 @@ export class DatabaseStorage implements IStorage {
           eq(guestProfiles.nextPaymentDue, todayStr)
         )
       );
+  }
+
+  // Portal Security Operations
+  async createPortalSecurity(data: schema.InsertPortalSecurity): Promise<schema.PortalSecurity> {
+    const [portalSecurity] = await db
+      .insert(schema.portalSecurity)
+      .values(data)
+      .returning();
+    return portalSecurity;
+  }
+
+  async getPortalSecurity(roomId: number): Promise<schema.PortalSecurity | undefined> {
+    const [portalSecurity] = await db
+      .select()
+      .from(schema.portalSecurity)
+      .where(eq(schema.portalSecurity.roomId, roomId));
+    return portalSecurity;
+  }
+
+  async updatePortalSecurity(roomId: number, data: Partial<schema.InsertPortalSecurity>): Promise<schema.PortalSecurity> {
+    const [portalSecurity] = await db
+      .update(schema.portalSecurity)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.portalSecurity.roomId, roomId))
+      .returning();
+    return portalSecurity;
+  }
+
+  async unlockPortal(roomId: number): Promise<schema.PortalSecurity> {
+    const [portalSecurity] = await db
+      .update(schema.portalSecurity)
+      .set({ 
+        isLocked: false,
+        failedAttempts: 0,
+        lockedAt: null,
+        lastAttemptAt: null,
+        updatedAt: new Date()
+      })
+      .where(eq(schema.portalSecurity.roomId, roomId))
+      .returning();
+    return portalSecurity;
+  }
+
+  async recordFailedAttempt(roomId: number, roomNumber: string): Promise<schema.PortalSecurity> {
+    const existing = await this.getPortalSecurity(roomId);
+    const now = new Date();
+    
+    if (!existing) {
+      // Create new record
+      return await this.createPortalSecurity({
+        roomId,
+        roomNumber,
+        failedAttempts: 1,
+        isLocked: false,
+        lastAttemptAt: now
+      });
+    }
+
+    const newFailedAttempts = (existing.failedAttempts || 0) + 1;
+    const shouldLock = newFailedAttempts >= 3;
+
+    const [portalSecurity] = await db
+      .update(schema.portalSecurity)
+      .set({
+        failedAttempts: newFailedAttempts,
+        isLocked: shouldLock,
+        lockedAt: shouldLock ? now : existing.lockedAt,
+        lastAttemptAt: now,
+        updatedAt: now
+      })
+      .where(eq(schema.portalSecurity.roomId, roomId))
+      .returning();
+
+    // Create notification if locked
+    if (shouldLock) {
+      await this.createSystemNotification({
+        type: 'security_alert',
+        title: `Room ${roomNumber} Portal Locked`,
+        message: `Room ${roomNumber} has been locked after 3 failed PIN attempts. Click to unlock.`,
+        roomId,
+        priority: 'urgent',
+        color: 'red',
+        actionType: 'unlock_portal',
+        actionData: JSON.stringify({ roomId, roomNumber })
+      });
+    }
+
+    return portalSecurity;
+  }
+
+  // System Notification Operations
+  async createSystemNotification(data: schema.InsertSystemNotification): Promise<schema.SystemNotification> {
+    const [notification] = await db
+      .insert(schema.systemNotifications)
+      .values(data)
+      .returning();
+    return notification;
+  }
+
+  async getSystemNotifications(buildingId?: number): Promise<schema.SystemNotification[]> {
+    let query = db.select().from(schema.systemNotifications);
+    
+    if (buildingId) {
+      query = query.where(eq(schema.systemNotifications.buildingId, buildingId));
+    }
+    
+    return await query.orderBy(desc(schema.systemNotifications.createdAt));
+  }
+
+  async markNotificationRead(id: number): Promise<schema.SystemNotification> {
+    const [notification] = await db
+      .update(schema.systemNotifications)
+      .set({ isRead: true })
+      .where(eq(schema.systemNotifications.id, id))
+      .returning();
+    return notification;
+  }
+
+  async deleteNotification(id: number): Promise<void> {
+    await db
+      .delete(schema.systemNotifications)
+      .where(eq(schema.systemNotifications.id, id));
+  }
+
+  async clearAllNotifications(buildingId?: number): Promise<void> {
+    let deleteQuery = db.delete(schema.systemNotifications);
+    
+    if (buildingId) {
+      deleteQuery = deleteQuery.where(eq(schema.systemNotifications.buildingId, buildingId));
+    }
+    
+    await deleteQuery;
   }
 }
 
