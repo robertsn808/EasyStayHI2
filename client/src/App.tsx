@@ -26,6 +26,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/tenant/:roomId" component={TenantPortal} />
+      <Route path="/tenant" component={TenantPortal} />
       <Route path="/inquiry" component={InquiryPage} />
       <Route path="/public" component={Landing} />
       <Route path="/property-949" component={Property949} />
