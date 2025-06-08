@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,13 +7,113 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Edit, Plus, Calendar, Users, DollarSign, QrCode, Download } from "lucide-react";
-import type { Room } from "@shared/schema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { Room, InsertBuilding, InsertRoom } from "@shared/schema";
+import { insertBuildingSchema, insertRoomSchema } from "@shared/schema";
 
 interface AdminRoomGridProps {
   rooms: Room[];
 }
 
 export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
+  const { toast } = useToast();
+  const [showBuildingDialog, setShowBuildingDialog] = useState(false);
+  const [showRoomDialog, setShowRoomDialog] = useState(false);
+
+  // Fetch buildings for room creation
+  const { data: buildings } = useQuery({
+    queryKey: ["/api/buildings"],
+  });
+
+  // Building form
+  const buildingForm = useForm<InsertBuilding>({
+    resolver: zodResolver(insertBuildingSchema),
+    defaultValues: {
+      name: "",
+      address: "",
+      totalUnits: 0,
+    },
+  });
+
+  // Room form
+  const roomForm = useForm<InsertRoom>({
+    resolver: zodResolver(insertRoomSchema),
+    defaultValues: {
+      number: "",
+      buildingId: 0,
+      status: "available",
+      monthlyRent: 0,
+    },
+  });
+
+  // Create building mutation
+  const createBuildingMutation = useMutation({
+    mutationFn: async (data: InsertBuilding) => {
+      const response = await apiRequest("/api/buildings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Building created successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/buildings"] });
+      setShowBuildingDialog(false);
+      buildingForm.reset();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to create building",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Create room mutation
+  const createRoomMutation = useMutation({
+    mutationFn: async (data: InsertRoom) => {
+      const response = await apiRequest("/api/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Room created successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/rooms"] });
+      setShowRoomDialog(false);
+      roomForm.reset();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to create room",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleBuildingSubmit = (data: InsertBuilding) => {
+    createBuildingMutation.mutate(data);
+  };
+
+  const handleRoomSubmit = (data: InsertRoom) => {
+    createRoomMutation.mutate(data);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available":
