@@ -1,61 +1,352 @@
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Plus, DollarSign, Receipt } from "lucide-react";
 
 interface PaymentsTabProps {
   payments?: any[];
 }
 
 export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
+  const { toast } = useToast();
+  const [activeSubTab, setActiveSubTab] = useState("payments");
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  const [showAddExpense, setShowAddExpense] = useState(false);
+
+  const addPaymentMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest({
+        url: "/api/payments",
+        method: "POST",
+        body: data,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Payment Added",
+        description: "Payment record has been created successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/payments"] });
+      setShowAddPayment(false);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to add payment record.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const addExpenseMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest({
+        url: "/api/expenses",
+        method: "POST",
+        body: data,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Expense Added",
+        description: "Expense record has been created successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/expenses"] });
+      setShowAddExpense(false);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to add expense record.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleAddPayment = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
+    const paymentData = {
+      roomId: parseInt(formData.get("roomId") as string),
+      amount: parseFloat(formData.get("amount") as string),
+      type: formData.get("type") as string,
+      status: formData.get("status") as string,
+      description: formData.get("description") as string,
+    };
+
+    addPaymentMutation.mutate(paymentData);
+  };
+
+  const handleAddExpense = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
+    const expenseData = {
+      category: formData.get("category") as string,
+      amount: parseFloat(formData.get("amount") as string),
+      vendor: formData.get("vendor") as string,
+      description: formData.get("description") as string,
+      property: formData.get("property") as string,
+    };
+
+    addExpenseMutation.mutate(expenseData);
+  };
+
+  // Mock expenses data for demonstration
+  const expenses = [
+    { id: 1, category: "Maintenance", amount: 150, vendor: "ABC Repairs", property: "934", description: "Plumbing repair" },
+    { id: 2, category: "Utilities", amount: 320, vendor: "Electric Company", property: "949", description: "Monthly electric bill" },
+  ];
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Payment Records</h3>
-        <Badge variant="secondary">{payments.length} total</Badge>
+        <h3 className="text-lg font-semibold">Financial Management</h3>
+        <div className="flex gap-2">
+          <Dialog open={showAddPayment} onOpenChange={setShowAddPayment}>
+            <DialogTrigger asChild>
+              <Button className="bg-green-600 hover:bg-green-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Payment
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Payment</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddPayment} className="space-y-4">
+                <div>
+                  <Label htmlFor="roomId">Room ID</Label>
+                  <Input id="roomId" name="roomId" type="number" required />
+                </div>
+                <div>
+                  <Label htmlFor="amount">Amount</Label>
+                  <Input id="amount" name="amount" type="number" step="0.01" required />
+                </div>
+                <div>
+                  <Label htmlFor="type">Payment Type</Label>
+                  <Select name="type" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select payment type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rent">Rent</SelectItem>
+                      <SelectItem value="deposit">Security Deposit</SelectItem>
+                      <SelectItem value="utilities">Utilities</SelectItem>
+                      <SelectItem value="cleaning">Cleaning Fee</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <Select name="status" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="failed">Failed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Input id="description" name="description" />
+                </div>
+                <Button type="submit" className="w-full" disabled={addPaymentMutation.isPending}>
+                  {addPaymentMutation.isPending ? "Adding..." : "Add Payment"}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={showAddExpense} onOpenChange={setShowAddExpense}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-50">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Expense
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Expense</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddExpense} className="space-y-4">
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select name="category" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="maintenance">Maintenance</SelectItem>
+                      <SelectItem value="utilities">Utilities</SelectItem>
+                      <SelectItem value="supplies">Supplies</SelectItem>
+                      <SelectItem value="insurance">Insurance</SelectItem>
+                      <SelectItem value="marketing">Marketing</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="amount">Amount</Label>
+                  <Input id="amount" name="amount" type="number" step="0.01" required />
+                </div>
+                <div>
+                  <Label htmlFor="vendor">Vendor</Label>
+                  <Input id="vendor" name="vendor" required />
+                </div>
+                <div>
+                  <Label htmlFor="property">Property</Label>
+                  <Select name="property" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select property" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="934">Property 934 - Kapahulu Ave</SelectItem>
+                      <SelectItem value="949">Property 949 - Kawaiahao St</SelectItem>
+                      <SelectItem value="both">Both Properties</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Input id="description" name="description" required />
+                </div>
+                <Button type="submit" className="w-full" disabled={addExpenseMutation.isPending}>
+                  {addExpenseMutation.isPending ? "Adding..." : "Add Expense"}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
-      
-      {payments.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-center text-gray-500">
-            No payment records available.
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {payments.map((payment: any, index: number) => (
-            <Card key={payment.id || index}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-base">Payment #{payment.id || index + 1}</CardTitle>
-                  <Badge variant={payment.status === 'completed' ? 'default' : payment.status === 'pending' ? 'secondary' : 'destructive'}>
-                    {payment.status || 'pending'}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Amount:</span>
-                    <span className="font-medium">${payment.amount || '0.00'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Room:</span>
-                    <span>{payment.roomId || 'N/A'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Type:</span>
-                    <span>{payment.type || 'Rent'}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-3">
-                  <Button size="sm" variant="outline">View Details</Button>
-                  <Button size="sm" variant="outline">Update Status</Button>
-                </div>
+
+      <Tabs value={activeSubTab} onValueChange={setActiveSubTab}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="payments" className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4" />
+            Payments ({payments.length})
+          </TabsTrigger>
+          <TabsTrigger value="expenses" className="flex items-center gap-2">
+            <Receipt className="h-4 w-4" />
+            Expenses ({expenses.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="payments" className="space-y-4">
+          {payments.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-center text-gray-500">
+                No payment records available. Click "Add Payment" to create your first payment record.
               </CardContent>
             </Card>
-          ))}
-        </div>
-      )}
+          ) : (
+            <div className="space-y-4">
+              {payments.map((payment: any, index: number) => (
+                <Card key={payment.id || index}>
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-base">Payment #{payment.id || index + 1}</CardTitle>
+                      <Badge variant={payment.status === 'completed' ? 'default' : payment.status === 'pending' ? 'secondary' : 'destructive'}>
+                        {payment.status || 'pending'}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Amount:</span>
+                        <span className="font-medium">${payment.amount || '0.00'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Room:</span>
+                        <span>{payment.roomId || 'N/A'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Type:</span>
+                        <span>{payment.type || 'Rent'}</span>
+                      </div>
+                      {payment.description && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Description:</span>
+                          <span>{payment.description}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <Button size="sm" variant="outline">View Details</Button>
+                      <Button size="sm" variant="outline">Update Status</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="expenses" className="space-y-4">
+          {expenses.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-center text-gray-500">
+                No expense records available. Click "Add Expense" to create your first expense record.
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {expenses.map((expense: any, index: number) => (
+                <Card key={expense.id || index}>
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-base">Expense #{expense.id || index + 1}</CardTitle>
+                      <Badge variant="outline" className="text-red-600 border-red-600">
+                        {expense.category}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Amount:</span>
+                        <span className="font-medium text-red-600">-${expense.amount}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Vendor:</span>
+                        <span>{expense.vendor}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Property:</span>
+                        <span>Property {expense.property}</span>
+                      </div>
+                      {expense.description && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Description:</span>
+                          <span>{expense.description}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <Button size="sm" variant="outline">View Receipt</Button>
+                      <Button size="sm" variant="outline">Edit</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

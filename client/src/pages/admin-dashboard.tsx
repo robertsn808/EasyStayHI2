@@ -70,11 +70,11 @@ export default function AdminDashboard() {
               <h3 className="text-xl font-semibold text-gray-900">Property 934</h3>
               <div className="flex space-x-2">
                 <Button 
-                  onClick={() => window.open('/', '_blank')} 
-                  variant="outline" 
+                  onClick={() => window.open('/property-934', '_blank')} 
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                   size="sm"
                 >
-                  View Page
+                  Manage Property
                 </Button>
                 <Button variant="outline" size="sm">
                   <Plus className="h-4 w-4 mr-1" />
@@ -145,11 +145,11 @@ export default function AdminDashboard() {
               <h3 className="text-xl font-semibold text-gray-900">Property 949</h3>
               <div className="flex space-x-2">
                 <Button 
-                  onClick={() => window.open('/949', '_blank')} 
-                  variant="outline" 
+                  onClick={() => window.open('/property-949', '_blank')} 
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
                   size="sm"
                 >
-                  View Page
+                  Manage Property
                 </Button>
                 <Button variant="outline" size="sm">
                   <Plus className="h-4 w-4 mr-1" />
