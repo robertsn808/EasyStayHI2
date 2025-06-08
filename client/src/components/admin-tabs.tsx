@@ -102,7 +102,7 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
         body: JSON.stringify(roomData),
         headers: {
           "Content-Type": "application/json",
-          "x-admin-token": "admin123"
+          "x-admin-token": "admin-authenticated"
         }
       });
       
