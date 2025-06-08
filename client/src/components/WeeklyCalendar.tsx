@@ -228,45 +228,45 @@ export default function WeeklyCalendar({ events = [] }: WeeklyCalendarProps) {
           </div>
         </div>
 
-        {/* Todo List Section */}
-        <div className="mt-6 pt-4 border-t">
-          <div className="flex justify-between items-center mb-4">
+        {/* Todo List Section - Condensed */}
+        <div className="mt-4 pt-3 border-t">
+          <div className="flex justify-between items-center mb-2">
             <h3 className="text-sm font-medium text-gray-700 flex items-center gap-2">
               <CheckSquare className="h-4 w-4" />
               Todo List
             </h3>
-            <Button variant="outline" size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Todo
-            </Button>
+            <div className="flex gap-1">
+              <Button variant="outline" size="sm" className="text-xs px-2 py-1">
+                View All
+              </Button>
+              <Button variant="outline" size="sm" className="text-xs px-2 py-1">
+                <Plus className="h-3 w-3 mr-1" />
+                Add
+              </Button>
+            </div>
           </div>
-          <div className="space-y-2">
-            {Array.isArray(todos) && todos.slice(0, 3).map((todo: any) => (
-              <div key={todo.id} className="flex items-center gap-3 p-2 rounded border">
+          <div className="space-y-1">
+            {Array.isArray(todos) && todos.slice(0, 2).map((todo: any) => (
+              <div key={todo.id} className="flex items-center gap-2 p-1.5 rounded text-xs">
                 <Checkbox 
                   checked={todo.isCompleted} 
-                  className="shrink-0"
+                  className="shrink-0 h-3 w-3"
                 />
                 <div className="flex-1 min-w-0">
-                  <div className={`text-sm ${todo.isCompleted ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                  <div className={`${todo.isCompleted ? 'line-through text-gray-500' : 'text-gray-900'}`}>
                     {todo.title}
                   </div>
-                  {todo.dueDate && (
-                    <div className="text-xs text-gray-500">
-                      Due: {new Date(todo.dueDate).toLocaleDateString()}
-                    </div>
-                  )}
                 </div>
                 <Badge 
                   variant={todo.priority === 'high' ? 'destructive' : todo.priority === 'medium' ? 'default' : 'secondary'}
-                  className="shrink-0"
+                  className="shrink-0 text-xs px-1 py-0"
                 >
                   {todo.priority}
                 </Badge>
               </div>
             ))}
             {(!todos || !Array.isArray(todos) || todos.length === 0) && (
-              <div className="text-sm text-gray-500 text-center py-4">
+              <div className="text-xs text-gray-500 text-center py-2">
                 No todos yet
               </div>
             )}
