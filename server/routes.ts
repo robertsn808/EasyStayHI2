@@ -1047,6 +1047,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/admin/guests/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updateData = req.body;
+      const guest = await storage.updateGuestProfile(id, updateData);
+      res.json(guest);
+    } catch (error) {
+      console.error("Guest update error:", error);
+      res.status(400).json({ message: "Failed to update guest profile", error: error.message });
+    }
+  });
+
   app.get("/api/admin/guests/room/:roomId", simpleAdminAuth, async (req, res) => {
     try {
       const roomId = parseInt(req.params.roomId);
