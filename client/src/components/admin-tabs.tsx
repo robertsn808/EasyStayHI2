@@ -133,85 +133,210 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                 </Button>
               </div>
               
-              {/* Summary Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <Card className="p-4 bg-green-50 border-green-200">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-700">
-                      {Array.isArray(rooms) ? rooms.filter((r: any) => r.status === 'available').length : 0}
-                    </div>
-                    <div className="text-sm text-green-600">Available</div>
-                  </div>
-                </Card>
-                <Card className="p-4 bg-red-50 border-red-200">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-red-700">
-                      {Array.isArray(rooms) ? rooms.filter((r: any) => r.status === 'occupied').length : 0}
-                    </div>
-                    <div className="text-sm text-red-600">Occupied</div>
-                  </div>
-                </Card>
-                <Card className="p-4 bg-orange-50 border-orange-200">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-700">
-                      {Array.isArray(rooms) ? rooms.filter((r: any) => r.status === 'needs_cleaning').length : 0}
-                    </div>
-                    <div className="text-sm text-orange-600">Cleaning</div>
-                  </div>
-                </Card>
+              {/* Summary Cards by Building */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                {/* 934 Kapahulu Ave Summary */}
                 <Card className="p-4 bg-blue-50 border-blue-200">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-700">
-                      {Array.isArray(rooms) ? rooms.length : 0}
+                  <h4 className="font-semibold text-blue-800 mb-3">934 Kapahulu Ave Overview</h4>
+                  <div className="grid grid-cols-4 gap-2">
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-green-700">
+                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
+                          rooms.filter((r: any) => {
+                            const building = buildings.find((b: any) => b.id === r.buildingId);
+                            return building?.name === "934 Kapahulu Ave" && r.status === 'available';
+                          }).length : 0}
+                      </div>
+                      <div className="text-xs text-green-600">Available</div>
                     </div>
-                    <div className="text-sm text-blue-600">Total Rooms</div>
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-red-700">
+                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
+                          rooms.filter((r: any) => {
+                            const building = buildings.find((b: any) => b.id === r.buildingId);
+                            return building?.name === "934 Kapahulu Ave" && r.status === 'occupied';
+                          }).length : 0}
+                      </div>
+                      <div className="text-xs text-red-600">Occupied</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-orange-700">
+                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
+                          rooms.filter((r: any) => {
+                            const building = buildings.find((b: any) => b.id === r.buildingId);
+                            return building?.name === "934 Kapahulu Ave" && r.status === 'needs_cleaning';
+                          }).length : 0}
+                      </div>
+                      <div className="text-xs text-orange-600">Cleaning</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-blue-700">
+                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
+                          rooms.filter((r: any) => {
+                            const building = buildings.find((b: any) => b.id === r.buildingId);
+                            return building?.name === "934 Kapahulu Ave";
+                          }).length : 0}
+                      </div>
+                      <div className="text-xs text-blue-600">Total</div>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* 949 Kawaiahao St Summary */}
+                <Card className="p-4 bg-purple-50 border-purple-200">
+                  <h4 className="font-semibold text-purple-800 mb-3">949 Kawaiahao St Overview</h4>
+                  <div className="grid grid-cols-4 gap-2">
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-green-700">
+                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
+                          rooms.filter((r: any) => {
+                            const building = buildings.find((b: any) => b.id === r.buildingId);
+                            return building?.name === "949 Kawaiahao St" && r.status === 'available';
+                          }).length : 0}
+                      </div>
+                      <div className="text-xs text-green-600">Available</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-red-700">
+                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
+                          rooms.filter((r: any) => {
+                            const building = buildings.find((b: any) => b.id === r.buildingId);
+                            return building?.name === "949 Kawaiahao St" && r.status === 'occupied';
+                          }).length : 0}
+                      </div>
+                      <div className="text-xs text-red-600">Occupied</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-orange-700">
+                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
+                          rooms.filter((r: any) => {
+                            const building = buildings.find((b: any) => b.id === r.buildingId);
+                            return building?.name === "949 Kawaiahao St" && r.status === 'needs_cleaning';
+                          }).length : 0}
+                      </div>
+                      <div className="text-xs text-orange-600">Cleaning</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-purple-700">
+                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
+                          rooms.filter((r: any) => {
+                            const building = buildings.find((b: any) => b.id === r.buildingId);
+                            return building?.name === "949 Kawaiahao St";
+                          }).length : 0}
+                      </div>
+                      <div className="text-xs text-purple-600">Total</div>
+                    </div>
                   </div>
                 </Card>
               </div>
 
-              {/* Rooms Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {Array.isArray(rooms) && rooms.map((room: any) => {
-                  const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
-                  return (
-                    <Card key={room.id} className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <h3 className="font-bold text-lg">#{room.number}</h3>
-                            <p className="text-xs text-gray-500">{building?.name || `Building ${room.buildingId}`}</p>
-                          </div>
-                          <Badge 
-                            variant={
-                              room.status === 'occupied' ? 'destructive' :
-                              room.status === 'available' ? 'default' :
-                              room.status === 'needs_cleaning' ? 'secondary' :
-                              'outline'
-                            }
-                            className="text-xs"
-                          >
-                            {room.status?.replace('_', ' ')}
-                          </Badge>
-                        </div>
-                        
-                        <div className="space-y-1 text-xs text-gray-600 mb-3">
-                          {room.size && <p><strong>Size:</strong> {room.size}</p>}
-                          {room.tenantName && <p><strong>Tenant:</strong> {room.tenantName}</p>}
-                          {room.accessPin && <p><strong>PIN:</strong> {room.accessPin}</p>}
-                        </div>
-                        
-                        <div className="flex gap-1">
-                          <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-7 flex-1">
-                            Edit
-                          </Button>
-                          <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-7 flex-1">
-                            Status
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+              {/* Buildings Separated Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* 934 Kapahulu Ave */}
+                <div>
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">934 Kapahulu Ave</h3>
+                    <p className="text-sm text-gray-600">8 rooms • $100/$500/$2000 pricing</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {Array.isArray(rooms) && rooms
+                      .filter((room: any) => {
+                        const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
+                        return building?.name === "934 Kapahulu Ave";
+                      })
+                      .map((room: any) => {
+                        const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
+                        return (
+                          <Card key={room.id} className="hover:shadow-md transition-shadow">
+                            <CardContent className="p-3">
+                              <div className="flex justify-between items-start mb-2">
+                                <h3 className="font-bold text-base">#{room.number}</h3>
+                                <Badge 
+                                  variant={
+                                    room.status === 'occupied' ? 'destructive' :
+                                    room.status === 'available' ? 'default' :
+                                    room.status === 'needs_cleaning' ? 'secondary' :
+                                    'outline'
+                                  }
+                                  className="text-xs"
+                                >
+                                  {room.status?.replace('_', ' ')}
+                                </Badge>
+                              </div>
+                              
+                              <div className="space-y-1 text-xs text-gray-600 mb-2">
+                                {room.size && <p><strong>Size:</strong> {room.size}</p>}
+                                {room.tenantName && <p><strong>Tenant:</strong> {room.tenantName}</p>}
+                                {room.accessPin && <p><strong>PIN:</strong> {room.accessPin}</p>}
+                              </div>
+                              
+                              <div className="flex gap-1">
+                                <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-6 flex-1">
+                                  Edit
+                                </Button>
+                                <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-6 flex-1">
+                                  Status
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                  </div>
+                </div>
+
+                {/* 949 Kawaiahao St */}
+                <div>
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">949 Kawaiahao St</h3>
+                    <p className="text-sm text-gray-600">10 suites • $50/$200/$600 pricing</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {Array.isArray(rooms) && rooms
+                      .filter((room: any) => {
+                        const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
+                        return building?.name === "949 Kawaiahao St";
+                      })
+                      .map((room: any) => {
+                        const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
+                        return (
+                          <Card key={room.id} className="hover:shadow-md transition-shadow">
+                            <CardContent className="p-3">
+                              <div className="flex justify-between items-start mb-2">
+                                <h3 className="font-bold text-base">#{room.number}</h3>
+                                <Badge 
+                                  variant={
+                                    room.status === 'occupied' ? 'destructive' :
+                                    room.status === 'available' ? 'default' :
+                                    room.status === 'needs_cleaning' ? 'secondary' :
+                                    'outline'
+                                  }
+                                  className="text-xs"
+                                >
+                                  {room.status?.replace('_', ' ')}
+                                </Badge>
+                              </div>
+                              
+                              <div className="space-y-1 text-xs text-gray-600 mb-2">
+                                {room.size && <p><strong>Size:</strong> {room.size}</p>}
+                                {room.tenantName && <p><strong>Tenant:</strong> {room.tenantName}</p>}
+                                {room.accessPin && <p><strong>PIN:</strong> {room.accessPin}</p>}
+                              </div>
+                              
+                              <div className="flex gap-1">
+                                <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-6 flex-1">
+                                  Edit
+                                </Button>
+                                <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-6 flex-1">
+                                  Status
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                  </div>
+                </div>
               </div>
             </div>
           )}
