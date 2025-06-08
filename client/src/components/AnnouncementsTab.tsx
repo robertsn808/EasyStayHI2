@@ -136,11 +136,11 @@ export function AnnouncementsTab({ announcements = [] }: AnnouncementsTabProps) 
   const inactiveAnnouncements = announcements.filter(a => !a.isActive);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Announcements Management</h3>
+        <h3 className="text-base font-semibold">Announcements</h3>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary">
+          <Badge variant="secondary" className="text-xs">
             {activeAnnouncements.length} active • {inactiveAnnouncements.length} inactive
           </Badge>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

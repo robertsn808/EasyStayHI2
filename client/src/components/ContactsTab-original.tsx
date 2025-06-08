@@ -27,11 +27,11 @@ export function ContactsTab({ contacts = [] }: ContactsTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/contacts'] });
-      toast({ title: "Success", description: "Contact added successfully" });
+      toast({ title: "Success", description: "Contact created successfully" });
       setIsAddDialogOpen(false);
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to add contact", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to create contact", variant: "destructive" });
     }
   });
 
@@ -47,41 +47,41 @@ export function ContactsTab({ contacts = [] }: ContactsTabProps) {
     };
     createContactMutation.mutate(data);
   };
-  
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-base font-semibold">Contacts</h3>
+        <h3 className="text-lg font-semibold">Contact Messages</h3>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="text-xs">{contacts.length} contacts</Badge>
+          <Badge variant="secondary">{contacts.length} total</Badge>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="h-7 text-xs">
-                <Plus className="w-3 h-3 mr-1" />
-                Add
+              <Button size="sm">
+                <Plus className="w-4 h-4 mr-1" />
+                Add Contact
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent>
               <DialogHeader>
                 <DialogTitle>Add New Contact</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleCreateContact} className="space-y-3">
+              <form onSubmit={handleCreateContact} className="space-y-4">
                 <div>
-                  <Label htmlFor="name" className="text-sm">Name</Label>
-                  <Input id="name" name="name" required className="h-8" />
+                  <Label htmlFor="name">Name</Label>
+                  <Input id="name" name="name" required />
                 </div>
                 <div>
-                  <Label htmlFor="email" className="text-sm">Email</Label>
-                  <Input id="email" name="email" type="email" required className="h-8" />
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" name="email" type="email" required />
                 </div>
                 <div>
-                  <Label htmlFor="phone" className="text-sm">Phone</Label>
-                  <Input id="phone" name="phone" className="h-8" />
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input id="phone" name="phone" />
                 </div>
                 <div>
-                  <Label htmlFor="category" className="text-sm">Category</Label>
+                  <Label htmlFor="category">Category</Label>
                   <Select name="category" required>
-                    <SelectTrigger className="h-8">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -94,10 +94,10 @@ export function ContactsTab({ contacts = [] }: ContactsTabProps) {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="notes" className="text-sm">Notes</Label>
-                  <Textarea id="notes" name="notes" className="min-h-16" />
+                  <Label htmlFor="notes">Notes</Label>
+                  <Textarea id="notes" name="notes" />
                 </div>
-                <Button type="submit" className="w-full h-8 text-xs" disabled={createContactMutation.isPending}>
+                <Button type="submit" className="w-full" disabled={createContactMutation.isPending}>
                   {createContactMutation.isPending ? "Adding..." : "Add Contact"}
                 </Button>
               </form>
@@ -108,56 +108,41 @@ export function ContactsTab({ contacts = [] }: ContactsTabProps) {
       
       {contacts.length === 0 ? (
         <Card>
-          <CardContent className="p-4 text-center text-gray-500 text-sm">
-            No contacts available.
+          <CardContent className="p-6 text-center text-gray-500">
+            No contact messages available.
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-4">
           {contacts.map((contact: any, index: number) => (
-            <Card key={contact.id || index} className="p-3">
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="text-sm font-medium">{contact.name}</h4>
-                <Badge 
-                  variant={contact.category === 'emergency' ? 'destructive' : 'secondary'} 
-                  className="text-xs px-1 py-0"
-                >
-                  {contact.category}
-                </Badge>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1">
-                  <Mail className="h-3 w-3 text-gray-400" />
-                  <p className="text-xs text-gray-600">{contact.email}</p>
+            <Card key={contact.id || index}>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-base">{contact.name}</CardTitle>
+                  <Badge variant="secondary">{contact.category || 'General'}</Badge>
                 </div>
-                {contact.phone && (
-                  <div className="flex items-center gap-1">
-                    <Phone className="h-3 w-3 text-gray-400" />
-                    <p className="text-xs text-gray-600">{contact.phone}</p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-gray-500" />
+                    <span>{contact.email}</span>
                   </div>
-                )}
-                {contact.notes && <p className="text-xs mt-1">{contact.notes}</p>}
-              </div>
-              <div className="flex gap-1 mt-2">
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="text-xs h-6 px-2"
-                  onClick={() => window.open(`mailto:${contact.email}`)}
-                >
-                  Email
-                </Button>
-                {contact.phone && (
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="text-xs h-6 px-2"
-                    onClick={() => window.open(`tel:${contact.phone}`)}
-                  >
-                    Call
-                  </Button>
-                )}
-              </div>
+                  {contact.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-gray-500" />
+                      <span>{contact.phone}</span>
+                    </div>
+                  )}
+                  {contact.notes && (
+                    <p className="text-gray-600 mt-2">{contact.notes}</p>
+                  )}
+                </div>
+                <div className="flex gap-2 mt-3">
+                  <Button size="sm" variant="outline">Reply</Button>
+                  <Button size="sm" variant="outline">Archive</Button>
+                </div>
+              </CardContent>
             </Card>
           ))}
         </div>
