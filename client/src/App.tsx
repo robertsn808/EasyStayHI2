@@ -14,6 +14,14 @@ import NotFound from "@/pages/not-found";
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <Switch>
       <Route path="/tenant/:roomId" component={TenantPortal} />
@@ -22,13 +30,11 @@ function Router() {
       <Route path="/property-949" component={Property949} />
       <Route path="/property-934" component={Property934} />
       <Route path="/949" component={Property949} />
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
+      <Route path="/admin" component={AdminDashboard} />
+      {isAuthenticated ? (
+        <Route path="/" component={AdminDashboard} />
       ) : (
-        <>
-          <Route path="/" component={AdminDashboard} />
-          <Route path="/admin" component={AdminDashboard} />
-        </>
+        <Route path="/" component={Landing} />
       )}
       <Route component={NotFound} />
     </Switch>

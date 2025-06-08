@@ -20,29 +20,24 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
+      // Use GET method since that's what the server expects
       const response = await fetch("/api/logout", { 
-        method: "POST",
+        method: "GET",
         credentials: 'include'
       });
       
-      if (response.ok) {
-        // Clear any local storage or session storage if needed
-        localStorage.clear();
-        sessionStorage.clear();
-        
-        // Force reload to clear auth state
-        window.location.replace("/");
-      } else {
-        throw new Error('Logout failed');
-      }
+      // Clear any local storage or session storage
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Force reload to clear auth state - this will trigger the redirect
+      window.location.href = "/";
+      
     } catch (error) {
-      toast({
-        title: "Error", 
-        description: "Failed to logout",
-        variant: "destructive",
-      });
-      // Even if logout fails, redirect to home
-      window.location.replace("/");
+      // Even if logout fails, clear local state and redirect
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/";
     }
   };
 
