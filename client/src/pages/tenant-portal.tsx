@@ -51,6 +51,41 @@ export default function TenantPortal() {
     }
   }, [roomId]);
 
+  // Fetch buildings and rooms for selection
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [buildingsRes, roomsRes] = await Promise.all([
+          fetch('/api/buildings'),
+          fetch('/api/rooms')
+        ]);
+        
+        if (buildingsRes.ok && roomsRes.ok) {
+          const buildingsData = await buildingsRes.json();
+          const roomsData = await roomsRes.json();
+          setBuildings(buildingsData);
+          setRooms(roomsData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch buildings and rooms:', error);
+      }
+    };
+
+    if (!roomId) {
+      fetchData();
+    }
+  }, [roomId]);
+
+  // Filter rooms based on selected building
+  useEffect(() => {
+    if (pinForm.buildingId) {
+      const filtered = rooms.filter(room => room.buildingId === parseInt(pinForm.buildingId));
+      setFilteredRooms(filtered);
+    } else {
+      setFilteredRooms([]);
+    }
+  }, [pinForm.buildingId, rooms]);
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -158,16 +193,45 @@ export default function TenantPortal() {
             
             <form onSubmit={handlePinAuth} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Room Number</label>
-                <input
-                  type="text"
-                  value={pinForm.roomNumber}
-                  onChange={(e) => setPinForm(prev => ({...prev, roomNumber: e.target.value}))}
-                  placeholder="e.g., 001, A01"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
+                <label className="block text-sm font-medium text-gray-700 mb-1">Select Building</label>
+                <Select 
+                  value={pinForm.buildingId} 
+                  onValueChange={(value) => setPinForm(prev => ({...prev, buildingId: value, roomNumber: ""}))}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Choose your building" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {buildings.map((building) => (
+                      <SelectItem key={building.id} value={building.id.toString()}>
+                        {building.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Select Room</label>
+                <Select 
+                  value={pinForm.roomNumber} 
+                  onValueChange={(value) => setPinForm(prev => ({...prev, roomNumber: value}))}
+                  disabled={!pinForm.buildingId}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={pinForm.buildingId ? "Choose your room" : "Select building first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredRooms.map((room) => (
+                      <SelectItem key={room.id} value={room.number}>
+                        Room {room.number}
+                        {room.tenantName && ` (${room.tenantName})`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">4-Digit PIN</label>
                 <input
@@ -183,7 +247,7 @@ export default function TenantPortal() {
               <Button 
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                disabled={pinForm.pin.length !== 4 || !pinForm.roomNumber}
+                disabled={pinForm.pin.length !== 4 || !pinForm.roomNumber || !pinForm.buildingId}
               >
                 Access Room Portal
               </Button>
