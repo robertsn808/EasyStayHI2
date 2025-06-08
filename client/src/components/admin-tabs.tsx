@@ -30,63 +30,63 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
   const isAdminAuthenticated = localStorage.getItem('admin-authenticated') === 'true';
 
   // Fetch data for each tab
-  const { data: inquiries } = useQuery({
+  const { data: inquiries = [] } = useQuery({
     queryKey: ["/api/admin/inquiries"],
     enabled: isAdminAuthenticated,
   });
 
-  const { data: maintenanceRequests } = useQuery({
+  const { data: maintenanceRequests = [] } = useQuery({
     queryKey: ["/api/admin/maintenance-requests"],
     enabled: isAdminAuthenticated,
   });
 
-  const { data: payments } = useQuery({
+  const { data: payments = [] } = useQuery({
     queryKey: ["/api/admin/payments"],
     enabled: isAdminAuthenticated,
   });
 
-  const { data: announcements } = useQuery({
+  const { data: announcements = [] } = useQuery({
     queryKey: ["/api/announcements"],
     enabled: isAdminAuthenticated,
   });
 
-  const { data: calendarEvents } = useQuery({
-    queryKey: ["/api/admin/calendar-events"],
+  const { data: calendarEvents = [] } = useQuery({
+    queryKey: ["/api/calendar"],
     enabled: isAdminAuthenticated,
   });
 
-  const { data: contacts } = useQuery({
+  const { data: contacts = [] } = useQuery({
     queryKey: ["/api/admin/contacts"],
     enabled: isAdminAuthenticated,
   });
 
-  const { data: inventory } = useQuery({
+  const { data: inventory = [] } = useQuery({
     queryKey: ["/api/admin/inventory"],
     enabled: isAdminAuthenticated,
   });
 
-  const { data: receipts } = useQuery({
+  const { data: receipts = [] } = useQuery({
     queryKey: ["/api/admin/receipts"],
     enabled: isAdminAuthenticated,
   });
 
-  const { data: todos } = useQuery({
+  const { data: todos = [] } = useQuery({
     queryKey: ["/api/admin/todos"],
     enabled: isAdminAuthenticated,
   });
 
-  const { data: rooms } = useQuery({
+  const { data: buildings = [] } = useQuery({
+    queryKey: ["/api/buildings"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: rooms = [] } = useQuery({
     queryKey: ["/api/rooms"],
     enabled: isAdminAuthenticated,
   });
 
-  const { data: guests } = useQuery({
+  const { data: guests = [] } = useQuery({
     queryKey: ["/api/admin/guests"],
-    enabled: isAdminAuthenticated,
-  });
-
-  const { data: buildings } = useQuery({
-    queryKey: ["/api/buildings"],
     enabled: isAdminAuthenticated,
   });
 
@@ -99,12 +99,15 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
 
   if (!isAdminAuthenticated) {
     return (
-      <Card>
+      <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200 shadow-lg">
         <CardHeader>
-          <CardTitle>Admin Access Required</CardTitle>
+          <CardTitle className="text-red-900 flex items-center space-x-2">
+            <div className="w-2 h-6 bg-red-500 rounded-full"></div>
+            <span>Admin Access Required</span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Please log in as admin to access the management dashboard.</p>
+          <p className="text-red-800">Please log in as admin to access the management dashboard.</p>
         </CardContent>
       </Card>
     );
@@ -112,67 +115,92 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
 
   return (
     <div className="space-y-6">
-      <Card className="w-full">
-        <div className="p-6">
-          {selectedTab === "quick-access" && (
-            <QuickAccessTab
-              buildings={Array.isArray(buildings) ? buildings : []}
-              rooms={Array.isArray(rooms) ? rooms : []}
-              guests={Array.isArray(guests) ? guests : []}
-              inquiries={Array.isArray(inquiries) ? inquiries : []}
-              maintenanceRequests={Array.isArray(maintenanceRequests) ? maintenanceRequests : []}
-            />
-          )}
+      <div className="w-full">
+        {selectedTab === "quick-access" && (
+          <QuickAccessTab
+            buildings={Array.isArray(buildings) ? buildings : []}
+            rooms={Array.isArray(rooms) ? rooms : []}
+            guests={Array.isArray(guests) ? guests : []}
+            inquiries={Array.isArray(inquiries) ? inquiries : []}
+            maintenanceRequests={Array.isArray(maintenanceRequests) ? maintenanceRequests : []}
+          />
+        )}
 
-          {selectedTab === "934" && (
-            <BuildingTab
-              buildingName="934 Kapahulu Ave"
-              buildingId={10}
-              rooms={Array.isArray(rooms) ? rooms : []}
-              guests={Array.isArray(guests) ? guests : []}
-              inquiriesCount={Array.isArray(inquiries) ? inquiries.filter((i: any) => 
-                i.message?.toLowerCase().includes('934') || 
-                i.message?.toLowerCase().includes('kapahulu') || 
-                (!i.message?.toLowerCase().includes('949') && !i.message?.toLowerCase().includes('kawaiahao'))
-              ).length : 0}
-              color="blue"
-            />
-          )}
-          
-          {selectedTab === "949" && (
-            <BuildingTab
-              buildingName="949 Kawaiahao St"
-              buildingId={11}
-              rooms={Array.isArray(rooms) ? rooms : []}
-              guests={Array.isArray(guests) ? guests : []}
-              inquiriesCount={Array.isArray(inquiries) ? inquiries.filter((i: any) => 
-                i.message?.toLowerCase().includes('949') || 
-                i.message?.toLowerCase().includes('kawaiahao')
-              ).length : 0}
-              color="purple"
-            />
-          )}
+        {selectedTab === "934" && (
+          <BuildingTab
+            buildingName="934 Kapahulu Ave"
+            buildingId={10}
+            rooms={Array.isArray(rooms) ? rooms : []}
+            guests={Array.isArray(guests) ? guests : []}
+            inquiriesCount={Array.isArray(inquiries) ? inquiries.filter((i: any) => 
+              i.message?.toLowerCase().includes('934') || 
+              i.message?.toLowerCase().includes('kapahulu') || 
+              (!i.message?.toLowerCase().includes('949') && !i.message?.toLowerCase().includes('kawaiahao'))
+            ).length : 0}
+            color="blue"
+          />
+        )}
+        
+        {selectedTab === "949" && (
+          <BuildingTab
+            buildingName="949 Kawaiahao St"
+            buildingId={11}
+            rooms={Array.isArray(rooms) ? rooms : []}
+            guests={Array.isArray(guests) ? guests : []}
+            inquiriesCount={Array.isArray(inquiries) ? inquiries.filter((i: any) => 
+              i.message?.toLowerCase().includes('949') || 
+              i.message?.toLowerCase().includes('kawaiahao')
+            ).length : 0}
+            color="purple"
+          />
+        )}
 
-          {selectedTab === "payment-tracker" && (
-            <PaymentTrackerTab
-              payments={Array.isArray(payments) ? payments : []}
-              rooms={Array.isArray(rooms) ? rooms : []}
-              guests={Array.isArray(guests) ? guests : []}
-            />
-          )}
+        {selectedTab === "payment-tracker" && (
+          <PaymentTrackerTab
+            payments={Array.isArray(payments) ? payments : []}
+            rooms={Array.isArray(rooms) ? rooms : []}
+            guests={Array.isArray(guests) ? guests : []}
+          />
+        )}
 
-          {selectedTab === "maintenance" && <MaintenanceTab maintenanceRequests={maintenanceRequests} />}
-          {selectedTab === "inquiries" && <InquiriesTab inquiries={inquiries} />}
-          {selectedTab === "payments" && <PaymentsTab payments={payments} />}
-          {selectedTab === "announcements" && <AnnouncementsTab announcements={announcements} />}
-          {selectedTab === "calendar" && <CalendarTab events={calendarEvents} />}
-          {selectedTab === "contacts" && <ContactsTab contacts={contacts} />}
-          {selectedTab === "inventory" && <InventoryTab inventory={inventory} />}
-          {selectedTab === "receipts" && <ReceiptsTab receipts={receipts} />}
-          {selectedTab === "todos" && <TodosTab todos={todos} />}
-          {selectedTab === "settings" && <SettingsTab />}
-        </div>
-      </Card>
+        {selectedTab === "maintenance" && (
+          <MaintenanceTab requests={Array.isArray(maintenanceRequests) ? maintenanceRequests : []} />
+        )}
+        
+        {selectedTab === "inquiries" && (
+          <InquiriesTab inquiries={Array.isArray(inquiries) ? inquiries : []} />
+        )}
+        
+        {selectedTab === "payments" && (
+          <PaymentsTab payments={Array.isArray(payments) ? payments : []} />
+        )}
+        
+        {selectedTab === "announcements" && (
+          <AnnouncementsTab announcements={Array.isArray(announcements) ? announcements : []} />
+        )}
+        
+        {selectedTab === "calendar" && (
+          <CalendarTab events={Array.isArray(calendarEvents) ? calendarEvents : []} />
+        )}
+        
+        {selectedTab === "contacts" && (
+          <ContactsTab contacts={Array.isArray(contacts) ? contacts : []} />
+        )}
+        
+        {selectedTab === "inventory" && (
+          <InventoryTab items={Array.isArray(inventory) ? inventory : []} />
+        )}
+        
+        {selectedTab === "receipts" && (
+          <ReceiptsTab receipts={Array.isArray(receipts) ? receipts : []} />
+        )}
+        
+        {selectedTab === "todos" && (
+          <TodosTab todos={Array.isArray(todos) ? todos : []} />
+        )}
+        
+        {selectedTab === "settings" && <SettingsTab />}
+      </div>
     </div>
   );
 }
