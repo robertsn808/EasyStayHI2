@@ -25,39 +25,39 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
   const [showRoomDialog, setShowRoomDialog] = useState(false);
 
   // Fetch buildings for room creation
-  const { data: buildings } = useQuery({
+  const { data: buildings = [] } = useQuery({
     queryKey: ["/api/buildings"],
   });
 
   // Building form
   const buildingForm = useForm<InsertBuilding>({
-    resolver: zodResolver(insertBuildingSchema),
     defaultValues: {
       name: "",
       address: "",
-      totalUnits: 0,
     },
   });
 
   // Room form
   const roomForm = useForm<InsertRoom>({
-    resolver: zodResolver(insertRoomSchema),
     defaultValues: {
       number: "",
-      buildingId: 0,
+      buildingId: undefined,
       status: "available",
-      monthlyRent: 0,
+      rentalRate: "0",
+      rentalPeriod: "monthly",
+      floor: 1,
     },
   });
 
   // Create building mutation
   const createBuildingMutation = useMutation({
     mutationFn: async (data: InsertBuilding) => {
-      const response = await apiRequest("/api/buildings", {
+      const response = await fetch("/api/buildings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!response.ok) throw new Error("Failed to create building");
       return response.json();
     },
     onSuccess: () => {
@@ -81,11 +81,12 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
   // Create room mutation
   const createRoomMutation = useMutation({
     mutationFn: async (data: InsertRoom) => {
-      const response = await apiRequest("/api/rooms", {
+      const response = await fetch("/api/rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!response.ok) throw new Error("Failed to create room");
       return response.json();
     },
     onSuccess: () => {
@@ -153,10 +154,150 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
     <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-semibold text-gray-900">Room Management</h3>
-        <Button className="bg-primary text-white hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Building
-        </Button>
+        <div className="flex space-x-2">
+          <Dialog open={showBuildingDialog} onOpenChange={setShowBuildingDialog}>
+            <DialogTrigger asChild>
+              <Button className="bg-primary text-white hover:bg-blue-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Building
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Building</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={buildingForm.handleSubmit(handleBuildingSubmit)} className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Building Name</Label>
+                  <Input
+                    id="name"
+                    {...buildingForm.register("name")}
+                    placeholder="e.g., 934 Main Building"
+                  />
+                  {buildingForm.formState.errors.name && (
+                    <p className="text-red-500 text-sm">{buildingForm.formState.errors.name.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    {...buildingForm.register("address")}
+                    placeholder="e.g., 934 Main Street, Honolulu, HI"
+                  />
+                  {buildingForm.formState.errors.address && (
+                    <p className="text-red-500 text-sm">{buildingForm.formState.errors.address.message}</p>
+                  )}
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setShowBuildingDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={createBuildingMutation.isPending}
+                    className="bg-primary text-white hover:bg-blue-700"
+                  >
+                    {createBuildingMutation.isPending ? "Creating..." : "Create Building"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={showRoomDialog} onOpenChange={setShowRoomDialog}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Room
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Room</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={roomForm.handleSubmit(handleRoomSubmit)} className="space-y-4">
+                <div>
+                  <Label htmlFor="buildingId">Building</Label>
+                  <Select
+                    value={roomForm.watch("buildingId")?.toString()}
+                    onValueChange={(value) => roomForm.setValue("buildingId", parseInt(value))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a building" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {buildings?.map((building: any) => (
+                        <SelectItem key={building.id} value={building.id.toString()}>
+                          {building.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {roomForm.formState.errors.buildingId && (
+                    <p className="text-red-500 text-sm">{roomForm.formState.errors.buildingId.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="number">Room Number</Label>
+                  <Input
+                    id="number"
+                    {...roomForm.register("number")}
+                    placeholder="e.g., 101"
+                  />
+                  {roomForm.formState.errors.number && (
+                    <p className="text-red-500 text-sm">{roomForm.formState.errors.number.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="rentalRate">Monthly Rent ($)</Label>
+                  <Input
+                    id="rentalRate"
+                    type="number"
+                    {...roomForm.register("rentalRate")}
+                    placeholder="e.g., 2000"
+                  />
+                  {roomForm.formState.errors.rentalRate && (
+                    <p className="text-red-500 text-sm">{roomForm.formState.errors.rentalRate.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <Select
+                    value={roomForm.watch("status")}
+                    onValueChange={(value) => roomForm.setValue("status", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="occupied">Occupied</SelectItem>
+                      <SelectItem value="needs_cleaning">Needs Cleaning</SelectItem>
+                      <SelectItem value="out_of_service">Out of Service</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {roomForm.formState.errors.status && (
+                    <p className="text-red-500 text-sm">{roomForm.formState.errors.status.message}</p>
+                  )}
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setShowRoomDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={createRoomMutation.isPending}
+                    className="bg-primary text-white hover:bg-blue-700"
+                  >
+                    {createRoomMutation.isPending ? "Creating..." : "Create Room"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
