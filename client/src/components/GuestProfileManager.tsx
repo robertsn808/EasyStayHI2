@@ -382,7 +382,7 @@ export default function GuestProfileManager() {
             <CardTitle>{editingGuest ? 'Edit Guest' : assigningRoom ? `Assign Guest to Room ${assigningRoom.number}` : 'Add New Guest'}</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="roomId">Room *</Label>
                 <Select value={formData.roomId} onValueChange={(value) => setFormData({...formData, roomId: value})}>
@@ -485,7 +485,7 @@ export default function GuestProfileManager() {
                 />
               </div>
 
-              <div className="col-span-2 flex gap-2">
+              <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row gap-2">
                 <Button type="submit" disabled={createGuestMutation.isPending || updateGuestMutation.isPending}>
                   {editingGuest 
                     ? (updateGuestMutation.isPending ? 'Updating...' : 'Update Guest')
