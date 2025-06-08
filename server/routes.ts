@@ -348,7 +348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: "available",
           size: "Studio",
           floor: Math.ceil(i / 4),
-          rentalRate: "$100/night, $500/week, $2000/month",
+          rentalRate: "100",
           rentalPeriod: "flexible"
         });
         rooms934.push(room);
@@ -363,7 +363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: "available", 
           size: "Suite",
           floor: Math.ceil(i / 5),
-          rentalRate: "$50/night, $200/week, $600/month",
+          rentalRate: "50",
           rentalPeriod: "flexible"
         });
         rooms949.push(room);
