@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Settings } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import { InquiriesTab } from "@/components/InquiriesTab";
 import { MaintenanceTab } from "@/components/MaintenanceTab";
 import { PaymentsTab } from "@/components/PaymentsTab";
@@ -20,22 +11,16 @@ import { ReceiptsTab } from "@/components/ReceiptsTab";
 import { TodosTab } from "@/components/TodosTab";
 import { AnnouncementsTab } from "@/components/AnnouncementsTab";
 import { SettingsTab } from "@/components/SettingsTab";
-import { PropertiesTab } from "@/components/PropertiesTab";
-import QRCodeManager from "@/components/QRCodeManager";
-import GuestProfileManager from "@/components/GuestProfileManager";
-import AdminRoomGrid from "@/components/admin-room-grid";
+import { BuildingTab } from "@/components/BuildingTab";
+import { PaymentTrackerTab } from "@/components/PaymentTrackerTab";
 
 interface AdminTabsProps {
   activeTab?: string;
   setActiveTab?: (tab: string) => void;
 }
 
-export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTabsProps) {
+export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabsProps) {
   const [selectedTab, setSelectedTab] = useState(activeTab);
-  const [editingRoom, setEditingRoom] = useState<any>(null);
-  const [showRoomDialog, setShowRoomDialog] = useState(false);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     setSelectedTab(activeTab);
@@ -50,7 +35,7 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
   });
 
   const { data: maintenanceRequests } = useQuery({
-    queryKey: ["/api/admin/maintenance"],
+    queryKey: ["/api/admin/maintenance-requests"],
     enabled: isAdminAuthenticated,
   });
 
@@ -60,12 +45,12 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
   });
 
   const { data: announcements } = useQuery({
-    queryKey: ["/api/admin/announcements"],
+    queryKey: ["/api/announcements"],
     enabled: isAdminAuthenticated,
   });
 
   const { data: calendarEvents } = useQuery({
-    queryKey: ["/api/admin/calendar"],
+    queryKey: ["/api/admin/calendar-events"],
     enabled: isAdminAuthenticated,
   });
 
@@ -88,94 +73,6 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
     queryKey: ["/api/admin/todos"],
     enabled: isAdminAuthenticated,
   });
-
-  const { data: buildings } = useQuery({
-    queryKey: ["/api/admin/buildings"],
-    enabled: isAdminAuthenticated,
-  });
-
-  // Room update mutation
-  const updateRoomMutation = useMutation({
-    mutationFn: async (roomData: any) => {
-      const response = await fetch(`/api/admin/rooms/${roomData.id}`, {
-        method: "PATCH",
-        body: JSON.stringify(roomData),
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-token": "admin-authenticated"
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to update room: ${response.statusText}`);
-      }
-      
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/rooms"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/rooms"] });
-      setShowRoomDialog(false);
-      setEditingRoom(null);
-      toast({
-        title: "Success",
-        description: "Room updated successfully",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to update room",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleEditRoom = (room: any) => {
-    setEditingRoom(room);
-    setShowRoomDialog(true);
-  };
-
-  const handleUpdateRoom = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingRoom) return;
-
-    const formData = new FormData(e.target as HTMLFormElement);
-    const roomData: any = {
-      id: editingRoom.id,
-    };
-
-    // Only add fields that have values
-    const status = formData.get('status') as string;
-    if (status) roomData.status = status;
-    
-    const accessPin = formData.get('accessPin') as string;
-    if (accessPin) roomData.accessPin = accessPin;
-    
-    const tenantName = formData.get('tenantName') as string;
-    if (tenantName) roomData.tenantName = tenantName;
-    
-    const tenantPhone = formData.get('tenantPhone') as string;
-    if (tenantPhone) roomData.tenantPhone = tenantPhone;
-    
-    const lastCleaned = formData.get('lastCleaned') as string;
-    if (lastCleaned) roomData.lastCleaned = lastCleaned;
-    
-    const nextPaymentDue = formData.get('nextPaymentDue') as string;
-    if (nextPaymentDue) roomData.nextPaymentDue = nextPaymentDue;
-
-    // Auto-set lastCleaned if status changed to "available" or "needs_cleaning"
-    if (status && (status === 'available' || status === 'needs_cleaning') && editingRoom.status !== status) {
-      roomData.lastCleaned = new Date().toISOString().split('T')[0];
-    }
-
-    updateRoomMutation.mutate(roomData);
-  };
-
-  const generateNewPin = () => {
-    const newPin = Math.floor(1000 + Math.random() * 9000).toString();
-    setEditingRoom({ ...editingRoom, accessPin: newPin });
-  };
 
   const { data: rooms } = useQuery({
     queryKey: ["/api/rooms"],
@@ -209,326 +106,54 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
 
   return (
     <div className="space-y-6">
-      {/* Content Area */}
       <Card className="w-full">
         <div className="p-6">
-
-
-          {selectedTab === "guests" && <GuestProfileManager />}
-          {selectedTab === "qr-codes" && <QRCodeManager />}
-          {selectedTab === "rooms" && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Room Management</h2>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Room
-                </Button>
-              </div>
-              
-              {/* Compact Summary */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-                <Card className="p-3 bg-blue-50 border-blue-200">
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium text-blue-800">934 Kapahulu Ave</h4>
-                    <div className="flex gap-3 text-xs">
-                      <span className="text-green-700 font-semibold">
-                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
-                          rooms.filter((r: any) => {
-                            const building = buildings.find((b: any) => b.id === r.buildingId);
-                            return building?.name === "934 Kapahulu Ave" && r.status === 'available';
-                          }).length : 0}A
-                      </span>
-                      <span className="text-red-700 font-semibold">
-                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
-                          rooms.filter((r: any) => {
-                            const building = buildings.find((b: any) => b.id === r.buildingId);
-                            return building?.name === "934 Kapahulu Ave" && r.status === 'occupied';
-                          }).length : 0}O
-                      </span>
-                      <span className="text-orange-700 font-semibold">
-                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
-                          rooms.filter((r: any) => {
-                            const building = buildings.find((b: any) => b.id === r.buildingId);
-                            return building?.name === "934 Kapahulu Ave" && r.status === 'needs_cleaning';
-                          }).length : 0}C
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-                <Card className="p-3 bg-purple-50 border-purple-200">
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium text-purple-800">949 Kawaiahao St</h4>
-                    <div className="flex gap-3 text-xs">
-                      <span className="text-green-700 font-semibold">
-                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
-                          rooms.filter((r: any) => {
-                            const building = buildings.find((b: any) => b.id === r.buildingId);
-                            return building?.name === "949 Kawaiahao St" && r.status === 'available';
-                          }).length : 0}A
-                      </span>
-                      <span className="text-red-700 font-semibold">
-                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
-                          rooms.filter((r: any) => {
-                            const building = buildings.find((b: any) => b.id === r.buildingId);
-                            return building?.name === "949 Kawaiahao St" && r.status === 'occupied';
-                          }).length : 0}O
-                      </span>
-                      <span className="text-orange-700 font-semibold">
-                        {Array.isArray(rooms) && Array.isArray(buildings) ? 
-                          rooms.filter((r: any) => {
-                            const building = buildings.find((b: any) => b.id === r.buildingId);
-                            return building?.name === "949 Kawaiahao St" && r.status === 'needs_cleaning';
-                          }).length : 0}C
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-
-              {/* Condensed Buildings Layout */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* 934 Kapahulu Ave */}
-                <div>
-                  <div className="mb-3 p-2 bg-blue-50 rounded border-l-4 border-blue-400">
-                    <h3 className="font-medium text-blue-800">934 Kapahulu Ave</h3>
-                    <p className="text-xs text-blue-600">$100/$500/$2000</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Array.isArray(rooms) && rooms
-                      .filter((room: any) => {
-                        const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
-                        return building?.name === "934 Kapahulu Ave";
-                      })
-                      .map((room: any) => {
-                        return (
-                          <Card key={room.id} className="hover:shadow-sm transition-shadow border-l-4 border-l-blue-400 bg-blue-50/30">
-                            <CardContent className="p-2">
-                              <div className="flex justify-between items-center mb-1">
-                                <h3 className="font-bold text-sm text-blue-800">#{room.number}</h3>
-                                <Badge 
-                                  variant={
-                                    room.status === 'occupied' ? 'destructive' :
-                                    room.status === 'available' ? 'default' :
-                                    room.status === 'needs_cleaning' ? 'secondary' :
-                                    'outline'
-                                  }
-                                  className="text-xs px-1 py-0"
-                                >
-                                  {room.status?.charAt(0).toUpperCase()}
-                                </Badge>
-                              </div>
-                              
-                              {(room.tenantName || room.accessPin) && (
-                                <div className="text-xs text-blue-700 mb-1">
-                                  {room.tenantName && <p className="truncate">{room.tenantName}</p>}
-                                  {room.accessPin && <p>PIN: {room.accessPin}</p>}
-                                </div>
-                              )}
-                              
-                              <div className="flex gap-1">
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  className="text-xs px-1 py-0 h-5 flex-1 border-blue-300 text-blue-700 hover:bg-blue-100"
-                                  onClick={() => handleEditRoom(room)}
-                                >
-                                  Edit
-                                </Button>
-                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1 border-blue-300 text-blue-700 hover:bg-blue-100">
-                                  Status
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                  </div>
-                </div>
-
-                {/* 949 Kawaiahao St */}
-                <div>
-                  <div className="mb-3 p-2 bg-purple-50 rounded border-l-4 border-purple-400">
-                    <h3 className="font-medium text-purple-800">949 Kawaiahao St</h3>
-                    <p className="text-xs text-purple-600">$50/$200/$600</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Array.isArray(rooms) && rooms
-                      .filter((room: any) => {
-                        const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
-                        return building?.name === "949 Kawaiahao St";
-                      })
-                      .map((room: any) => {
-                        return (
-                          <Card key={room.id} className="hover:shadow-sm transition-shadow border-l-4 border-l-purple-400 bg-purple-50/30">
-                            <CardContent className="p-2">
-                              <div className="flex justify-between items-center mb-1">
-                                <h3 className="font-bold text-sm text-purple-800">#{room.number}</h3>
-                                <Badge 
-                                  variant={
-                                    room.status === 'occupied' ? 'destructive' :
-                                    room.status === 'available' ? 'default' :
-                                    room.status === 'needs_cleaning' ? 'secondary' :
-                                    'outline'
-                                  }
-                                  className="text-xs px-1 py-0"
-                                >
-                                  {room.status?.charAt(0).toUpperCase()}
-                                </Badge>
-                              </div>
-                              
-                              {(room.tenantName || room.accessPin) && (
-                                <div className="text-xs text-purple-700 mb-1">
-                                  {room.tenantName && <p className="truncate">{room.tenantName}</p>}
-                                  {room.accessPin && <p>PIN: {room.accessPin}</p>}
-                                </div>
-                              )}
-                              
-                              <div className="flex gap-1">
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  className="text-xs px-1 py-0 h-5 flex-1 border-purple-300 text-purple-700 hover:bg-purple-100"
-                                  onClick={() => handleEditRoom(room)}
-                                >
-                                  Edit
-                                </Button>
-                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1 border-purple-300 text-purple-700 hover:bg-purple-100">
-                                  Status
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Room Edit Dialog */}
-              <Dialog open={showRoomDialog} onOpenChange={setShowRoomDialog}>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Edit Room #{editingRoom?.number}</DialogTitle>
-                  </DialogHeader>
-                  
-                  {editingRoom && (
-                    <form onSubmit={handleUpdateRoom} className="space-y-4">
-                      <div>
-                        <Label htmlFor="status">Room Status</Label>
-                        <Select name="status" defaultValue={editingRoom.status}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="available">Available</SelectItem>
-                            <SelectItem value="occupied">Occupied</SelectItem>
-                            <SelectItem value="needs_cleaning">Needs Cleaning</SelectItem>
-                            <SelectItem value="maintenance">Maintenance</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div>
-                        <Label htmlFor="accessPin">Access PIN</Label>
-                        <div className="flex gap-2">
-                          <Input
-                            name="accessPin"
-                            value={editingRoom.accessPin || ''}
-                            onChange={(e) => setEditingRoom({...editingRoom, accessPin: e.target.value})}
-                            placeholder="4-digit PIN"
-                            maxLength={4}
-                            pattern="[0-9]{4}"
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={generateNewPin}
-                            className="px-3"
-                          >
-                            Generate
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label htmlFor="tenantName">Tenant Name</Label>
-                        <Input
-                          name="tenantName"
-                          defaultValue={editingRoom.tenantName || ''}
-                          placeholder="Enter tenant name"
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="tenantEmail">Tenant Email</Label>
-                        <Input
-                          name="tenantEmail"
-                          type="email"
-                          defaultValue={editingRoom.tenantEmail || ''}
-                          placeholder="Enter tenant email"
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="tenantPhone">Tenant Phone</Label>
-                        <Input
-                          name="tenantPhone"
-                          defaultValue={editingRoom.tenantPhone || ''}
-                          placeholder="Enter tenant phone"
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="lastCleaned">Last Cleaned Date</Label>
-                        <Input
-                          name="lastCleaned"
-                          type="date"
-                          defaultValue={editingRoom.lastCleaned || ''}
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="nextPaymentDue">Next Payment Due</Label>
-                        <Input
-                          name="nextPaymentDue"
-                          type="date"
-                          defaultValue={editingRoom.nextPaymentDue || ''}
-                        />
-                      </div>
-
-                      <div className="flex gap-2 pt-4">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setShowRoomDialog(false)}
-                          className="flex-1"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          disabled={updateRoomMutation.isPending}
-                          className="flex-1"
-                        >
-                          {updateRoomMutation.isPending ? 'Updating...' : 'Update Room'}
-                        </Button>
-                      </div>
-                    </form>
-                  )}
-                </DialogContent>
-              </Dialog>
-            </div>
+          {selectedTab === "934" && (
+            <BuildingTab
+              buildingName="934 Kapahulu Ave"
+              buildingId={10}
+              rooms={Array.isArray(rooms) ? rooms : []}
+              guests={Array.isArray(guests) ? guests : []}
+              inquiriesCount={Array.isArray(inquiries) ? inquiries.filter((i: any) => 
+                i.message?.toLowerCase().includes('934') || 
+                i.message?.toLowerCase().includes('kapahulu') || 
+                (!i.message?.toLowerCase().includes('949') && !i.message?.toLowerCase().includes('kawaiahao'))
+              ).length : 0}
+              color="blue"
+            />
           )}
-          {selectedTab === "maintenance" && <MaintenanceTab requests={maintenanceRequests as any[]} />}
-          {selectedTab === "inquiries" && <InquiriesTab inquiries={inquiries as any[]} />}
-          {selectedTab === "payments" && <PaymentsTab payments={payments as any[]} />}
-          {selectedTab === "announcements" && <AnnouncementsTab announcements={announcements as any[]} />}
-          {selectedTab === "calendar" && <CalendarTab events={calendarEvents as any[]} />}
-          {selectedTab === "contacts" && <ContactsTab contacts={contacts as any[]} />}
-          {selectedTab === "inventory" && <InventoryTab items={inventory as any[]} />}
-          {selectedTab === "receipts" && <ReceiptsTab receipts={receipts as any[]} />}
-          {selectedTab === "todos" && <TodosTab todos={todos as any[]} />}
+          
+          {selectedTab === "949" && (
+            <BuildingTab
+              buildingName="949 Kawaiahao St"
+              buildingId={11}
+              rooms={Array.isArray(rooms) ? rooms : []}
+              guests={Array.isArray(guests) ? guests : []}
+              inquiriesCount={Array.isArray(inquiries) ? inquiries.filter((i: any) => 
+                i.message?.toLowerCase().includes('949') || 
+                i.message?.toLowerCase().includes('kawaiahao')
+              ).length : 0}
+              color="purple"
+            />
+          )}
+
+          {selectedTab === "payment-tracker" && (
+            <PaymentTrackerTab
+              payments={Array.isArray(payments) ? payments : []}
+              rooms={Array.isArray(rooms) ? rooms : []}
+              guests={Array.isArray(guests) ? guests : []}
+            />
+          )}
+
+          {selectedTab === "maintenance" && <MaintenanceTab maintenanceRequests={maintenanceRequests} />}
+          {selectedTab === "inquiries" && <InquiriesTab inquiries={inquiries} />}
+          {selectedTab === "payments" && <PaymentsTab payments={payments} />}
+          {selectedTab === "announcements" && <AnnouncementsTab announcements={announcements} />}
+          {selectedTab === "calendar" && <CalendarTab events={calendarEvents} />}
+          {selectedTab === "contacts" && <ContactsTab contacts={contacts} />}
+          {selectedTab === "inventory" && <InventoryTab inventory={inventory} />}
+          {selectedTab === "receipts" && <ReceiptsTab receipts={receipts} />}
+          {selectedTab === "todos" && <TodosTab todos={todos} />}
           {selectedTab === "settings" && <SettingsTab />}
         </div>
       </Card>

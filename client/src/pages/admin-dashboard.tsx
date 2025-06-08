@@ -499,7 +499,7 @@ export default function AdminDashboard() {
 
           {/* Main Content Area */}
           <div className="flex-1 space-y-4 lg:space-y-8">
-            <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            <AdminTabs activeTab={activeTab} setActiveTab={(tab: string) => setActiveTab(tab as TabType)} />
           </div>
         </div>
       </div>
