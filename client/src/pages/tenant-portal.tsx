@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRoute } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -12,7 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Home, Wrench, CreditCard, Bell, Upload } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Home, Wrench, CreditCard, Bell, Upload, QrCode, Camera, X } from "lucide-react";
 
 interface TenantSession {
   id: number;
@@ -27,6 +28,9 @@ export default function TenantPortal() {
   const { toast } = useToast();
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [showQRScanner, setShowQRScanner] = useState(false);
+  const [isScanningQR, setIsScanningQR] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [signInForm, setSignInForm] = useState({
     tenantName: "",
     tenantEmail: "",
@@ -43,6 +47,50 @@ export default function TenantPortal() {
       setIsSignedIn(true);
     }
   }, [roomId]);
+
+  // QR Code scanning functions
+  const startQRScanner = async () => {
+    try {
+      setIsScanningQR(true);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+      setShowQRScanner(true);
+    } catch (error) {
+      toast({
+        title: "Camera Error",
+        description: "Unable to access camera. Please check permissions.",
+        variant: "destructive",
+      });
+      setIsScanningQR(false);
+    }
+  };
+
+  const stopQRScanner = () => {
+    if (videoRef.current?.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+    }
+    setShowQRScanner(false);
+    setIsScanningQR(false);
+  };
+
+  const handleQRScan = (scannedUrl: string) => {
+    const urlMatch = scannedUrl.match(/\/tenant\/(\d+)/);
+    if (urlMatch) {
+      const scannedRoomId = parseInt(urlMatch[1]);
+      window.location.href = `/tenant/${scannedRoomId}`;
+    } else {
+      toast({
+        title: "Invalid QR Code",
+        description: "This QR code is not valid for tenant access.",
+        variant: "destructive",
+      });
+    }
+    stopQRScanner();
+  };
 
   // Sign in mutation
   const signInMutation = useMutation({
@@ -158,15 +206,56 @@ export default function TenantPortal() {
 
   if (!roomId) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-center text-red-600">Invalid Room</CardTitle>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-green-50">
+        <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-lg">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-gray-900 mb-4">EasyStay Hawaii</CardTitle>
+            <p className="text-gray-600">Tenant Portal Access</p>
           </CardHeader>
-          <CardContent>
-            <p className="text-center text-gray-600">
-              The room ID in the URL is invalid. Please scan a valid QR code.
-            </p>
+          <CardContent className="space-y-4">
+            <div className="text-center">
+              <QrCode className="w-16 h-16 mx-auto mb-4 text-blue-600" />
+              <p className="text-gray-600 mb-4">
+                Scan the QR code in your room to access the tenant portal
+              </p>
+            </div>
+            
+            <Button 
+              onClick={startQRScanner}
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={isScanningQR}
+            >
+              <Camera className="w-4 h-4 mr-2" />
+              {isScanningQR ? "Starting Camera..." : "Scan QR Code"}
+            </Button>
+
+            {/* QR Scanner Modal */}
+            <Dialog open={showQRScanner} onOpenChange={setShowQRScanner}>
+              <DialogContent className="w-full max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center justify-between">
+                    Scan QR Code
+                    <Button variant="ghost" size="sm" onClick={stopQRScanner}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="relative">
+                  <video
+                    ref={videoRef}
+                    className="w-full rounded-lg"
+                    autoPlay
+                    playsInline
+                  />
+                  <div className="absolute inset-0 border-2 border-blue-500 rounded-lg pointer-events-none">
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-white rounded-lg"></div>
+                  </div>
+                </div>
+                <p className="text-center text-sm text-gray-600">
+                  Point your camera at the QR code in your room
+                </p>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
       </div>

@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ArrowLeft, Plus, Users, Wrench, DollarSign, MessageCircle, Calendar } from "lucide-react";
+import { ArrowLeft, Plus, Users, Wrench, DollarSign, MessageCircle, Calendar, QrCode } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Property934() {
@@ -20,6 +20,8 @@ export default function Property934() {
   const [showAddMaintenance, setShowAddMaintenance] = useState(false);
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [showAddGuest, setShowAddGuest] = useState(false);
+  const [qrCodeData, setQrCodeData] = useState<{roomId: number, qrCode: string} | null>(null);
+  const [showQRModal, setShowQRModal] = useState(false);
 
   // Sample data for Property 934
   const propertyData = {
