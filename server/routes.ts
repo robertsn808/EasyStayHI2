@@ -294,24 +294,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { roomNumber, pin } = req.body;
       
+      // Strict input validation
       if (!roomNumber || !pin) {
         return res.status(400).json({ error: "Room number and PIN are required" });
       }
 
-      // Find room by number and validate PIN
+      // Validate PIN format (must be exactly 4 digits)
+      if (!/^\d{4}$/.test(pin)) {
+        return res.status(400).json({ error: "PIN must be exactly 4 digits" });
+      }
+
+      // Sanitize room number input
+      const sanitizedRoomNumber = roomNumber.toString().trim();
+      if (!sanitizedRoomNumber) {
+        return res.status(400).json({ error: "Invalid room number format" });
+      }
+
+      // Find room by number and validate PIN with exact match
       const rooms = await storage.getRooms();
-      const room = rooms.find((r: any) => r.number === roomNumber && r.accessPin === pin);
+      const room = rooms.find((r: any) => 
+        r.number === sanitizedRoomNumber && 
+        r.accessPin === pin && 
+        r.accessPin !== null && 
+        r.accessPin !== ""
+      );
       
       if (!room) {
+        // Add slight delay to prevent timing attacks
+        await new Promise(resolve => setTimeout(resolve, 1000));
         return res.status(401).json({ error: "Invalid room number or PIN" });
       }
 
+      // Additional security: check room status
       if (room.status !== 'available') {
         return res.status(403).json({ error: "Room is not available for tenant access" });
       }
 
-      // Generate tenant session token
-      const sessionToken = generateTenantToken(room.id, { name: "Tenant", email: "", phone: "" });
+      // Generate secure tenant session token with room data
+      const sessionToken = generateTenantToken(room.id, { 
+        name: room.tenantName || "Tenant", 
+        email: room.tenantEmail || "", 
+        phone: room.tenantPhone || "" 
+      });
       
       res.json({
         success: true,
