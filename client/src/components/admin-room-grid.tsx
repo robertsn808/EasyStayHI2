@@ -198,7 +198,7 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">Room Management</h3>
+        <h3 className="text-xl font-semibold text-gray-900">Room Status Overview</h3>
         <div className="flex space-x-2">
           <Dialog open={showBuildingDialog} onOpenChange={setShowBuildingDialog}>
             <DialogTrigger asChild>
@@ -406,37 +406,58 @@ export default function AdminRoomGrid({ rooms }: AdminRoomGridProps) {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Simplified Room Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
         {rooms.map((room) => (
-          <Card key={room.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-semibold text-lg">Room {room.number}</h4>
-                <Button variant="ghost" size="sm" onClick={() => handleEditRoom(room)}>
-                  <Edit className="w-4 h-4" />
-                </Button>
-              </div>
-              <div className="mb-3">
-                <Badge className={`px-2 py-1 text-sm rounded-full ${getStatusColor(room.status)}`}>
+          <Card key={room.id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleEditRoom(room)}>
+            <CardContent className="p-3">
+              <div className="text-center">
+                <h4 className="font-bold text-lg mb-2">{room.number}</h4>
+                <Badge className={`px-2 py-1 text-xs rounded-full ${getStatusColor(room.status)} mb-2 block`}>
                   {getStatusText(room.status)}
                 </Badge>
-              </div>
-              <div className="text-sm text-gray-600 mb-3">
-                <div>Last cleaned: {formatDate(room.lastCleaned)}</div>
-                {room.tenantName && <div>Tenant: {room.tenantName}</div>}
-                <div>Next payment: {formatDate(room.nextPaymentDue)}</div>
-              </div>
-              <div className="flex space-x-2">
-                <Button size="sm" className="flex-1 bg-primary text-white hover:bg-blue-700" onClick={() => handleEditRoom(room)}>
-                  Edit
-                </Button>
-                <Button size="sm" variant="outline" className="flex-1">
-                  {room.status === "available" ? "Clean" : "View"}
-                </Button>
+                {room.tenantName && (
+                  <div className="text-xs text-gray-600 mb-1 truncate">
+                    {room.tenantName}
+                  </div>
+                )}
+                <div className="text-xs text-gray-500">
+                  ${room.rentalRate || '2000'}/mo
+                </div>
               </div>
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Room Statistics Summary */}
+      <div className="mt-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <div className="text-2xl font-bold text-green-600">
+              {rooms.filter(r => r.status === 'available').length}
+            </div>
+            <div className="text-sm text-green-700">Available</div>
+          </div>
+          <div className="bg-red-50 p-4 rounded-lg text-center">
+            <div className="text-2xl font-bold text-red-600">
+              {rooms.filter(r => r.status === 'occupied').length}
+            </div>
+            <div className="text-sm text-red-700">Occupied</div>
+          </div>
+          <div className="bg-orange-50 p-4 rounded-lg text-center">
+            <div className="text-2xl font-bold text-orange-600">
+              {rooms.filter(r => r.status === 'needs_cleaning').length}
+            </div>
+            <div className="text-sm text-orange-700">Needs Cleaning</div>
+          </div>
+          <div className="bg-yellow-50 p-4 rounded-lg text-center">
+            <div className="text-2xl font-bold text-yellow-600">
+              {rooms.filter(r => r.status === 'out_of_service').length}
+            </div>
+            <div className="text-sm text-yellow-700">Maintenance</div>
+          </div>
+        </div>
       </div>
     </div>
   );
