@@ -8,6 +8,7 @@ import Landing from "@/pages/landing";
 import Property949 from "@/pages/property-949";
 import Property934 from "@/pages/property-934";
 import AdminDashboard from "@/pages/admin-dashboard";
+import ModernDashboard from "@/pages/modern-dashboard";
 import TenantPortal from "@/pages/tenant-portal";
 import InquiryPage from "@/pages/inquiry";
 import NotFound from "@/pages/not-found";
@@ -32,10 +33,11 @@ function Router() {
       <Route path="/property-949" component={Property949} />
       <Route path="/property-934" component={Property934} />
       <Route path="/949" component={Property949} />
-      <Route path="/admin-dashboard" component={AdminDashboard} />
-      <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin-dashboard" component={ModernDashboard} />
+      <Route path="/admin" component={ModernDashboard} />
+      <Route path="/legacy-admin" component={AdminDashboard} />
       {isAuthenticated ? (
-        <Route path="/" component={AdminDashboard} />
+        <Route path="/" component={ModernDashboard} />
       ) : (
         <Route path="/" component={Landing} />
       )}
