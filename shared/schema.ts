@@ -57,6 +57,7 @@ export const rooms = pgTable("rooms", {
   nextPaymentDue: date("next_payment_due"),
   rentalRate: numeric("rental_rate", { precision: 10, scale: 2 }),
   rentalPeriod: varchar("rental_period", { length: 20 }), // daily, weekly, monthly
+  accessPin: varchar("access_pin", { length: 4 }), // 4-digit PIN for tenant access
   createdAt: timestamp("created_at").defaultNow(),
 });
 

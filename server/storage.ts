@@ -417,6 +417,13 @@ export class DatabaseStorage implements IStorage {
   // Room Management Updates
   async updateRoomStatus(id: number, status: string, additionalData?: Partial<schema.InsertRoom>) {
     const updateData = { status, ...additionalData };
+    
+    // Generate 4-digit PIN when room becomes available
+    if (status === 'available') {
+      const accessPin = Math.floor(1000 + Math.random() * 9000).toString();
+      updateData.accessPin = accessPin;
+    }
+    
     const [room] = await db
       .update(schema.rooms)
       .set(updateData)

@@ -289,6 +289,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   };
 
+  // PIN authentication endpoint for tenant access
+  app.post("/api/tenant/auth/pin", async (req, res) => {
+    try {
+      const { roomNumber, pin } = req.body;
+      
+      if (!roomNumber || !pin) {
+        return res.status(400).json({ error: "Room number and PIN are required" });
+      }
+
+      // Find room by number and validate PIN
+      const rooms = await storage.getRooms();
+      const room = rooms.find((r: any) => r.number === roomNumber && r.accessPin === pin);
+      
+      if (!room) {
+        return res.status(401).json({ error: "Invalid room number or PIN" });
+      }
+
+      if (room.status !== 'available') {
+        return res.status(403).json({ error: "Room is not available for tenant access" });
+      }
+
+      // Generate tenant session token
+      const sessionToken = generateTenantToken(room.id, { name: "Tenant", email: "", phone: "" });
+      
+      res.json({
+        success: true,
+        roomId: room.id,
+        roomNumber: room.number,
+        sessionToken,
+        message: "PIN authentication successful"
+      });
+    } catch (error) {
+      console.error("PIN authentication error:", error);
+      res.status(500).json({ error: "Authentication failed" });
+    }
+  });
+
   // Simple admin login endpoint
   app.post("/api/admin/login", async (req, res) => {
     const { username, password } = req.body;

@@ -413,20 +413,46 @@ export default function TenantPortal() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-center">
-              <QrCode className="w-16 h-16 mx-auto mb-4 text-blue-600" />
+              <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                <span className="text-2xl font-bold text-blue-600">#</span>
+              </div>
               <p className="text-gray-600 mb-4">
-                Scan the QR code in your room to access the tenant portal
+                Enter your room number and 4-digit PIN to access the tenant portal
               </p>
             </div>
             
-            <Button 
-              onClick={startQRScanner}
-              className="w-full bg-blue-600 hover:bg-blue-700"
-              disabled={isScanningQR}
-            >
-              <Camera className="w-4 h-4 mr-2" />
-              {isScanningQR ? "Starting Camera..." : "Scan QR Code"}
-            </Button>
+            <form onSubmit={handlePinAuth} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Room Number</label>
+                <input
+                  type="text"
+                  value={pinForm.roomNumber}
+                  onChange={(e) => setPinForm(prev => ({...prev, roomNumber: e.target.value}))}
+                  placeholder="e.g., 001, A01"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">4-Digit PIN</label>
+                <input
+                  type="password"
+                  maxLength={4}
+                  value={pinForm.pin}
+                  onChange={(e) => setPinForm(prev => ({...prev, pin: e.target.value.replace(/\D/g, '')}))}
+                  placeholder="Enter PIN"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-lg tracking-widest"
+                  required
+                />
+              </div>
+              <Button 
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                disabled={pinForm.pin.length !== 4 || !pinForm.roomNumber}
+              >
+                Access Room Portal
+              </Button>
+            </form>
 
             {/* QR Scanner Modal */}
             <Dialog open={showQRScanner} onOpenChange={setShowQRScanner}>
