@@ -155,6 +155,16 @@ export default function InquiryForm() {
           </div>
           
           <div className="md:col-span-2">
+            <div className="bg-blue-50 p-4 rounded-lg mb-4 border border-blue-200">
+              <h4 className="font-semibold text-blue-900 mb-2">Important Information:</h4>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Management will call or text the number listed once payment is confirmed</li>
+                <li>• You will receive the front door and room access codes after payment</li>
+                <li>• $100 security deposit required (+$50 per pet)</li>
+                <li>• Security deposit will be returned upon checkout</li>
+              </ul>
+            </div>
+            
             <Button
               type="submit"
               disabled={mutation.isPending}
