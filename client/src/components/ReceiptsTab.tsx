@@ -50,8 +50,8 @@ export function ReceiptsTab({ receipts = [] }: ReceiptsTabProps) {
                 </div>
                 <p className="text-sm mt-2">{receipt.description}</p>
                 <div className="flex gap-2 mt-3">
-                  <Button size="sm" variant="outline">View Receipt</Button>
-                  <Button size="sm" variant="outline">Edit</Button>
+                  <Button size="sm" variant="outline" onClick={() => toast({ title: "View Receipt", description: `Viewing receipt #${receipt.id || 'N/A'}` })}>View Receipt</Button>
+                  <Button size="sm" variant="outline" onClick={() => toast({ title: "Edit Receipt", description: `Editing receipt #${receipt.id || 'N/A'}` })}>Edit</Button>
                 </div>
               </CardContent>
             </Card>

@@ -2,12 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
 
 interface TodosTabProps {
   todos?: any[];
 }
 
 export function TodosTab({ todos = [] }: TodosTabProps) {
+  const { toast } = useToast();
+  
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -42,8 +45,8 @@ export function TodosTab({ todos = [] }: TodosTabProps) {
                     </div>
                     <p className="text-sm text-gray-600 mt-1">{todo.description}</p>
                     <div className="flex gap-2 mt-3">
-                      <Button size="sm" variant="outline">Edit</Button>
-                      <Button size="sm" variant="outline">Delete</Button>
+                      <Button size="sm" variant="outline" onClick={() => toast({ title: "Edit Todo", description: `Editing task: ${todo.title}` })}>Edit</Button>
+                      <Button size="sm" variant="outline" onClick={() => toast({ title: "Delete Todo", description: `Deleted task: ${todo.title}` })}>Delete</Button>
                     </div>
                   </div>
                 </div>
