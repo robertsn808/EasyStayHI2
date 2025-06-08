@@ -164,20 +164,20 @@ export default function GuestProfileManager() {
     : guests;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Payment Due Dashboard */}
       {paymentDueGuests.length > 0 && (
         <Card className="border-orange-200 bg-orange-50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-800">
-              <Clock className="h-5 w-5" />
-              Payment Reminders Today ({paymentDueGuests.length})
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-orange-800 text-base">
+              <Clock className="h-4 w-4" />
+              Payment Due Today ({paymentDueGuests.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-3">
+            <div className="grid gap-2">
               {paymentDueGuests.map((guest: GuestProfile) => (
-                <div key={guest.id} className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                <div key={guest.id} className="flex items-center justify-between p-2 bg-white rounded-lg border">
                   <div className="flex items-center gap-3">
                     <User className="h-4 w-4 text-gray-500" />
                     <div>

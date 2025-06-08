@@ -49,11 +49,11 @@ export function InventoryTab({ items = [] }: InventoryTabProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Inventory Management</h3>
+        <h3 className="text-base font-semibold">Inventory</h3>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary">{items.length} items</Badge>
+          <Badge variant="secondary" className="text-xs">{items.length} items</Badge>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm">
