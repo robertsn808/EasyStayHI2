@@ -67,7 +67,7 @@ export default function AdminDashboard() {
         {/* Admin Navigation */}
         <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm p-4 mb-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900">934 Property Management Dashboard</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Property Mng</h2>
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <Button variant="outline" size="sm">
@@ -87,53 +87,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-full">
-                <div className="text-green-600 text-xl">🏠</div>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">{availableRooms}</h3>
-                <p className="text-sm text-gray-600">Available Rooms</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-red-100 rounded-full">
-                <div className="text-red-600 text-xl">👤</div>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">{occupiedRooms}</h3>
-                <p className="text-sm text-gray-600">Occupied Rooms</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <div className="text-yellow-600 text-xl">🔧</div>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">{maintenanceRooms}</h3>
-                <p className="text-sm text-gray-600">Under Maintenance</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <div className="text-blue-600 text-xl">💰</div>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">${monthlyRevenue.toLocaleString()}</h3>
-                <p className="text-sm text-gray-600">Monthly Revenue</p>
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Room Management Grid */}
         <AdminRoomGrid rooms={rooms || []} />
