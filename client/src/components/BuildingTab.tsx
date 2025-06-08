@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { User, Edit, Home } from "lucide-react";
 
 interface BuildingTabProps {
@@ -24,6 +24,21 @@ export function BuildingTab({ buildingName, buildingId, rooms = [], guests = [],
   const queryClient = useQueryClient();
   const [selectedRoom, setSelectedRoom] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Fetch fresh data directly to ensure real-time updates
+  const { data: freshRooms } = useQuery({
+    queryKey: ['/api/rooms'],
+    refetchInterval: 2000, // Refetch every 2 seconds
+  });
+
+  const { data: freshGuests } = useQuery({
+    queryKey: ['/api/admin/guests'],
+    refetchInterval: 2000, // Refetch every 2 seconds
+  });
+
+  // Use fresh data if available, fallback to props
+  const currentRooms = Array.isArray(freshRooms) ? freshRooms : rooms;
+  const currentGuests = Array.isArray(freshGuests) ? freshGuests : guests;
 
   const colorClasses = {
     blue: {
@@ -58,8 +73,16 @@ export function BuildingTab({ buildingName, buildingId, rooms = [], guests = [],
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate all related queries to ensure data consistency
       queryClient.invalidateQueries({ queryKey: ['/api/rooms'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/guests'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/payments'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/maintenance-requests'] });
+      
+      // Force immediate refetch to update UI
+      queryClient.refetchQueries({ queryKey: ['/api/rooms'] });
+      queryClient.refetchQueries({ queryKey: ['/api/admin/guests'] });
+      
       toast({ title: "Success", description: "Room updated successfully" });
       setIsDialogOpen(false);
     },
@@ -86,8 +109,15 @@ export function BuildingTab({ buildingName, buildingId, rooms = [], guests = [],
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate and refetch all related data
       queryClient.invalidateQueries({ queryKey: ['/api/admin/guests'] });
       queryClient.invalidateQueries({ queryKey: ['/api/rooms'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/payments'] });
+      
+      // Force immediate refetch
+      queryClient.refetchQueries({ queryKey: ['/api/admin/guests'] });
+      queryClient.refetchQueries({ queryKey: ['/api/rooms'] });
+      
       toast({ title: "Success", description: "Guest assigned successfully" });
     },
     onError: () => {
@@ -105,9 +135,17 @@ export function BuildingTab({ buildingName, buildingId, rooms = [], guests = [],
     }
   };
 
-  const buildingRooms = rooms.filter(room => room.buildingId === buildingId);
-  const buildingGuests = guests.filter(guest => 
-    buildingRooms.some(room => room.id === guest.roomId)
+  // Use useMemo to optimize filtering and ensure real-time updates
+  const buildingRooms = useMemo(() => 
+    currentRooms.filter(room => room.buildingId === buildingId),
+    [currentRooms, buildingId]
+  );
+  
+  const buildingGuests = useMemo(() => 
+    currentGuests.filter(guest => 
+      buildingRooms.some(room => room.id === guest.roomId)
+    ),
+    [currentGuests, buildingRooms]
   );
 
   const handleRoomUpdate = (e: React.FormEvent<HTMLFormElement>) => {
