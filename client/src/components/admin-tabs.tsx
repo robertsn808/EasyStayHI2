@@ -114,6 +114,16 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
     <div className="space-y-6">
       <Card className="w-full">
         <div className="p-6">
+          {selectedTab === "quick-access" && (
+            <QuickAccessTab
+              buildings={Array.isArray(buildings) ? buildings : []}
+              rooms={Array.isArray(rooms) ? rooms : []}
+              guests={Array.isArray(guests) ? guests : []}
+              inquiries={Array.isArray(inquiries) ? inquiries : []}
+              maintenanceRequests={Array.isArray(maintenanceRequests) ? maintenanceRequests : []}
+            />
+          )}
+
           {selectedTab === "934" && (
             <BuildingTab
               buildingName="934 Kapahulu Ave"

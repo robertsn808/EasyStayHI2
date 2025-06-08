@@ -243,6 +243,17 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Mobile Overview Cards */}
         <div className="lg:hidden grid grid-cols-4 gap-2 mb-6">
+          <Card className={`${activeTab === "quick-access" ? "bg-gray-100 border-gray-300" : "bg-gray-50 border-gray-200"} cursor-pointer`}
+            onClick={() => setActiveTab("quick-access")}
+          >
+            <CardContent className="p-2">
+              <div className="text-center">
+                <Home className="h-4 w-4 text-gray-500 mx-auto mb-1" />
+                <p className="text-xs font-medium text-gray-900">Quick</p>
+                <p className="text-xs text-gray-600">Access</p>
+              </div>
+            </CardContent>
+          </Card>
           <Card className={`${activeTab === "934" ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"} cursor-pointer`}
             onClick={() => setActiveTab("934")}
           >
@@ -297,6 +308,23 @@ export default function AdminDashboard() {
           <div className="hidden lg:block w-80 space-y-4 flex-shrink-0">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Overview</h2>
             
+            {/* Quick Access */}
+            <div className="mb-4">
+              <Card className={`${activeTab === "quick-access" ? "bg-gray-100 border-gray-300" : "bg-gray-50 border-gray-200"} cursor-pointer`}
+                onClick={() => setActiveTab("quick-access")}
+              >
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-3">
+                    <Home className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-xs font-semibold text-gray-900">Quick Access</h3>
+                      <p className="text-xs text-gray-600">Dashboard & Notifications</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             {/* Building Management Grid */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               <Card className={`${activeTab === "934" ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"} cursor-pointer`}
