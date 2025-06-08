@@ -166,53 +166,6 @@ export default function GuestProfileManager() {
 
   return (
     <div className="space-y-4">
-      {/* Payment Due Dashboard */}
-      {paymentDueGuests.length > 0 && (
-        <Card className="border-orange-200 bg-orange-50">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-orange-800 text-base">
-              <Clock className="h-4 w-4" />
-              Payment Due Today ({paymentDueGuests.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-2">
-              {paymentDueGuests.map((guest: GuestProfile) => (
-                <div key={guest.id} className="flex items-center justify-between p-2 bg-white rounded-lg border">
-                  <div className="flex items-center gap-3">
-                    <User className="h-4 w-4 text-gray-500" />
-                    <div>
-                      <p className="font-medium">{guest.guestName}</p>
-                      <p className="text-sm text-gray-500">
-                        Room {rooms.find(r => r.id === guest.roomId)?.number} • 
-                        <Badge className={`ml-1 ${getBookingTypeColor(guest.bookingType)}`}>
-                          {guest.bookingType}
-                        </Badge>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className="font-medium">${guest.paymentAmount}</p>
-                      <p className="text-sm text-gray-500">Due today</p>
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={() => markPaymentMutation.mutate(guest.id)}
-                      disabled={markPaymentMutation.isPending}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      <CheckCircle className="h-4 w-4 mr-1" />
-                      Mark Paid
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Header and Controls */}
       <div className="flex items-center justify-between mb-4">
         <div>
