@@ -486,10 +486,32 @@ export default function GuestProfileManager() {
               </div>
 
               <div className="col-span-2 flex gap-2">
-                <Button type="submit" disabled={createGuestMutation.isPending}>
-                  {createGuestMutation.isPending ? 'Creating...' : 'Create Guest'}
+                <Button type="submit" disabled={createGuestMutation.isPending || updateGuestMutation.isPending}>
+                  {editingGuest 
+                    ? (updateGuestMutation.isPending ? 'Updating...' : 'Update Guest')
+                    : (createGuestMutation.isPending ? 'Creating...' : 'Create Guest')
+                  }
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowForm(false);
+                    setEditingGuest(null);
+                    setAssigningRoom(null);
+                    setFormData({
+                      roomId: '',
+                      guestName: '',
+                      email: '',
+                      phone: '',
+                      bookingType: 'daily',
+                      checkInDate: '',
+                      checkOutDate: '',
+                      paymentAmount: '',
+                      notes: ''
+                    });
+                  }}
+                >
                   Cancel
                 </Button>
               </div>
