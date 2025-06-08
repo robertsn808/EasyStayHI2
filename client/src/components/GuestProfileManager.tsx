@@ -39,6 +39,8 @@ interface Room {
 export default function GuestProfileManager() {
   const [selectedRoom, setSelectedRoom] = useState<string>('all');
   const [showForm, setShowForm] = useState(false);
+  const [editingGuest, setEditingGuest] = useState<GuestProfile | null>(null);
+  const [assigningRoom, setAssigningRoom] = useState<Room | null>(null);
   const [formData, setFormData] = useState({
     roomId: '',
     guestName: '',
@@ -71,19 +73,25 @@ export default function GuestProfileManager() {
   // Create guest profile mutation
   const createGuestMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest('/api/admin/guests', {
+      const response = await fetch('/api/admin/guests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('admin-authenticated')}`
+          'x-admin-token': 'admin-authenticated'
         },
         body: JSON.stringify(data)
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create guest');
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/guests'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/guests/payment-due'] });
       setShowForm(false);
+      setAssigningRoom(null);
       setFormData({
         roomId: '',
         guestName: '',
@@ -102,6 +110,35 @@ export default function GuestProfileManager() {
     }
   });
 
+  // Update guest profile mutation
+  const updateGuestMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/admin/guests/${data.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'admin-authenticated'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update guest');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/guests'] });
+      setEditingGuest(null);
+      setShowForm(false);
+      toast({ title: "Guest profile updated successfully!" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update guest profile", variant: "destructive" });
+    }
+  });
+
 
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -111,11 +148,42 @@ export default function GuestProfileManager() {
       return;
     }
 
-    createGuestMutation.mutate({
+    const guestData = {
       ...formData,
       roomId: parseInt(formData.roomId),
       paymentAmount: parseFloat(formData.paymentAmount)
+    };
+
+    if (editingGuest) {
+      updateGuestMutation.mutate({ ...guestData, id: editingGuest.id });
+    } else {
+      createGuestMutation.mutate(guestData);
+    }
+  };
+
+  const handleAssignRoom = (room: Room) => {
+    setAssigningRoom(room);
+    setFormData({
+      ...formData,
+      roomId: room.id.toString()
     });
+    setShowForm(true);
+  };
+
+  const handleEditGuest = (guest: GuestProfile) => {
+    setEditingGuest(guest);
+    setFormData({
+      roomId: guest.roomId.toString(),
+      guestName: guest.guestName,
+      email: guest.email || '',
+      phone: guest.phone || '',
+      bookingType: guest.bookingType,
+      checkInDate: guest.checkInDate,
+      checkOutDate: guest.checkOutDate || '',
+      paymentAmount: guest.paymentAmount.toString(),
+      notes: guest.notes || ''
+    });
+    setShowForm(true);
   };
 
   const getBookingTypeColor = (type: string) => {
@@ -193,8 +261,16 @@ export default function GuestProfileManager() {
                             {guest.paymentStatus}
                           </Badge>
                         </div>
-                        <div className="text-xs text-blue-700 mt-1">
-                          <span className="font-medium">{guest.bookingType}</span> • ${guest.paymentAmount}
+                        <div className="text-xs text-blue-700 mt-1 flex justify-between items-center">
+                          <span><span className="font-medium">{guest.bookingType}</span> • ${guest.paymentAmount}</span>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="text-xs h-5 px-2 text-blue-600 hover:bg-blue-100"
+                            onClick={() => handleEditGuest(guest)}
+                          >
+                            Edit
+                          </Button>
                         </div>
                       </div>
                     );
@@ -206,7 +282,12 @@ export default function GuestProfileManager() {
                           <p className="text-sm text-blue-600">Room {room.number}</p>
                           <p className="text-xs text-gray-500">Available</p>
                         </div>
-                        <Button size="sm" variant="ghost" className="text-xs h-6 text-blue-600 hover:bg-blue-100">
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="text-xs h-6 text-blue-600 hover:bg-blue-100"
+                          onClick={() => handleAssignRoom(room)}
+                        >
                           Assign
                         </Button>
                       </div>
@@ -255,8 +336,16 @@ export default function GuestProfileManager() {
                             {guest.paymentStatus}
                           </Badge>
                         </div>
-                        <div className="text-xs text-purple-700 mt-1">
-                          <span className="font-medium">{guest.bookingType}</span> • ${guest.paymentAmount}
+                        <div className="text-xs text-purple-700 mt-1 flex justify-between items-center">
+                          <span><span className="font-medium">{guest.bookingType}</span> • ${guest.paymentAmount}</span>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="text-xs h-5 px-2 text-purple-600 hover:bg-purple-100"
+                            onClick={() => handleEditGuest(guest)}
+                          >
+                            Edit
+                          </Button>
                         </div>
                       </div>
                     );
@@ -268,7 +357,12 @@ export default function GuestProfileManager() {
                           <p className="text-sm text-purple-600">Room {room.number}</p>
                           <p className="text-xs text-gray-500">Available</p>
                         </div>
-                        <Button size="sm" variant="ghost" className="text-xs h-6 text-purple-600 hover:bg-purple-100">
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="text-xs h-6 text-purple-600 hover:bg-purple-100"
+                          onClick={() => handleAssignRoom(room)}
+                        >
                           Assign
                         </Button>
                       </div>
@@ -285,7 +379,7 @@ export default function GuestProfileManager() {
       {showForm && (
         <Card>
           <CardHeader>
-            <CardTitle>Add New Guest</CardTitle>
+            <CardTitle>{editingGuest ? 'Edit Guest' : assigningRoom ? `Assign Guest to Room ${assigningRoom.number}` : 'Add New Guest'}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
