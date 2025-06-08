@@ -34,7 +34,7 @@ import {
   type InsertGuestProfile,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, gt, desc } from "drizzle-orm";
+import { eq, and, gt, desc, asc } from "drizzle-orm";
 import * as schema from "@shared/schema";
 
 // Interface for storage operations
@@ -183,7 +183,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getRooms(): Promise<Room[]> {
-    return await db.select().from(rooms);
+    return await db.select().from(rooms).orderBy(asc(rooms.number));
   }
 
   async updateRoom(id: number, room: Partial<InsertRoom>): Promise<Room> {
