@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, Megaphone, Eye, EyeOff } from "lucide-react";
+import { Plus, Megaphone, Eye, EyeOff, Edit } from "lucide-react";
 
 interface AnnouncementsTabProps {
   announcements?: any[];
@@ -21,6 +21,8 @@ interface AnnouncementsTabProps {
 export function AnnouncementsTab({ announcements = [] }: AnnouncementsTabProps) {
   const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingAnnouncement, setEditingAnnouncement] = useState<any>(null);
 
   const createAnnouncementMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -34,6 +36,22 @@ export function AnnouncementsTab({ announcements = [] }: AnnouncementsTabProps) 
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to create announcement", variant: "destructive" });
+    }
+  });
+
+  const editAnnouncementMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      return apiRequest('PATCH', `/api/admin/announcements/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/announcements'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/announcements'] });
+      toast({ title: "Success", description: "Announcement updated successfully" });
+      setIsEditDialogOpen(false);
+      setEditingAnnouncement(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update announcement", variant: "destructive" });
     }
   });
 
@@ -65,11 +83,30 @@ export function AnnouncementsTab({ announcements = [] }: AnnouncementsTabProps) 
     createAnnouncementMutation.mutate(data);
   };
 
+  const handleEditAnnouncement = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      title: formData.get('title'),
+      content: formData.get('content'),
+      type: formData.get('type'),
+      priority: formData.get('priority'),
+      isActive: formData.get('isActive') === 'on',
+      expiresAt: formData.get('expiresAt') || null
+    };
+    editAnnouncementMutation.mutate({ id: editingAnnouncement.id, data });
+  };
+
   const handleToggleActive = (announcement: any) => {
     toggleAnnouncementMutation.mutate({
       id: announcement.id,
       isActive: !announcement.isActive
     });
+  };
+
+  const handleEditClick = (announcement: any) => {
+    setEditingAnnouncement(announcement);
+    setIsEditDialogOpen(true);
   };
 
   const getTypeColor = (type: string) => {
@@ -169,6 +206,87 @@ export function AnnouncementsTab({ announcements = [] }: AnnouncementsTabProps) 
               </form>
             </DialogContent>
           </Dialog>
+          
+          {/* Edit Dialog */}
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Edit Announcement</DialogTitle>
+              </DialogHeader>
+              {editingAnnouncement && (
+                <form onSubmit={handleEditAnnouncement} className="space-y-4">
+                  <div>
+                    <Label htmlFor="edit-title">Title</Label>
+                    <Input 
+                      id="edit-title" 
+                      name="title" 
+                      defaultValue={editingAnnouncement.title}
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-content">Content</Label>
+                    <Textarea 
+                      id="edit-content" 
+                      name="content" 
+                      rows={4} 
+                      defaultValue={editingAnnouncement.content}
+                      required 
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-type">Type</Label>
+                      <Select name="type" defaultValue={editingAnnouncement.type} required>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="info">Information</SelectItem>
+                          <SelectItem value="warning">Warning</SelectItem>
+                          <SelectItem value="success">Success</SelectItem>
+                          <SelectItem value="urgent">Urgent</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-priority">Priority</Label>
+                      <Select name="priority" defaultValue={editingAnnouncement.priority} required>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="high">High</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="low">Low</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-expiresAt">Expiry Date (optional)</Label>
+                    <Input 
+                      id="edit-expiresAt" 
+                      name="expiresAt" 
+                      type="date" 
+                      defaultValue={editingAnnouncement.expiresAt ? editingAnnouncement.expiresAt.split('T')[0] : ''}
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch 
+                      id="edit-isActive" 
+                      name="isActive" 
+                      defaultChecked={editingAnnouncement.isActive} 
+                    />
+                    <Label htmlFor="edit-isActive">Active</Label>
+                  </div>
+                  <Button type="submit" className="w-full" disabled={editAnnouncementMutation.isPending}>
+                    {editAnnouncementMutation.isPending ? "Updating..." : "Update Announcement"}
+                  </Button>
+                </form>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -212,6 +330,13 @@ export function AnnouncementsTab({ announcements = [] }: AnnouncementsTabProps) 
                           <Badge variant="default" className="bg-green-600">
                             Live
                           </Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditClick(announcement)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
                           <Button
                             size="sm"
                             variant="outline"
@@ -269,6 +394,13 @@ export function AnnouncementsTab({ announcements = [] }: AnnouncementsTabProps) 
                           <Badge variant="secondary">
                             Draft
                           </Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditClick(announcement)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
                           <Button
                             size="sm"
                             variant="outline"
