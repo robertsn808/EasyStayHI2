@@ -34,6 +34,11 @@ interface WeeklyCalendarProps {
 export default function WeeklyCalendar({ events = [] }: WeeklyCalendarProps) {
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
 
+  // Fetch todos data
+  const { data: todos } = useQuery({
+    queryKey: ["/api/admin/todos"],
+  });
+
   const getWeekDays = () => {
     const today = new Date();
     const currentDay = today.getDay();
@@ -127,6 +132,10 @@ export default function WeeklyCalendar({ events = [] }: WeeklyCalendarProps) {
             <Button variant="outline" size="sm" onClick={goToNextWeek}>
               <ChevronRight className="h-4 w-4" />
             </Button>
+            <Button variant="outline" size="sm">
+              <Calendar className="h-4 w-4 mr-2" />
+              View All
+            </Button>
             <Button size="sm">
               <Plus className="h-4 w-4 mr-2" />
               Add Event
@@ -216,6 +225,51 @@ export default function WeeklyCalendar({ events = [] }: WeeklyCalendarProps) {
               <div className="w-3 h-3 rounded bg-purple-100 border border-purple-300"></div>
               <span>Training</span>
             </div>
+          </div>
+        </div>
+
+        {/* Todo List Section */}
+        <div className="mt-6 pt-4 border-t">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <CheckSquare className="h-4 w-4" />
+              Todo List
+            </h3>
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Todo
+            </Button>
+          </div>
+          <div className="space-y-2">
+            {Array.isArray(todos) && todos.slice(0, 3).map((todo: any) => (
+              <div key={todo.id} className="flex items-center gap-3 p-2 rounded border">
+                <Checkbox 
+                  checked={todo.isCompleted} 
+                  className="shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className={`text-sm ${todo.isCompleted ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                    {todo.title}
+                  </div>
+                  {todo.dueDate && (
+                    <div className="text-xs text-gray-500">
+                      Due: {new Date(todo.dueDate).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
+                <Badge 
+                  variant={todo.priority === 'high' ? 'destructive' : todo.priority === 'medium' ? 'default' : 'secondary'}
+                  className="shrink-0"
+                >
+                  {todo.priority}
+                </Badge>
+              </div>
+            ))}
+            {(!todos || !Array.isArray(todos) || todos.length === 0) && (
+              <div className="text-sm text-gray-500 text-center py-4">
+                No todos yet
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
