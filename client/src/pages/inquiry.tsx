@@ -1,8 +1,6 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useState, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,27 +15,31 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Send, MapPin, Phone, Mail } from "lucide-react";
-import { insertInquirySchema, type InsertInquiry } from "@shared/schema";
 import { Link } from "wouter";
 
 export default function InquiryPage() {
   const { toast } = useToast();
   const [selectedProperty, setSelectedProperty] = useState("");
-
-  const form = useForm<InsertInquiry>({
-    resolver: zodResolver(insertInquirySchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      roomNumber: "",
-      rentalPeriod: "",
-      message: "",
-    },
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    roomNumber: "",
+    rentalPeriod: "",
+    message: "",
   });
 
+  // Get property from URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const property = urlParams.get('property');
+    if (property === '934' || property === '949') {
+      setSelectedProperty(property);
+    }
+  }, []);
+
   const createInquiryMutation = useMutation({
-    mutationFn: async (data: InsertInquiry) => {
+    mutationFn: async (data: any) => {
       const response = await apiRequest("POST", "/api/inquiries", data);
       return response;
     },
@@ -46,7 +48,14 @@ export default function InquiryPage() {
         title: "Inquiry Sent Successfully!",
         description: "We'll contact you soon about your rental inquiry.",
       });
-      form.reset();
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        roomNumber: "",
+        rentalPeriod: "",
+        message: "",
+      });
       setSelectedProperty("");
     },
     onError: (error) => {
@@ -58,12 +67,23 @@ export default function InquiryPage() {
     },
   });
 
-  const onSubmit = (data: InsertInquiry) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const propertyPrefix = selectedProperty === "934" ? "Property 934" : "Property 949";
+    const roomType = selectedProperty === "934" ? "Room" : "Suite";
+    
     const inquiryData = {
-      ...data,
-      roomNumber: selectedProperty === "934" ? `Property 934 - ${data.roomNumber || 'Any Room'}` : `Property 949 - ${data.roomNumber || 'Any Suite'}`,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone || null,
+      message: `${propertyPrefix} - ${roomType}: ${formData.roomNumber || 'Any available'} | Rental Period: ${formData.rentalPeriod || 'Not specified'} | Message: ${formData.message}`,
     };
+    
     createInquiryMutation.mutate(inquiryData);
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -139,13 +159,14 @@ export default function InquiryPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name *</Label>
                     <Input
                       id="name"
-                      {...form.register("name")}
+                      value={formData.name}
+                      onChange={(e) => handleInputChange("name", e.target.value)}
                       placeholder="Enter your full name"
                       required
                     />
@@ -155,7 +176,8 @@ export default function InquiryPage() {
                     <Input
                       id="email"
                       type="email"
-                      {...form.register("email")}
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
                       placeholder="your@email.com"
                       required
                     />
@@ -167,7 +189,8 @@ export default function InquiryPage() {
                   <Input
                     id="phone"
                     type="tel"
-                    {...form.register("phone")}
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
                     placeholder="(808) 555-0123"
                   />
                 </div>
@@ -177,13 +200,14 @@ export default function InquiryPage() {
                     <Label htmlFor="roomNumber">Preferred {selectedProperty === "934" ? "Room" : "Suite"}</Label>
                     <Input
                       id="roomNumber"
-                      {...form.register("roomNumber")}
+                      value={formData.roomNumber}
+                      onChange={(e) => handleInputChange("roomNumber", e.target.value)}
                       placeholder={`Any ${selectedProperty === "934" ? "room" : "suite"} available`}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="rentalPeriod">Rental Period</Label>
-                    <Select onValueChange={(value) => form.setValue("rentalPeriod", value)}>
+                    <Select onValueChange={(value) => handleInputChange("rentalPeriod", value)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select rental period" />
                       </SelectTrigger>
@@ -202,7 +226,8 @@ export default function InquiryPage() {
                   <Label htmlFor="message">Message *</Label>
                   <Textarea
                     id="message"
-                    {...form.register("message")}
+                    value={formData.message}
+                    onChange={(e) => handleInputChange("message", e.target.value)}
                     placeholder={`Tell us about your interest in Property ${selectedProperty}...`}
                     rows={4}
                     required
