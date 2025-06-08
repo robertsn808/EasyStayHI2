@@ -54,6 +54,30 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
     }
   });
 
+  const deleteInquiryMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/admin/inquiries/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-token': 'admin-authenticated'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete inquiry');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/inquiries'] });
+      toast({ title: "Success", description: "Inquiry deleted successfully" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete inquiry", variant: "destructive" });
+    }
+  });
+
   const assignRoomMutation = useMutation({
     mutationFn: async ({ inquiryId, roomId, guestData }: { inquiryId: number; roomId: number; guestData: any }) => {
       // First create the guest profile
