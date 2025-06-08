@@ -9,6 +9,7 @@ import {
   inventory,
   receipts,
   todos,
+  guestProfiles,
   type User,
   type UpsertUser,
   type Building,
@@ -29,6 +30,8 @@ import {
   type InsertReceipt,
   type Todo,
   type InsertTodo,
+  type GuestProfile,
+  type InsertGuestProfile,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, gt, desc } from "drizzle-orm";
@@ -106,6 +109,15 @@ export interface IStorage {
   // Room Management Updates
   updateRoomStatus(id: number, status: string, additionalData?: Partial<schema.InsertRoom>): Promise<schema.Room>;
   getRoomsByStatus(status: string): Promise<schema.Room[]>;
+
+  // Guest Profile Operations
+  createGuestProfile(data: InsertGuestProfile): Promise<GuestProfile>;
+  getGuestProfiles(): Promise<GuestProfile[]>;
+  getGuestProfilesByRoom(roomId: number): Promise<GuestProfile[]>;
+  updateGuestProfile(id: number, data: Partial<InsertGuestProfile>): Promise<GuestProfile>;
+  markPaymentReceived(guestId: number): Promise<GuestProfile>;
+  getPaymentDueGuests(): Promise<GuestProfile[]>;
+  getTodaysPaymentDueGuests(): Promise<GuestProfile[]>;
 }
 
 export class DatabaseStorage implements IStorage {

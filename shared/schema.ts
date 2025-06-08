@@ -118,6 +118,26 @@ export const announcements = pgTable("announcements", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const guestProfiles = pgTable("guest_profiles", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  guestName: varchar("guest_name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }),
+  phone: varchar("phone", { length: 50 }),
+  bookingType: varchar("booking_type", { length: 20 }).notNull(), // daily, weekly, monthly
+  checkInDate: date("check_in_date").notNull(),
+  checkOutDate: date("check_out_date"),
+  paymentAmount: numeric("payment_amount", { precision: 10, scale: 2 }).notNull(),
+  paymentDueDay: integer("payment_due_day"), // day of week (0-6) for weekly, day of month (1-31) for monthly
+  lastPaymentDate: date("last_payment_date"),
+  nextPaymentDue: date("next_payment_due").notNull(),
+  paymentStatus: varchar("payment_status", { length: 20 }).default("pending"), // pending, paid, overdue
+  isActive: boolean("is_active").default(true),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const calendarEvents = pgTable("calendar_events", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -212,6 +232,7 @@ export type InsertInventory = typeof inventory.$inferInsert;
 export type InsertReceipt = typeof receipts.$inferInsert;
 export type InsertInquiry = typeof inquiries.$inferInsert;
 export type InsertTodo = typeof todos.$inferInsert;
+export type InsertGuestProfile = typeof guestProfiles.$inferInsert;
 
 // Type definitions for selects
 export type SelectUser = typeof users.$inferSelect;
@@ -228,6 +249,7 @@ export type SelectInventory = typeof inventory.$inferSelect;
 export type SelectReceipt = typeof receipts.$inferSelect;
 export type SelectInquiry = typeof inquiries.$inferSelect;
 export type SelectTodo = typeof todos.$inferSelect;
+export type SelectGuestProfile = typeof guestProfiles.$inferSelect;
 
 // Type aliases for compatibility
 export type User = SelectUser;
@@ -245,6 +267,7 @@ export type CalendarEvent = SelectCalendarEvent;
 export type InventoryItem = SelectInventory;
 export type Receipt = SelectReceipt;
 export type Todo = SelectTodo;
+export type GuestProfile = SelectGuestProfile;
 
 // Validation schemas (simplified - using the insert types as schemas)
 export const insertInquirySchema = {
@@ -285,4 +308,7 @@ export const insertPaymentSchema = {
 };
 export const insertNotificationSchema = {
   parse: (data: any) => data as InsertNotification
+};
+export const insertGuestProfileSchema = {
+  parse: (data: any) => data as InsertGuestProfile
 };
