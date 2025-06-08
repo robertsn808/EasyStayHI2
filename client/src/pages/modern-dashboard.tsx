@@ -109,26 +109,27 @@ export default function ModernDashboard() {
   const totalEarnings = calculateEarnings();
 
   const renderDashboard = () => (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       {/* Welcome Section */}
-      <div className="flex justify-between items-start mb-8">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
-            <User className="h-6 w-6 text-gray-600" />
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+            <User className="h-4 w-4 text-gray-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Good morning!</h1>
-            <p className="text-gray-600">Here's an overview of your properties</p>
+            <h1 className="text-lg font-bold text-gray-900">Good morning!</h1>
+            <p className="text-sm text-gray-600">Property overview</p>
           </div>
         </div>
-        <div className="flex items-center space-x-4">
-          <select className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-            <option>Last month</option>
+        <div className="flex items-center space-x-3">
+          <select className="bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500">
             <option>This month</option>
+            <option>Last month</option>
             <option>Last week</option>
           </select>
           <Button 
-            className="bg-green-600 hover:bg-green-700 text-white px-6"
+            size="sm"
+            className="bg-green-600 hover:bg-green-700 text-white px-4 text-xs"
             onClick={() => {
               toast({
                 title: "Analytics Coming Soon",
@@ -142,20 +143,19 @@ export default function ModernDashboard() {
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
         {/* In-House */}
         <Card 
           className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
           onClick={() => setActiveTab("934")}
         >
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-700">In-House Guests</h3>
-              <CheckCircle className="h-5 w-5 text-green-500" />
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-medium text-gray-700">In-House Guests</h3>
+              <CheckCircle className="h-4 w-4 text-green-500" />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <div className="text-xs text-gray-500">Daily: <span className="font-semibold">{Array.isArray(guests) ? guests.filter((g: any) => g.checkInDate && new Date(g.checkInDate).toDateString() === new Date().toDateString()).length : 0}</span></div>
-              <div className="text-xs text-gray-500">Weekly: <span className="font-semibold">{Array.isArray(guests) ? guests.filter((g: any) => g.checkInDate && (Date.now() - new Date(g.checkInDate).getTime()) < 7 * 24 * 60 * 60 * 1000).length : 0}</span></div>
               <div className="text-xs text-gray-500">Total: <span className="font-semibold">{Array.isArray(guests) ? guests.length : 0}</span></div>
             </div>
           </CardContent>
@@ -166,17 +166,17 @@ export default function ModernDashboard() {
           className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
           onClick={() => setActiveTab("949")}
         >
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-700">Open Rooms</h3>
-              <Home className="h-5 w-5 text-green-500" />
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-medium text-gray-700">Open Rooms</h3>
+              <Home className="h-4 w-4 text-green-500" />
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs">
                 <span className="text-gray-600">934:</span>
                 <span className="font-semibold">{occupied934}/{building934Rooms.length}</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs">
                 <span className="text-gray-600">949:</span>
                 <span className="font-semibold">{occupied949}/{building949Rooms.length}</span>
               </div>
@@ -189,13 +189,13 @@ export default function ModernDashboard() {
           className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
           onClick={() => setActiveTab("rent-tracker")}
         >
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-700">Earnings</h3>
-              <DollarSign className="h-5 w-5 text-green-500" />
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-medium text-gray-700">Earnings</h3>
+              <DollarSign className="h-4 w-4 text-green-500" />
             </div>
-            <div className="text-2xl font-bold text-gray-900">
-              ${Math.floor(totalEarnings).toLocaleString()}<span className="text-sm font-normal text-gray-500">.{String(Math.floor((totalEarnings % 1) * 100)).padStart(2, '0')}</span>
+            <div className="text-lg font-bold text-gray-900">
+              ${Math.floor(totalEarnings).toLocaleString()}<span className="text-xs font-normal text-gray-500">.{String(Math.floor((totalEarnings % 1) * 100)).padStart(2, '0')}</span>
             </div>
           </CardContent>
         </Card>
@@ -205,36 +205,36 @@ export default function ModernDashboard() {
           className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
           onClick={() => setActiveTab("maintenance")}
         >
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-700">Work Orders</h3>
-              <Wrench className={`h-5 w-5 ${urgentMaintenance > 0 ? 'text-red-500' : 'text-orange-500'}`} />
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-medium text-gray-700">Work Orders</h3>
+              <Wrench className={`h-4 w-4 ${urgentMaintenance > 0 ? 'text-red-500' : 'text-orange-500'}`} />
             </div>
-            <div className="space-y-1">
-              <div className="text-sm text-gray-600">{Array.isArray(maintenanceRequests) ? maintenanceRequests.length : 0} Maintenance requests</div>
-              <div className="text-sm text-gray-600">{Array.isArray(todos) ? todos.filter((t: any) => !t.completed).length : 0} Open Tasks</div>
+            <div className="space-y-0.5">
+              <div className="text-xs text-gray-600">{Array.isArray(maintenanceRequests) ? maintenanceRequests.length : 0} Maintenance</div>
+              <div className="text-xs text-gray-600">{Array.isArray(todos) ? todos.filter((t: any) => !t.completed).length : 0} Tasks</div>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Bottom Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Your next steps */}
         <div className="lg:col-span-1">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Your next steps</h2>
-          <div className="space-y-4">
+          <h2 className="text-sm font-semibold text-gray-900 mb-2">Your next steps</h2>
+          <div className="space-y-2">
             <Card 
               className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
               onClick={() => setActiveTab("rent-tracker")}
             >
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
+              <CardContent className="p-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                    <AlertTriangle className="h-3 w-3 text-red-600" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">Rent Due: <span className="text-red-600">{Array.isArray(guests) ? guests.filter((g: any) => g.paymentStatus === 'overdue').length : 0}</span></h3>
+                    <h3 className="text-xs font-medium text-gray-900">Rent Due: <span className="text-red-600">{Array.isArray(guests) ? guests.filter((g: any) => g.paymentStatus === 'overdue').length : 0}</span></h3>
                   </div>
                 </div>
               </CardContent>
@@ -244,14 +244,14 @@ export default function ModernDashboard() {
               className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
               onClick={() => setActiveTab("maintenance")}
             >
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <Home className="h-4 w-4 text-green-600" />
+              <CardContent className="p-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                    <Home className="h-3 w-3 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">Housekeeping: <span className="text-orange-600">{Array.isArray(maintenanceRequests) ? maintenanceRequests.filter((m: any) => m.request?.category === 'housekeeping').length : 0}</span></h3>
-                    <p className="text-sm text-gray-500">Out of Order: <span className="text-red-600">{Array.isArray(rooms) ? rooms.filter((r: any) => r.status === 'maintenance').length : 0}</span></p>
+                    <h3 className="text-xs font-medium text-gray-900">Housekeeping: <span className="text-orange-600">{Array.isArray(maintenanceRequests) ? maintenanceRequests.filter((m: any) => m.request?.category === 'housekeeping').length : 0}</span></h3>
+                    <p className="text-xs text-gray-500">Out of Order: <span className="text-red-600">{Array.isArray(rooms) ? rooms.filter((r: any) => r.status === 'maintenance').length : 0}</span></p>
                   </div>
                 </div>
               </CardContent>
@@ -261,31 +261,28 @@ export default function ModernDashboard() {
               className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
               onClick={() => setActiveTab("inbox")}
             >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-gray-900">Inquiries</h3>
-                  <Badge className="bg-green-500 text-white">
+              <CardContent className="p-2">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-medium text-gray-900">Inquiries</h3>
+                  <Badge className="bg-green-500 text-white text-xs px-1.5 py-0.5">
                     {pendingInquiries}
                   </Badge>
                 </div>
-                <div className="mt-3 space-y-2">
-                  {Array.isArray(inquiries) && inquiries.slice(0, 3).map((inquiry: any, index: number) => (
-                    <div key={inquiry.id || index} className="flex items-center space-x-3 p-2 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                <div className="space-y-1">
+                  {Array.isArray(inquiries) && inquiries.slice(0, 2).map((inquiry: any, index: number) => (
+                    <div key={inquiry.id || index} className="flex items-center space-x-2 p-1.5 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                      <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
                         {inquiry.name ? inquiry.name.charAt(0).toUpperCase() : 'U'}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{inquiry.name || 'Unknown Guest'}</p>
-                        <p className="text-xs text-gray-500">{inquiry.status === 'pending' ? 'Pending Response' : 'Processed'}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium">{inquiry.email ? inquiry.email.substring(0, 8) + '...' : 'No contact'}</p>
+                        <p className="text-xs font-medium text-gray-900 truncate">{inquiry.name || 'Unknown Guest'}</p>
+                        <p className="text-xs text-gray-500">{inquiry.status === 'pending' ? 'Pending' : 'Processed'}</p>
                       </div>
                     </div>
                   ))}
                   {(!Array.isArray(inquiries) || inquiries.length === 0) && (
-                    <div className="text-center py-4">
-                      <p className="text-sm text-gray-500">No recent inquiries</p>
+                    <div className="text-center py-2">
+                      <p className="text-xs text-gray-500">No recent inquiries</p>
                     </div>
                   )}
                 </div>
@@ -296,40 +293,37 @@ export default function ModernDashboard() {
 
         {/* New activity */}
         <div className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">New activity</h2>
-            <Badge className="bg-green-500 text-white">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-semibold text-gray-900">Recent activity</h2>
+            <Badge className="bg-green-500 text-white text-xs px-1.5 py-0.5">
               {pendingInquiries}
             </Badge>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* Real Activity Items from Inquiries */}
-            {Array.isArray(inquiries) && inquiries.slice(0, 4).map((inquiry: any, index: number) => (
+            {Array.isArray(inquiries) && inquiries.slice(0, 3).map((inquiry: any, index: number) => (
               <Card key={inquiry.id || index} className="bg-white border border-gray-200">
-                <CardContent className="p-4">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-8 h-8 bg-blue-500 rounded text-white flex items-center justify-center text-sm font-semibold">
+                <CardContent className="p-2">
+                  <div className="flex items-start space-x-2">
+                    <div className="w-6 h-6 bg-blue-500 rounded text-white flex items-center justify-center text-xs font-semibold">
                       {inquiry.id || (index + 1)}
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="font-medium text-gray-900">{inquiry.name || 'New Inquiry'}</h3>
-                        <Badge variant="outline" className={`text-xs ${
+                        <h3 className="text-xs font-medium text-gray-900 truncate">{inquiry.name || 'New Inquiry'}</h3>
+                        <Badge variant="outline" className={`text-xs px-1 py-0 ${
                           inquiry.status === 'pending' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'
                         }`}>
-                          {inquiry.status === 'pending' ? 'Pending' : 'Processed'}
+                          {inquiry.status === 'pending' ? 'Pending' : 'Done'}
                         </Badge>
-                        <span className="text-xs text-gray-500">
-                          {new Date(inquiry.createdAt || Date.now()).toLocaleDateString()}
-                        </span>
                       </div>
-                      <p className="text-sm text-gray-600">{inquiry.email || 'No email provided'}</p>
-                      <p className="text-xs text-gray-500 mt-1 truncate">{inquiry.message || 'No message'}</p>
+                      <p className="text-xs text-gray-600 truncate">{inquiry.email || 'No email provided'}</p>
+                      <p className="text-xs text-gray-500 truncate">{inquiry.message || 'No message'}</p>
                     </div>
                     <div className="flex items-center space-x-1 text-gray-400">
-                      <MessageSquare className="h-4 w-4" />
-                      <span className="text-sm">1</span>
+                      <MessageSquare className="h-3 w-3" />
+                      <span className="text-xs">1</span>
                     </div>
                   </div>
                 </CardContent>
@@ -337,31 +331,28 @@ export default function ModernDashboard() {
             ))}
 
             {/* Real Activity Items from Maintenance Requests */}
-            {Array.isArray(maintenanceRequests) && maintenanceRequests.slice(0, 2).map((request: any, index: number) => (
+            {Array.isArray(maintenanceRequests) && maintenanceRequests.slice(0, 1).map((request: any, index: number) => (
               <Card key={`maintenance-${request.id || index}`} className="bg-white border border-gray-200">
-                <CardContent className="p-4">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-8 h-8 bg-orange-500 rounded text-white flex items-center justify-center text-sm font-semibold">
-                      <Wrench className="h-4 w-4" />
+                <CardContent className="p-2">
+                  <div className="flex items-start space-x-2">
+                    <div className="w-6 h-6 bg-orange-500 rounded text-white flex items-center justify-center">
+                      <Wrench className="h-3 w-3" />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="font-medium text-gray-900">{request.request?.description || 'Maintenance Request'}</h3>
-                        <Badge variant="outline" className={`text-xs ${
+                        <h3 className="text-xs font-medium text-gray-900 truncate">{request.request?.description || 'Maintenance Request'}</h3>
+                        <Badge variant="outline" className={`text-xs px-1 py-0 ${
                           request.request?.priority === 'urgent' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
                         }`}>
                           {request.request?.priority || 'Normal'}
                         </Badge>
-                        <span className="text-xs text-gray-500">
-                          {new Date(request.request?.createdAt || Date.now()).toLocaleDateString()}
-                        </span>
                       </div>
-                      <p className="text-sm text-gray-600">Room {request.room?.number || 'Unknown'} - {request.building?.name || 'Unknown Building'}</p>
-                      <p className="text-xs text-gray-500 mt-1">Status: {request.request?.status || 'Pending'}</p>
+                      <p className="text-xs text-gray-600 truncate">Room {request.room?.number || 'Unknown'} - {request.building?.name || 'Unknown Building'}</p>
+                      <p className="text-xs text-gray-500">Status: {request.request?.status || 'Pending'}</p>
                     </div>
                     <div className="flex items-center space-x-1 text-gray-400">
-                      <Wrench className="h-4 w-4" />
-                      <span className="text-sm">1</span>
+                      <Wrench className="h-3 w-3" />
+                      <span className="text-xs">1</span>
                     </div>
                   </div>
                 </CardContent>
@@ -372,10 +363,10 @@ export default function ModernDashboard() {
             {(!Array.isArray(inquiries) || inquiries.length === 0) && 
              (!Array.isArray(maintenanceRequests) || maintenanceRequests.length === 0) && (
               <Card className="bg-white border border-gray-200">
-                <CardContent className="p-8 text-center">
-                  <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Recent Activity</h3>
-                  <p className="text-gray-600">New inquiries and maintenance requests will appear here.</p>
+                <CardContent className="p-4 text-center">
+                  <Activity className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                  <h3 className="text-sm font-medium text-gray-900 mb-1">No Recent Activity</h3>
+                  <p className="text-xs text-gray-600">New inquiries and maintenance requests will appear here.</p>
                 </CardContent>
               </Card>
             )}
@@ -424,33 +415,31 @@ export default function ModernDashboard() {
       <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Logo and Search Bar */}
-          <div className="flex justify-between items-center py-3">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                  <Home className="h-4 w-4 text-white" />
-                </div>
-                <span className="text-lg font-semibold text-gray-900">EasyStay</span>
+          <div className="flex justify-between items-center py-2">
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                <Home className="h-3 w-3 text-white" />
               </div>
+              <span className="text-sm font-semibold text-gray-900">EasyStay</span>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               {/* Search */}
               <div className="relative hidden md:block">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-64 pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-48 pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
               {/* Notification Bell */}
               <div className="relative">
-                <Button variant="ghost" size="sm" className="relative">
-                  <Bell className="h-5 w-5 text-gray-600" />
+                <Button variant="ghost" size="sm" className="relative h-7 w-7 p-0">
+                  <Bell className="h-4 w-4 text-gray-600" />
                   {pendingInquiries > 0 && (
-                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full flex items-center justify-center">
                       <span className="text-xs text-white font-bold">
                         {pendingInquiries}
                       </span>
@@ -460,16 +449,14 @@ export default function ModernDashboard() {
               </div>
 
               {/* User Profile */}
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4 text-gray-600" />
-                </div>
+              <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                <User className="h-3 w-3 text-gray-600" />
               </div>
             </div>
           </div>
 
           {/* Navigation Tabs - Enhanced with All Functions */}
-          <div className="flex space-x-4 border-b border-gray-200 overflow-x-auto">
+          <div className="flex space-x-3 border-b border-gray-200 overflow-x-auto pb-2">
             <button
               onClick={() => setActiveTab("dashboard")}
               className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
