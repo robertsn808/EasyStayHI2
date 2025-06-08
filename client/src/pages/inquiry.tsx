@@ -24,7 +24,6 @@ export default function InquiryPage() {
     name: "",
     email: "",
     phone: "",
-    roomNumber: "",
     rentalPeriod: "",
     message: "",
   });
@@ -52,7 +51,6 @@ export default function InquiryPage() {
         name: "",
         email: "",
         phone: "",
-        roomNumber: "",
         rentalPeriod: "",
         message: "",
       });
@@ -76,7 +74,7 @@ export default function InquiryPage() {
       name: formData.name,
       email: formData.email,
       phone: formData.phone || null,
-      message: `${propertyPrefix} - ${roomType}: ${formData.roomNumber || 'Any available'} | Rental Period: ${formData.rentalPeriod || 'Not specified'} | Message: ${formData.message}`,
+      message: `${propertyPrefix} - ${roomType}: Any available | Rental Period: ${formData.rentalPeriod || 'Not specified'} | Message: ${formData.message}`,
     };
     
     createInquiryMutation.mutate(inquiryData);
@@ -195,31 +193,23 @@ export default function InquiryPage() {
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="roomNumber">Preferred {selectedProperty === "934" ? "Room" : "Suite"}</Label>
-                    <Input
-                      id="roomNumber"
-                      value={formData.roomNumber}
-                      onChange={(e) => handleInputChange("roomNumber", e.target.value)}
-                      placeholder={`Any ${selectedProperty === "934" ? "room" : "suite"} available`}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="rentalPeriod">Rental Period</Label>
-                    <Select onValueChange={(value) => handleInputChange("rentalPeriod", value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select rental period" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1-month">1 Month</SelectItem>
-                        <SelectItem value="3-months">3 Months</SelectItem>
-                        <SelectItem value="6-months">6 Months</SelectItem>
-                        <SelectItem value="1-year">1 Year</SelectItem>
-                        <SelectItem value="long-term">Long Term (1+ years)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="rentalPeriod">Rental Period</Label>
+                  <Select onValueChange={(value) => handleInputChange("rentalPeriod", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select rental period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1day">1 Day</SelectItem>
+                      <SelectItem value="2days">2 Days</SelectItem>
+                      <SelectItem value="3days">3 Days</SelectItem>
+                      <SelectItem value="4days">4 Days</SelectItem>
+                      <SelectItem value="1week">1 Week</SelectItem>
+                      <SelectItem value="2weeks+">2 Weeks+</SelectItem>
+                      <SelectItem value="month">Month</SelectItem>
+                      <SelectItem value="2months+">2 Months+</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
