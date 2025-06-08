@@ -257,7 +257,10 @@ export default function ModernDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white border border-gray-200">
+            <Card 
+              className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => setActiveTab("inbox")}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-medium text-gray-900">Inquiries</h3>
@@ -267,17 +270,24 @@ export default function ModernDashboard() {
                 </div>
                 <div className="mt-3 space-y-2">
                   {Array.isArray(inquiries) && inquiries.slice(0, 3).map((inquiry: any, index: number) => (
-                    <div key={inquiry.id || index} className="flex items-center space-x-3 p-2 bg-gray-50 rounded">
-                      <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                    <div key={inquiry.id || index} className="flex items-center space-x-3 p-2 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                        {inquiry.name ? inquiry.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{inquiry.name || 'Unknown'}</p>
-                        <p className="text-xs text-gray-500">7 Days</p>
+                        <p className="text-sm font-medium text-gray-900 truncate">{inquiry.name || 'Unknown Guest'}</p>
+                        <p className="text-xs text-gray-500">{inquiry.status === 'pending' ? 'Pending Response' : 'Processed'}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium">${inquiry.budget || '2,178'}.78</p>
+                        <p className="text-sm font-medium">{inquiry.email ? inquiry.email.substring(0, 8) + '...' : 'No contact'}</p>
                       </div>
                     </div>
                   ))}
+                  {(!Array.isArray(inquiries) || inquiries.length === 0) && (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-gray-500">No recent inquiries</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
