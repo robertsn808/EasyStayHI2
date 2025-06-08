@@ -16,6 +16,7 @@ import { AnnouncementsTab } from "@/components/AnnouncementsTab";
 import { SettingsTab } from "@/components/SettingsTab";
 import QRCodeManager from "@/components/QRCodeManager";
 import GuestProfileManager from "@/components/GuestProfileManager";
+import AdminRoomGrid from "@/components/admin-room-grid";
 
 interface AdminTabsProps {
   activeTab?: string;
@@ -113,149 +114,7 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
       <Card className="w-full">
         <div className="p-6">
           {selectedTab === "properties" && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Property Management</h2>
-                <div className="flex gap-2">
-                  <Button onClick={() => handleTabChange("qr-codes")}>
-                    QR Codes
-                  </Button>
-                  <Button onClick={() => handleTabChange("rooms")}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Manage Rooms
-                  </Button>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">934 Kapahulu Ave</h3>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <p className="text-gray-600">
-                        {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10 && room.status === 'available').length : 0} of {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 0} Rooms Available
-                      </p>
-                      <p className="text-sm">Daily: $100 | Weekly: $500 | Monthly: $2000</p>
-                    </div>
-                    
-                    {/* Room Status Overview */}
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-gray-700">Room Status Overview</h4>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div className="flex items-center justify-between p-2 bg-green-50 rounded">
-                          <span className="text-green-700">Available:</span>
-                          <span className="font-semibold text-green-800">
-                            {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10 && room.status === 'available').length : 0}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 bg-red-50 rounded">
-                          <span className="text-red-700">Occupied:</span>
-                          <span className="font-semibold text-red-800">
-                            {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10 && room.status === 'occupied').length : 0}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 bg-orange-50 rounded">
-                          <span className="text-orange-700">Needs Cleaning:</span>
-                          <span className="font-semibold text-orange-800">
-                            {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10 && room.status === 'needs_cleaning').length : 0}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 bg-yellow-50 rounded">
-                          <span className="text-yellow-700">Maintenance:</span>
-                          <span className="font-semibold text-yellow-800">
-                            {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10 && room.status === 'maintenance').length : 0}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Room Grid */}
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-semibold text-gray-700">Room Layout</h4>
-                      <div className="grid grid-cols-4 gap-2">
-                        {Array.isArray(rooms) && rooms.filter((room: any) => room.buildingId === 10).map((room: any) => (
-                          <div 
-                            key={room.id} 
-                            className={`p-2 border rounded text-center text-xs ${
-                              room.status === 'occupied' ? 'bg-red-100 text-red-800 border-red-300' :
-                              room.status === 'available' ? 'bg-green-100 text-green-800 border-green-300' :
-                              room.status === 'needs_cleaning' ? 'bg-orange-100 text-orange-800 border-orange-300' :
-                              'bg-yellow-100 text-yellow-800 border-yellow-300'
-                            }`}
-                            title={`Room ${room.number} - ${room.status}`}
-                          >
-                            {room.number}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">949 Kawaiahao St</h3>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <p className="text-gray-600">
-                        {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11 && room.status === 'available').length : 0} of {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 0} Suites Available
-                      </p>
-                      <p className="text-sm">Daily: $50 | Weekly: $200 | Monthly: $600</p>
-                    </div>
-                    
-                    {/* Room Status Overview */}
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-gray-700">Suite Status Overview</h4>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div className="flex items-center justify-between p-2 bg-green-50 rounded">
-                          <span className="text-green-700">Available:</span>
-                          <span className="font-semibold text-green-800">
-                            {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11 && room.status === 'available').length : 0}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 bg-red-50 rounded">
-                          <span className="text-red-700">Occupied:</span>
-                          <span className="font-semibold text-red-800">
-                            {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11 && room.status === 'occupied').length : 0}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 bg-orange-50 rounded">
-                          <span className="text-orange-700">Needs Cleaning:</span>
-                          <span className="font-semibold text-orange-800">
-                            {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11 && room.status === 'needs_cleaning').length : 0}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 bg-yellow-50 rounded">
-                          <span className="text-yellow-700">Maintenance:</span>
-                          <span className="font-semibold text-yellow-800">
-                            {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11 && room.status === 'maintenance').length : 0}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Room Grid */}
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-semibold text-gray-700">Suite Layout</h4>
-                      <div className="grid grid-cols-5 gap-2">
-                        {Array.isArray(rooms) && rooms.filter((room: any) => room.buildingId === 11).map((room: any) => (
-                          <div 
-                            key={room.id} 
-                            className={`p-2 border rounded text-center text-xs ${
-                              room.status === 'occupied' ? 'bg-red-100 text-red-800 border-red-300' :
-                              room.status === 'available' ? 'bg-green-100 text-green-800 border-green-300' :
-                              room.status === 'needs_cleaning' ? 'bg-orange-100 text-orange-800 border-orange-300' :
-                              'bg-yellow-100 text-yellow-800 border-yellow-300'
-                            }`}
-                            title={`Suite ${room.number} - ${room.status}`}
-                          >
-                            {room.number}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            </div>
+            <AdminRoomGrid rooms={Array.isArray(rooms) ? rooms : []} />
           )}
 
           {selectedTab === "guests" && <GuestProfileManager />}
