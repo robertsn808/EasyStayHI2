@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bell, LogOut } from "lucide-react";
 import AdminTabs from "@/components/admin-tabs";
+import WeeklyCalendar from "@/components/WeeklyCalendar";
 import backgroundImage from "@assets/image_1749351216300.png";
 
 export default function AdminDashboard() {
@@ -146,7 +147,60 @@ export default function AdminDashboard() {
         </div>
       </div>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Quick Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-900">Pending Inquiries</h3>
+                  <p className="text-3xl font-bold text-blue-700">3</p>
+                  <p className="text-sm text-blue-600">Require immediate attention</p>
+                </div>
+                <div className="text-blue-500">
+                  <Bell className="h-8 w-8" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-green-900">Active Properties</h3>
+                  <p className="text-3xl font-bold text-green-700">2</p>
+                  <p className="text-sm text-green-600">934 Kapahulu & 949 Kawaiahao</p>
+                </div>
+                <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                  Manage Properties
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-orange-50 to-orange-100 border-orange-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-orange-900">Total Rooms</h3>
+                  <p className="text-3xl font-bold text-orange-700">18</p>
+                  <p className="text-sm text-orange-600">8 rooms + 10 suites</p>
+                </div>
+                <div className="text-orange-500">
+                  <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7l-10-5z"/>
+                  </svg>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Weekly Calendar */}
+        <WeeklyCalendar />
+        
         <AdminTabs />
       </div>
     </div>

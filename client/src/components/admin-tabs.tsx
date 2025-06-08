@@ -16,6 +16,7 @@ import { ReceiptsTab } from "@/components/ReceiptsTab";
 import { TodosTab } from "@/components/TodosTab";
 import QRCodeManager from "@/components/QRCodeManager";
 import GuestProfileManager from "@/components/GuestProfileManager";
+import WeeklyCalendar from "@/components/WeeklyCalendar";
 export default function AdminTabs() {
   const { toast } = useToast();
   const [selectedTab, setSelectedTab] = useState("properties");

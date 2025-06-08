@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus, Calendar, Clock } from "lucide-react";
-import { format, startOfWeek, addDays, addWeeks, subWeeks, isSameDay, parseISO } from "date-fns";
 
 interface CalendarEvent {
   id: number;
@@ -21,28 +20,57 @@ interface WeeklyCalendarProps {
 }
 
 export default function WeeklyCalendar({ events = [] }: WeeklyCalendarProps) {
-  const [currentWeek, setCurrentWeek] = useState(new Date());
+  const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
 
-  const weekStart = startOfWeek(currentWeek, { weekStartsOn: 0 });
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const getWeekDays = () => {
+    const today = new Date();
+    const currentDay = today.getDay();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - currentDay + (currentWeekOffset * 7));
+    
+    const weekDays = [];
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(startOfWeek);
+      day.setDate(startOfWeek.getDate() + i);
+      weekDays.push(day);
+    }
+    return weekDays;
+  };
+
+  const weekDays = getWeekDays();
 
   const goToPreviousWeek = () => {
-    setCurrentWeek(subWeeks(currentWeek, 1));
+    setCurrentWeekOffset(currentWeekOffset - 1);
   };
 
   const goToNextWeek = () => {
-    setCurrentWeek(addWeeks(currentWeek, 1));
+    setCurrentWeekOffset(currentWeekOffset + 1);
   };
 
   const goToCurrentWeek = () => {
-    setCurrentWeek(new Date());
+    setCurrentWeekOffset(0);
+  };
+
+  const formatDate = (date: Date, format: string) => {
+    if (format === 'EEE') {
+      return date.toLocaleDateString('en-US', { weekday: 'short' });
+    }
+    if (format === 'd') {
+      return date.getDate().toString();
+    }
+    return date.toLocaleDateString();
+  };
+
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
   };
 
   const getEventsForDay = (day: Date) => {
     return events.filter(event => {
       try {
-        const eventDate = parseISO(event.date);
-        return isSameDay(eventDate, day);
+        const eventDate = new Date(event.date);
+        return eventDate.toDateString() === day.toDateString();
       } catch {
         return false;
       }
@@ -65,6 +93,9 @@ export default function WeeklyCalendar({ events = [] }: WeeklyCalendarProps) {
         return 'bg-gray-100 border-gray-300 text-gray-800';
     }
   };
+
+  const weekStart = weekDays[0];
+  const weekEnd = weekDays[6];
 
   return (
     <Card className="shadow-sm">
@@ -91,27 +122,27 @@ export default function WeeklyCalendar({ events = [] }: WeeklyCalendarProps) {
           </div>
         </div>
         <div className="text-lg font-semibold text-gray-700">
-          {format(weekStart, 'MMMM d')} - {format(addDays(weekStart, 6), 'MMMM d, yyyy')}
+          {weekStart.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} - {weekEnd.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
         </div>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-7 gap-4">
           {weekDays.map((day, index) => {
             const dayEvents = getEventsForDay(day);
-            const isToday = isSameDay(day, new Date());
+            const isDayToday = isToday(day);
             
             return (
               <div key={index} className="space-y-2">
                 <div className={`text-center p-2 rounded-lg ${
-                  isToday 
+                  isDayToday 
                     ? 'bg-blue-100 text-blue-800 font-semibold' 
                     : 'text-gray-600'
                 }`}>
                   <div className="text-sm font-medium">
-                    {format(day, 'EEE')}
+                    {formatDate(day, 'EEE')}
                   </div>
                   <div className="text-lg">
-                    {format(day, 'd')}
+                    {formatDate(day, 'd')}
                   </div>
                 </div>
                 
