@@ -119,7 +119,7 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
                   <Button onClick={() => handleTabChange("qr-codes")}>
                     QR Codes
                   </Button>
-                  <Button>
+                  <Button onClick={() => handleTabChange("rooms")}>
                     <Plus className="h-4 w-4 mr-2" />
                     Manage Rooms
                   </Button>
@@ -181,6 +181,43 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
 
           {selectedTab === "guests" && <GuestProfileManager />}
           {selectedTab === "qr-codes" && <QRCodeManager />}
+          {selectedTab === "rooms" && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold">Room Management</h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {Array.isArray(rooms) && rooms.map((room: any) => (
+                  <Card key={room.id} className="p-4">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-lg font-semibold">Room {room.number}</h3>
+                        <p className="text-sm text-gray-600">Building ID: {room.buildingId}</p>
+                      </div>
+                      <Badge 
+                        className={
+                          room.status === 'occupied' ? 'bg-red-100 text-red-800' :
+                          room.status === 'available' ? 'bg-green-100 text-green-800' :
+                          room.status === 'needs_cleaning' ? 'bg-orange-100 text-orange-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }
+                      >
+                        {room.status}
+                      </Badge>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Type:</strong> {room.type || 'Standard'}</p>
+                      <p><strong>Size:</strong> {room.size || 'Not specified'}</p>
+                      <p><strong>Amenities:</strong> {room.amenities || 'Basic amenities'}</p>
+                      <p><strong>Notes:</strong> {room.notes || 'No notes'}</p>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <Button size="sm" variant="outline">Edit</Button>
+                      <Button size="sm" variant="outline">Update Status</Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
           {selectedTab === "maintenance" && <MaintenanceTab requests={maintenanceRequests as any[]} />}
           {selectedTab === "inquiries" && <InquiriesTab inquiries={inquiries as any[]} />}
           {selectedTab === "payments" && <PaymentsTab payments={payments as any[]} />}
