@@ -9,6 +9,7 @@ import Property949 from "@/pages/property-949";
 import Property934 from "@/pages/property-934";
 import AdminDashboard from "@/pages/admin-dashboard";
 import TenantPortal from "@/pages/tenant-portal";
+import InquiryPage from "@/pages/inquiry";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -25,7 +26,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/tenant/:roomId" component={TenantPortal} />
-      <Route path="/inquiry" component={Landing} />
+      <Route path="/inquiry" component={InquiryPage} />
       <Route path="/public" component={Landing} />
       <Route path="/property-949" component={Property949} />
       <Route path="/property-934" component={Property934} />
