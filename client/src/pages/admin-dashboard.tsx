@@ -99,7 +99,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm p-6">
             <div className="flex items-center">
               <div className="p-3 bg-red-100 rounded-full">
                 <div className="text-red-600 text-xl">👤</div>
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm p-6">
             <div className="flex items-center">
               <div className="p-3 bg-yellow-100 rounded-full">
                 <div className="text-yellow-600 text-xl">🔧</div>
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm p-6">
             <div className="flex items-center">
               <div className="p-3 bg-blue-100 rounded-full">
                 <div className="text-blue-600 text-xl">💰</div>

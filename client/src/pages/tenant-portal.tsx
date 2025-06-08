@@ -158,8 +158,8 @@ export default function TenantPortal() {
 
   if (!roomId) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-center text-red-600">Invalid Room</CardTitle>
           </CardHeader>
@@ -175,8 +175,8 @@ export default function TenantPortal() {
 
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-center flex items-center gap-2 justify-center">
               <Home className="w-5 h-5" />
@@ -229,8 +229,8 @@ export default function TenantPortal() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
+    <div className="min-h-screen">
+      <div className="bg-white/90 backdrop-blur-sm shadow-sm border-b">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Home className="w-6 h-6" />
