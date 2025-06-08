@@ -12,12 +12,12 @@ export default function Landing() {
   return (
     <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="bg-white/90 backdrop-blur-sm shadow-sm border-b">
+      <nav className="luxury-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <h1 className="text-xl font-bold text-primary">EasyStay Hawaii</h1>
+                <h1 className="text-2xl font-bold gold-accent">EasyStay Hawaii</h1>
               </div>
               <div className="hidden md:block ml-10">
                 <div className="flex items-baseline space-x-4">
@@ -31,7 +31,7 @@ export default function Landing() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Button onClick={handleLogin} className="bg-primary text-white hover:bg-blue-700">
+              <Button onClick={handleLogin} className="luxury-button text-white border-0">
                 <LogIn className="w-4 h-4 mr-2" />
                 Admin Login
               </Button>
@@ -42,10 +42,13 @@ export default function Landing() {
 
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center mb-12 bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-sm">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">934 - Quality Rooms Available for Rent</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Comfortable, clean accommodations at property 934 with flexible rental terms. Choose from daily, weekly, or monthly options to suit your needs.
+        <div className="text-center mb-12 luxury-card rounded-2xl p-12 shadow-2xl">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
+            <span className="gold-accent">934</span> - Luxury Accommodations
+          </h2>
+          <p className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
+            Exceptional, meticulously maintained accommodations at our prestigious 934 property. 
+            Experience comfort and elegance with flexible rental terms designed for discerning guests.
           </p>
         </div>
 
