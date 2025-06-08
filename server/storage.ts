@@ -141,7 +141,7 @@ export interface IStorage {
   // System Notification Operations
   createSystemNotification(data: InsertSystemNotification): Promise<SystemNotification>;
   getSystemNotifications(buildingId?: number): Promise<SystemNotification[]>;
-  markNotificationRead(id: number): Promise<SystemNotification>;
+  markSystemNotificationRead(id: number): Promise<SystemNotification>;
   deleteNotification(id: number): Promise<void>;
   clearAllNotifications(buildingId?: number): Promise<void>;
 }
@@ -183,10 +183,7 @@ export class DatabaseStorage implements IStorage {
   async updateBuilding(id: number, buildingData: Partial<InsertBuilding>): Promise<Building> {
     const [building] = await db
       .update(buildings)
-      .set({
-        ...buildingData,
-        updatedAt: new Date(),
-      })
+      .set(buildingData)
       .where(eq(buildings.id, id))
       .returning();
     return building;
@@ -340,7 +337,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getRoomWithBuilding(roomId: number) {
-    const [room] = await db
+    const [result] = await db
       .select({
         room: schema.rooms,
         building: schema.buildings
@@ -348,7 +345,15 @@ export class DatabaseStorage implements IStorage {
       .from(schema.rooms)
       .leftJoin(schema.buildings, eq(schema.rooms.buildingId, schema.buildings.id))
       .where(eq(schema.rooms.id, roomId));
-    return room;
+    
+    if (!result || !result.building) {
+      throw new Error('Room or building not found');
+    }
+    
+    return {
+      room: result.room,
+      building: result.building
+    };
   }
 
   // Maintenance Requests
@@ -683,7 +688,7 @@ export class DatabaseStorage implements IStorage {
     return await query.orderBy(desc(schema.systemNotifications.createdAt));
   }
 
-  async markNotificationRead(id: number): Promise<schema.SystemNotification> {
+  async markSystemNotificationRead(id: number): Promise<schema.SystemNotification> {
     const [notification] = await db
       .update(schema.systemNotifications)
       .set({ isRead: true })
