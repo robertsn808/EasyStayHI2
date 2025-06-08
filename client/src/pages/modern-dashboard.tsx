@@ -5,9 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Bell, User, Search, CheckCircle, Home, DollarSign, 
   Wrench, AlertTriangle, Calendar, Users, MessageSquare,
-  TrendingUp, Activity, Clock, MapPin
+  TrendingUp, Activity, Clock, MapPin, Building, Mail, 
+  Phone, Edit, Trash2, Plus, FileText, Package
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import AdminTabs from "@/components/admin-tabs";
 
 type TabType = 
   | "dashboard"
@@ -15,10 +19,18 @@ type TabType =
   | "calendar"
   | "934" 
   | "949" 
-  | "rent-tracker";
+  | "rent-tracker"
+  | "maintenance"
+  | "announcements"
+  | "contacts"
+  | "inventory"
+  | "todos"
+  | "receipts";
 
 export default function ModernDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: rooms = [] } = useQuery({
     queryKey: ["/api/rooms"],
@@ -38,6 +50,34 @@ export default function ModernDashboard() {
 
   const { data: payments = [] } = useQuery({
     queryKey: ["/api/admin/payments"],
+  });
+
+  const { data: announcements = [] } = useQuery({
+    queryKey: ["/api/admin/announcements"],
+  });
+
+  const { data: calendarEvents = [] } = useQuery({
+    queryKey: ["/api/admin/calendar"],
+  });
+
+  const { data: contacts = [] } = useQuery({
+    queryKey: ["/api/admin/contacts"],
+  });
+
+  const { data: inventory = [] } = useQuery({
+    queryKey: ["/api/admin/inventory"],
+  });
+
+  const { data: todos = [] } = useQuery({
+    queryKey: ["/api/admin/todos"],
+  });
+
+  const { data: receipts = [] } = useQuery({
+    queryKey: ["/api/admin/receipts"],
+  });
+
+  const { data: buildings = [] } = useQuery({
+    queryKey: ["/api/buildings"],
   });
 
   // Calculate metrics
@@ -303,78 +343,49 @@ export default function ModernDashboard() {
     </div>
   );
 
-  const renderInbox = () => (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Inbox</h1>
-      <div className="bg-white rounded-lg border border-gray-200">
-        <div className="p-6">
-          <div className="space-y-4">
-            {Array.isArray(inquiries) && inquiries.map((inquiry: any) => (
-              <div key={inquiry.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
-                <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-                <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">{inquiry.name}</h3>
-                  <p className="text-sm text-gray-600">{inquiry.email}</p>
-                  <p className="text-sm text-gray-500">{inquiry.message}</p>
-                </div>
-                <div className="text-right">
-                  <Badge variant={inquiry.status === 'pending' ? 'default' : 'secondary'}>
-                    {inquiry.status}
-                  </Badge>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   const renderContent = () => {
-    switch (activeTab) {
-      case "dashboard":
-        return renderDashboard();
-      case "inbox":
-        return renderInbox();
-      case "calendar":
-        return (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Calendar</h1>
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <p className="text-gray-600">Calendar view coming soon...</p>
-            </div>
-          </div>
-        );
-      case "934":
-        return (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">934 Kapahulu Ave</h1>
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <p className="text-gray-600">Building 934 management coming soon...</p>
-            </div>
-          </div>
-        );
-      case "949":
-        return (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">949 Kawaiahao St</h1>
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <p className="text-gray-600">Building 949 management coming soon...</p>
-            </div>
-          </div>
-        );
-      case "rent-tracker":
-        return (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Rent Tracker</h1>
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <p className="text-gray-600">Rent tracking coming soon...</p>
-            </div>
-          </div>
-        );
-      default:
-        return renderDashboard();
+    if (activeTab === "dashboard") {
+      return renderDashboard();
     }
+
+    // Convert modern tab names to AdminTabs format
+    const tabMapping: Record<TabType, string> = {
+      "dashboard": "quick-access",
+      "inbox": "inquiries", 
+      "calendar": "calendar",
+      "934": "934",
+      "949": "949", 
+      "rent-tracker": "payment-tracker",
+      "maintenance": "maintenance",
+      "announcements": "announcements",
+      "contacts": "contacts",
+      "inventory": "inventory",
+      "todos": "todos",
+      "receipts": "receipts"
+    };
+
+    const adminTabName = tabMapping[activeTab] || "quick-access";
+
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <AdminTabs
+          activeTab={adminTabName}
+          setActiveTab={() => {}} // Read-only mode from modern dashboard
+          rooms={rooms}
+          guests={guests}
+          inquiries={inquiries}
+          maintenanceRequests={maintenanceRequests}
+          payments={payments}
+          announcements={announcements}
+          calendarEvents={calendarEvents}
+          contacts={contacts}
+          inventory={inventory}
+          receipts={receipts}
+          todos={todos}
+          buildings={buildings}
+        />
+      </div>
+    );
   };
 
   return (
@@ -499,6 +510,68 @@ export default function ModernDashboard() {
             >
               Rent Tracker
             </button>
+
+            {/* More Menu for Additional Features */}
+            <div className="relative">
+              <button
+                onClick={() => setActiveTab("maintenance")}
+                className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+                  ["maintenance", "announcements", "contacts", "inventory", "todos", "receipts"].includes(activeTab)
+                    ? "border-green-500 text-green-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                More
+              </button>
+              {["maintenance", "announcements", "contacts", "inventory", "todos", "receipts"].includes(activeTab) && (
+                <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-48">
+                  <div className="py-2">
+                    <button
+                      onClick={() => setActiveTab("maintenance")}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "maintenance" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
+                    >
+                      <Wrench className="inline h-4 w-4 mr-2" />
+                      Maintenance
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("announcements")}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "announcements" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
+                    >
+                      <Bell className="inline h-4 w-4 mr-2" />
+                      Announcements
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("contacts")}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "contacts" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
+                    >
+                      <Users className="inline h-4 w-4 mr-2" />
+                      Contacts
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("inventory")}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "inventory" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
+                    >
+                      <Package className="inline h-4 w-4 mr-2" />
+                      Inventory
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("todos")}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "todos" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
+                    >
+                      <CheckCircle className="inline h-4 w-4 mr-2" />
+                      Tasks
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("receipts")}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "receipts" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
+                    >
+                      <FileText className="inline h-4 w-4 mr-2" />
+                      Receipts
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
