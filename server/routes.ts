@@ -727,6 +727,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/admin/inquiries/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteInquiry(id);
+      res.json({ message: "Inquiry deleted successfully" });
+    } catch (error) {
+      console.error("Delete inquiry error:", error);
+      res.status(500).json({ message: "Failed to delete inquiry", error: error.message });
+    }
+  });
+
   app.get("/api/admin/contacts", simpleAdminAuth, async (req, res) => {
     try {
       const contacts = await storage.getContacts();

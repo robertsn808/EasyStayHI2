@@ -60,6 +60,7 @@ export interface IStorage {
   createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
   getInquiries(): Promise<Inquiry[]>;
   updateInquiryStatus(id: number, status: string): Promise<Inquiry>;
+  deleteInquiry(id: number): Promise<void>;
 
   // Contact operations
   createContact(contact: InsertContact): Promise<Contact>;
@@ -207,6 +208,10 @@ export class DatabaseStorage implements IStorage {
   async updateInquiryStatus(id: number, status: string): Promise<Inquiry> {
     const [result] = await db.update(inquiries).set({ status }).where(eq(inquiries.id, id)).returning();
     return result;
+  }
+
+  async deleteInquiry(id: number): Promise<void> {
+    await db.delete(inquiries).where(eq(inquiries.id, id));
   }
 
   // Contact operations
