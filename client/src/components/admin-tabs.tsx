@@ -59,7 +59,8 @@ export default function AdminTabs() {
     <Card className="shadow-sm">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <div className="border-b border-gray-200">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-11">
+            <TabsTrigger value="properties">Properties</TabsTrigger>
             <TabsTrigger value="inquiries" className="relative">
               Inquiries
               {inquiries?.length > 0 && (
