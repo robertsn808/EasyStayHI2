@@ -14,10 +14,9 @@ import backgroundImage from "@assets/image_1749351216300.png";
 import AdminTabs from "@/components/admin-tabs";
 
 type TabType = 
-  | "rooms" 
-  | "buildings"
-  | "guests" 
-  | "qr-codes" 
+  | "934" 
+  | "949"
+  | "payment-tracker" 
   | "maintenance" 
   | "inquiries" 
   | "payments" 
@@ -30,7 +29,7 @@ type TabType =
   | "settings";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<TabType>("rooms");
+  const [activeTab, setActiveTab] = useState<TabType>("934");
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
   const [, setLocation] = useLocation();
@@ -243,26 +242,26 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Mobile Overview Cards */}
         <div className="lg:hidden grid grid-cols-4 gap-2 mb-6">
-          <Card className={`${activeTab === "rooms" ? "bg-green-100 border-green-300" : "bg-green-50 border-green-200"} cursor-pointer`}
-            onClick={() => setActiveTab("rooms")}
+          <Card className={`${activeTab === "934" ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"} cursor-pointer`}
+            onClick={() => setActiveTab("934")}
           >
             <CardContent className="p-2">
               <div className="text-center">
-                <Home className="h-4 w-4 text-green-500 mx-auto mb-1" />
-                <p className="text-xs font-medium text-green-900">Rooms</p>
-                <p className="text-sm font-bold text-green-700">{Array.isArray(rooms) ? rooms.length : 0}</p>
+                <Building className="h-4 w-4 text-blue-500 mx-auto mb-1" />
+                <p className="text-xs font-medium text-blue-900">934</p>
+                <p className="text-sm font-bold text-blue-700">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 10).length : 0}</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className={`${activeTab === "guests" ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"} cursor-pointer`}
-            onClick={() => setActiveTab("guests")}
+          <Card className={`${activeTab === "949" ? "bg-purple-100 border-purple-300" : "bg-purple-50 border-purple-200"} cursor-pointer`}
+            onClick={() => setActiveTab("949")}
           >
             <CardContent className="p-2">
               <div className="text-center">
-                <Users className="h-4 w-4 text-blue-500 mx-auto mb-1" />
-                <p className="text-xs font-medium text-blue-900">Guests</p>
-                <p className="text-sm font-bold text-blue-700">{Array.isArray(guests) ? guests.length : 0}</p>
+                <Building className="h-4 w-4 text-purple-500 mx-auto mb-1" />
+                <p className="text-xs font-medium text-purple-900">949</p>
+                <p className="text-sm font-bold text-purple-700">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 11).length : 0}</p>
               </div>
             </CardContent>
           </Card>
@@ -297,47 +296,47 @@ export default function AdminDashboard() {
           <div className="hidden lg:block w-80 space-y-4 flex-shrink-0">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Overview</h2>
             
-            {/* Main Management Grid */}
+            {/* Building Management Grid */}
             <div className="grid grid-cols-2 gap-3 mb-4">
-              <Card className={`${activeTab === "properties" ? "bg-green-100 border-green-300" : "bg-green-50 border-green-200"} cursor-pointer`}
-                onClick={() => setActiveTab("properties")}
+              <Card className={`${activeTab === "934" ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"} cursor-pointer`}
+                onClick={() => setActiveTab("934")}
               >
                 <CardContent className="p-3">
                   <div className="flex items-center gap-3">
-                    <Home className="h-4 w-4 text-green-500 flex-shrink-0" />
+                    <Building className="h-4 w-4 text-blue-500 flex-shrink-0" />
                     <div>
-                      <h3 className="text-xs font-semibold text-green-900">Properties</h3>
-                      <p className="text-lg font-bold text-green-700">2</p>
+                      <h3 className="text-xs font-semibold text-blue-900">934 Kapahulu</h3>
+                      <p className="text-lg font-bold text-blue-700">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 10).length : 0} rooms</p>
+                      <p className="text-xs text-blue-600">{Array.isArray(inquiries) ? inquiries.filter((i: any) => i.message?.toLowerCase().includes('934') || i.message?.toLowerCase().includes('kapahulu') || (!i.message?.toLowerCase().includes('949') && !i.message?.toLowerCase().includes('kawaiahao'))).length : 0} inquiries</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-
-
-              <Card className={`${activeTab === "guests" ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"} cursor-pointer`}
-                onClick={() => setActiveTab("guests")}
+              <Card className={`${activeTab === "949" ? "bg-purple-100 border-purple-300" : "bg-purple-50 border-purple-200"} cursor-pointer`}
+                onClick={() => setActiveTab("949")}
               >
                 <CardContent className="p-3">
                   <div className="flex items-center gap-3">
-                    <Users className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                    <Building className="h-4 w-4 text-purple-500 flex-shrink-0" />
                     <div>
-                      <h3 className="text-xs font-semibold text-blue-900">Guests</h3>
-                      <p className="text-lg font-bold text-blue-700">{Array.isArray(guests) ? guests.length : 0}</p>
+                      <h3 className="text-xs font-semibold text-purple-900">949 Kawaiahao</h3>
+                      <p className="text-lg font-bold text-purple-700">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 11).length : 0} rooms</p>
+                      <p className="text-xs text-purple-600">{Array.isArray(inquiries) ? inquiries.filter((i: any) => i.message?.toLowerCase().includes('949') || i.message?.toLowerCase().includes('kawaiahao')).length : 0} inquiries</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "qr-codes" ? "bg-purple-100 border-purple-300" : "bg-purple-50 border-purple-200"} cursor-pointer`}
-                onClick={() => setActiveTab("qr-codes")}
+              <Card className={`${activeTab === "payment-tracker" ? "bg-green-100 border-green-300" : "bg-green-50 border-green-200"} cursor-pointer`}
+                onClick={() => setActiveTab("payment-tracker")}
               >
                 <CardContent className="p-3">
                   <div className="flex items-center gap-3">
-                    <QrCode className="h-4 w-4 text-purple-500 flex-shrink-0" />
+                    <DollarSign className="h-4 w-4 text-green-500 flex-shrink-0" />
                     <div>
-                      <h3 className="text-xs font-semibold text-purple-900">QR Codes</h3>
-                      <p className="text-lg font-bold text-purple-700">18</p>
+                      <h3 className="text-xs font-semibold text-green-900">Payment Tracker</h3>
+                      <p className="text-lg font-bold text-green-700">{Array.isArray(payments) ? payments.length : 0}</p>
                     </div>
                   </div>
                 </CardContent>
