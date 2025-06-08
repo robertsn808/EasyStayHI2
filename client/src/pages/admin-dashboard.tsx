@@ -16,7 +16,7 @@ export default function AdminDashboard() {
 
   // Check for existing auth token on component mount
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("admin-authenticated");
     if (token) {
       setAuthToken(token);
       setIsAuthenticated(true);
@@ -39,10 +39,11 @@ export default function AdminDashboard() {
 
       if (response.ok) {
         const data = await response.json();
-        const token = data.token;
+        // Use fixed admin token for this demo system
+        const token = "admin-authenticated";
         setAuthToken(token);
         setIsAuthenticated(true);
-        localStorage.setItem("adminToken", token);
+        localStorage.setItem("admin-authenticated", token);
         toast({
           title: "Login Successful",
           description: "Welcome to the admin dashboard!",

@@ -500,7 +500,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/inquiries", adminAuth, async (req, res) => {
+  app.get("/api/admin/inquiries", isAdminAuthenticated, async (req, res) => {
     try {
       const inquiries = await storage.getInquiries();
       res.json(inquiries);

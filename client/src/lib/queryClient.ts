@@ -20,7 +20,7 @@ export async function apiRequest(
   
   // Add admin token for admin endpoints
   if (url.includes('/api/admin/')) {
-    const adminToken = localStorage.getItem("adminToken");
+    const adminToken = localStorage.getItem("admin-authenticated");
     if (adminToken) {
       headers["Authorization"] = `Bearer ${adminToken}`;
     }
@@ -48,7 +48,7 @@ export const getQueryFn: <T>(options: {
     
     // Add admin token for admin endpoints
     if (url.includes('/api/admin/')) {
-      const adminToken = localStorage.getItem("adminToken");
+      const adminToken = localStorage.getItem("admin-authenticated");
       if (adminToken) {
         headers["Authorization"] = `Bearer ${adminToken}`;
       }
