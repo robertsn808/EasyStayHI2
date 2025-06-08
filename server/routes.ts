@@ -88,7 +88,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/qr/generate", async (req, res) => {
     const { roomId } = req.body;
     try {
-      const qrCode = await generateTenantQRCode(roomId);
+      const rooms = await storage.getRooms();
+      const room = rooms.find(r => r.id === roomId);
+      if (!room) {
+        return res.status(404).json({ error: "Room not found" });
+      }
+      const qrCode = await generateTenantQRCode(roomId, room.number);
       res.json({ qrCode });
     } catch (error) {
       console.error("Error generating QR code:", error);
@@ -303,7 +308,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/rooms/:roomId/qr", async (req, res) => {
     try {
       const roomId = parseInt(req.params.roomId);
-      const qrCode = await generateTenantQRCode(roomId);
+      const rooms = await storage.getRooms();
+      const room = rooms.find(r => r.id === roomId);
+      if (!room) {
+        return res.status(404).json({ error: "Room not found" });
+      }
+      const qrCode = await generateTenantQRCode(roomId, room.number);
       res.json({ qrCode, roomId });
     } catch (error) {
       console.error("Error generating QR code:", error);
@@ -800,7 +810,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/rooms/:id/qr", simpleAdminAuth, async (req, res) => {
     try {
       const roomId = parseInt(req.params.id);
-      const qrCode = await generateTenantQRCode(roomId);
+      const rooms = await storage.getRooms();
+      const room = rooms.find(r => r.id === roomId);
+      if (!room) {
+        return res.status(404).json({ message: "Room not found" });
+      }
+      const qrCode = await generateTenantQRCode(roomId, room.number);
       res.json({ qrCode });
     } catch (error) {
       res.status(500).json({ message: "Failed to generate QR code" });
