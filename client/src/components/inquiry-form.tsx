@@ -23,6 +23,7 @@ import { insertInquirySchema, type InsertInquiry } from "@shared/schema";
 export default function InquiryForm() {
   const { toast } = useToast();
   const [selectedPeriod, setSelectedPeriod] = useState("");
+  const [contactPreference, setContactPreference] = useState("");
   const [hasReadAgreement, setHasReadAgreement] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
 
@@ -62,9 +63,19 @@ export default function InquiryForm() {
   });
 
   const onSubmit = (data: InsertInquiry) => {
+    if (!contactPreference) {
+      toast({
+        title: "Error",
+        description: "Please select a contact preference.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const formData = {
       ...data,
       message: `${data.message || ''} | Rental Period: ${selectedPeriod}`,
+      contactPreference,
     };
     mutation.mutate(formData);
   };
@@ -148,15 +159,32 @@ export default function InquiryForm() {
             />
           </div>
           
+          <div>
+            <Label className="block text-sm font-medium text-gray-700 mb-2">
+              How would you like us to contact you?
+            </Label>
+            <Select value={contactPreference} onValueChange={setContactPreference} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Select contact method..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="phone">Phone Call</SelectItem>
+                <SelectItem value="text">Text Message</SelectItem>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="any">Any Method</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
           <div className="md:col-span-2">
             <Label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-              Message
+              Additional Message (Optional)
             </Label>
             <Textarea
               id="message"
               {...form.register("message")}
               rows={4}
-              placeholder="Tell us about your rental needs..."
+              placeholder="Tell us about your rental needs, special requests, or any questions..."
               className="w-full"
             />
           </div>

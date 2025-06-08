@@ -169,7 +169,8 @@ export const inquiries = pgTable("inquiries", {
   name: varchar("name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 50 }),
-  message: text("message").notNull(),
+  message: text("message"),
+  contactPreference: varchar("contact_preference", { length: 50 }).default("any"), // phone, text, email, any
   status: varchar("status", { length: 50 }).default("new"), // new, contacted, closed
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
