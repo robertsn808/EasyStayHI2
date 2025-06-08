@@ -204,7 +204,7 @@ export default function Landing() {
             <div>
               <Phone className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 sm:mb-4 text-green-600" />
               <h3 className="font-semibold mb-1 sm:mb-2 text-sm sm:text-base">Call Us</h3>
-              <p className="text-sm sm:text-base text-gray-600">(808) 555-0123</p>
+              <p className="text-sm sm:text-base text-gray-600">(808) 219-6562</p>
             </div>
             <div>
               <Mail className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 sm:mb-4 text-purple-600" />
