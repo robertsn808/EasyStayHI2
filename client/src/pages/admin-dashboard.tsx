@@ -186,19 +186,7 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "buildings" ? "bg-teal-100 border-teal-300" : "bg-teal-50 border-teal-200"} cursor-pointer`}
-                onClick={() => setActiveTab("buildings")}
-              >
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-3">
-                    <Building className="h-4 w-4 text-teal-500 flex-shrink-0" />
-                    <div>
-                      <h3 className="text-xs font-semibold text-teal-900">Buildings</h3>
-                      <p className="text-lg font-bold text-teal-700">2</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+
 
               <Card className={`${activeTab === "guests" ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"} cursor-pointer`}
                 onClick={() => setActiveTab("guests")}

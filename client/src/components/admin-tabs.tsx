@@ -14,7 +14,7 @@ import { ReceiptsTab } from "@/components/ReceiptsTab";
 import { TodosTab } from "@/components/TodosTab";
 import { AnnouncementsTab } from "@/components/AnnouncementsTab";
 import { SettingsTab } from "@/components/SettingsTab";
-import { BuildingsTab } from "@/components/BuildingsTab";
+import { PropertiesTab } from "@/components/PropertiesTab";
 import QRCodeManager from "@/components/QRCodeManager";
 import GuestProfileManager from "@/components/GuestProfileManager";
 import AdminRoomGrid from "@/components/admin-room-grid";
@@ -79,6 +79,11 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
     enabled: isAdminAuthenticated,
   });
 
+  const { data: buildings } = useQuery({
+    queryKey: ["/api/admin/buildings"],
+    enabled: isAdminAuthenticated,
+  });
+
   const { data: rooms } = useQuery({
     queryKey: ["/api/rooms"],
     enabled: isAdminAuthenticated,
@@ -115,11 +120,7 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
       <Card className="w-full">
         <div className="p-6">
           {selectedTab === "properties" && (
-            <AdminRoomGrid rooms={Array.isArray(rooms) ? rooms : []} />
-          )}
-
-          {selectedTab === "buildings" && (
-            <BuildingsTab buildings={Array.isArray(rooms) ? [] : []} rooms={Array.isArray(rooms) ? rooms : []} />
+            <PropertiesTab buildings={Array.isArray(buildings) ? buildings : []} rooms={Array.isArray(rooms) ? rooms : []} />
           )}
 
           {selectedTab === "guests" && <GuestProfileManager />}
