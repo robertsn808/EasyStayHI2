@@ -783,6 +783,63 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Weekly Schedule Overview */}
+            <Card className="bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200">
+              <CardContent className="p-4">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-sm font-semibold text-slate-900">Weekly Schedule</h3>
+                      <p className="text-2xl font-bold text-slate-700">{Array.isArray(calendarEvents) ? calendarEvents.length : 0}</p>
+                      <p className="text-xs text-slate-600">Events this week</p>
+                    </div>
+                    <Calendar className="h-5 w-5 text-slate-500" />
+                  </div>
+                  
+                  {/* Quick Schedule Preview */}
+                  <div className="space-y-2 text-xs">
+                    {Array.isArray(calendarEvents) && calendarEvents.slice(0, 3).map((event: any, index: number) => (
+                      <div key={event.id || index} className="flex justify-between items-center p-2 bg-white rounded border">
+                        <div className="flex-1">
+                          <p className="font-medium text-slate-800 truncate">{event.title}</p>
+                          <p className="text-slate-500">{new Date(event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                        </div>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${
+                            event.type === 'cleaning' ? 'border-blue-300 text-blue-700' :
+                            event.type === 'maintenance' ? 'border-orange-300 text-orange-700' :
+                            event.type === 'inspection' ? 'border-purple-300 text-purple-700' :
+                            'border-gray-300 text-gray-700'
+                          }`}
+                        >
+                          {event.type}
+                        </Badge>
+                      </div>
+                    ))}
+                    
+                    {(!Array.isArray(calendarEvents) || calendarEvents.length === 0) && (
+                      <div className="text-center py-2 text-slate-500">
+                        No events scheduled
+                      </div>
+                    )}
+                  </div>
+
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="w-full text-xs h-8"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTab("calendar");
+                    }}
+                  >
+                    View Full Schedule
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Main Content Area */}
