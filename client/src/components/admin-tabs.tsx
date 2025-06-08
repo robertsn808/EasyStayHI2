@@ -276,10 +276,10 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                       })
                       .map((room: any) => {
                         return (
-                          <Card key={room.id} className="hover:shadow-sm transition-shadow">
+                          <Card key={room.id} className="hover:shadow-sm transition-shadow border-l-4 border-l-blue-400 bg-blue-50/30">
                             <CardContent className="p-2">
                               <div className="flex justify-between items-center mb-1">
-                                <h3 className="font-bold text-sm">#{room.number}</h3>
+                                <h3 className="font-bold text-sm text-blue-800">#{room.number}</h3>
                                 <Badge 
                                   variant={
                                     room.status === 'occupied' ? 'destructive' :
@@ -294,7 +294,7 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                               </div>
                               
                               {(room.tenantName || room.accessPin) && (
-                                <div className="text-xs text-gray-600 mb-1">
+                                <div className="text-xs text-blue-700 mb-1">
                                   {room.tenantName && <p className="truncate">{room.tenantName}</p>}
                                   {room.accessPin && <p>PIN: {room.accessPin}</p>}
                                 </div>
@@ -304,12 +304,12 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                                 <Button 
                                   size="sm" 
                                   variant="outline" 
-                                  className="text-xs px-1 py-0 h-5 flex-1"
+                                  className="text-xs px-1 py-0 h-5 flex-1 border-blue-300 text-blue-700 hover:bg-blue-100"
                                   onClick={() => handleEditRoom(room)}
                                 >
                                   Edit
                                 </Button>
-                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1">
+                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1 border-blue-300 text-blue-700 hover:bg-blue-100">
                                   Status
                                 </Button>
                               </div>
@@ -334,10 +334,10 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                       })
                       .map((room: any) => {
                         return (
-                          <Card key={room.id} className="hover:shadow-sm transition-shadow">
+                          <Card key={room.id} className="hover:shadow-sm transition-shadow border-l-4 border-l-purple-400 bg-purple-50/30">
                             <CardContent className="p-2">
                               <div className="flex justify-between items-center mb-1">
-                                <h3 className="font-bold text-sm">#{room.number}</h3>
+                                <h3 className="font-bold text-sm text-purple-800">#{room.number}</h3>
                                 <Badge 
                                   variant={
                                     room.status === 'occupied' ? 'destructive' :
@@ -352,7 +352,7 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                               </div>
                               
                               {(room.tenantName || room.accessPin) && (
-                                <div className="text-xs text-gray-600 mb-1">
+                                <div className="text-xs text-purple-700 mb-1">
                                   {room.tenantName && <p className="truncate">{room.tenantName}</p>}
                                   {room.accessPin && <p>PIN: {room.accessPin}</p>}
                                 </div>
@@ -362,12 +362,12 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
                                 <Button 
                                   size="sm" 
                                   variant="outline" 
-                                  className="text-xs px-1 py-0 h-5 flex-1"
+                                  className="text-xs px-1 py-0 h-5 flex-1 border-purple-300 text-purple-700 hover:bg-purple-100"
                                   onClick={() => handleEditRoom(room)}
                                 >
                                   Edit
                                 </Button>
-                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1">
+                                <Button size="sm" variant="outline" className="text-xs px-1 py-0 h-5 flex-1 border-purple-300 text-purple-700 hover:bg-purple-100">
                                   Status
                                 </Button>
                               </div>
