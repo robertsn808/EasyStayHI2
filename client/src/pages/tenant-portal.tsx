@@ -192,18 +192,57 @@ export default function TenantPortal() {
     setIsScanningQR(false);
   };
 
-  const handleQRScan = (scannedUrl: string) => {
-    const urlMatch = scannedUrl.match(/\/tenant\/(\d+)/);
-    if (urlMatch) {
-      const scannedRoomId = parseInt(urlMatch[1]);
-      window.location.href = `/tenant/${scannedRoomId}`;
+  const handleQRScan = (scannedData: string) => {
+    // Handle both URL format and access token format
+    let scannedRoomId: number;
+    
+    if (scannedData.includes('/tenant/')) {
+      const urlMatch = scannedData.match(/\/tenant\/(\d+)/);
+      if (urlMatch) {
+        scannedRoomId = parseInt(urlMatch[1]);
+      } else {
+        toast({
+          title: "Invalid QR Code",
+          description: "This QR code is not valid for tenant access.",
+          variant: "destructive",
+        });
+        stopQRScanner();
+        return;
+      }
+    } else if (scannedData.includes('tenant-access-')) {
+      const accessMatch = scannedData.match(/tenant-access-(\d+)/);
+      if (accessMatch) {
+        scannedRoomId = parseInt(accessMatch[1]);
+      } else {
+        toast({
+          title: "Invalid QR Code",
+          description: "This QR code is not valid for tenant access.",
+          variant: "destructive",
+        });
+        stopQRScanner();
+        return;
+      }
     } else {
       toast({
         title: "Invalid QR Code",
         description: "This QR code is not valid for tenant access.",
         variant: "destructive",
       });
+      stopQRScanner();
+      return;
     }
+
+    // Auto-sign in with detected room - navigate to the correct room URL
+    window.location.href = `/tenant/${scannedRoomId}`;
+    
+    // Also trigger sign in for immediate feedback
+    signInMutation.mutate({
+      roomId: scannedRoomId,
+      tenantName: `Guest ${scannedRoomId}`,
+      tenantEmail: `guest${scannedRoomId}@easystay.hi`,
+      tenantPhone: ""
+    });
+    
     stopQRScanner();
   };
 
@@ -398,10 +437,18 @@ export default function TenantPortal() {
                     }}
                   />
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-48 h-48 border-2 border-white rounded-lg opacity-75"></div>
+                    <div className="w-48 h-48 border-2 border-green-400 rounded-lg opacity-75 animate-pulse"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-40 h-40 border border-white/50 rounded-lg"></div>
+                    </div>
+                  </div>
+                  <div className="absolute top-2 left-2 right-2 text-center">
+                    <p className="text-green-400 text-xs bg-black/70 rounded px-2 py-1">
+                      QR Scanner Active - Searching for codes
+                    </p>
                   </div>
                   <div className="absolute bottom-2 left-2 right-2 text-center">
-                    <p className="text-white text-sm bg-black bg-opacity-50 rounded px-2 py-1">
+                    <p className="text-white text-sm bg-black/70 rounded px-2 py-1">
                       Position QR code within the square
                     </p>
                   </div>
