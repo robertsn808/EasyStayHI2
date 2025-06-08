@@ -262,13 +262,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin auth middleware - simplified check
+  const adminAuth = (req: any, res: any, next: any) => {
+    const authHeader = req.headers.authorization;
+    
+    if (authHeader === "Bearer admin-authenticated") {
+      next();
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  };
+
   // Simple admin login endpoint
   app.post("/api/admin/login", async (req, res) => {
     const { username, password } = req.body;
     
     if (username === "admin" && password === "admin123") {
-      // Set a simple admin token in session
-      (req.session as any).adminToken = "admin-authenticated";
       res.json({ 
         success: true, 
         user: { id: "admin", email: "admin@easystay.com", role: "admin" },
@@ -278,20 +287,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(401).json({ error: "Invalid credentials" });
     }
   });
-
-  // Admin auth middleware - simplified check
-  const adminAuth = (req: any, res: any, next: any) => {
-    const authHeader = req.headers.authorization;
-    const sessionToken = (req.session as any)?.adminToken;
-    
-    console.log("Auth check - Header:", authHeader, "Session:", sessionToken);
-    
-    if (authHeader === "Bearer admin-authenticated" || sessionToken === "admin-authenticated") {
-      next();
-    } else {
-      res.status(401).json({ message: "Unauthorized" });
-    }
-  };
 
   // Generate QR code for a specific room
   app.get("/api/rooms/:roomId/qr", async (req, res) => {
@@ -504,7 +499,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/inquiries", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/inquiries", adminAuth, async (req, res) => {
     try {
       const inquiries = await storage.getInquiries();
       res.json(inquiries);
