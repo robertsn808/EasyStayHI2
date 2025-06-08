@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Home, MessageSquare, Eye, Phone, Mail } from "lucide-react";
+import { Plus, Home, MessageSquare, Eye, Phone, Mail, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface InquiriesTabProps {
@@ -26,6 +26,9 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
 
   // Fetch available rooms for assignment
   const { data: rooms } = useQuery({ queryKey: ["/api/rooms"] });
+  
+  // Fetch buildings data
+  const { data: buildings } = useQuery({ queryKey: ["/api/admin/buildings"] });
 
   const updateInquiryMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
@@ -108,6 +111,30 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
     updateInquiryMutation.mutate({ id: inquiry.id, status: 'resolved' });
   };
 
+  // Helper functions for room status colors
+  const getRoomStatusColor = (status: string) => {
+    switch (status) {
+      case 'occupied': return 'bg-red-500';
+      case 'available': return 'bg-green-500';
+      case 'maintenance': return 'bg-yellow-500';
+      case 'cleaning': return 'bg-blue-500';
+      default: return 'bg-gray-400';
+    }
+  };
+
+  // Group inquiries by building preference (934 Kapahulu vs 949 Kawaiahao)
+  const inquiriesByBuilding = {
+    kapahulu: Array.isArray(inquiries) ? inquiries.filter((inquiry: any) => 
+      inquiry.message?.toLowerCase().includes('934') || 
+      inquiry.message?.toLowerCase().includes('kapahulu') ||
+      (!inquiry.message?.toLowerCase().includes('949') && !inquiry.message?.toLowerCase().includes('kawaiahao'))
+    ) : [],
+    kawaiahao: Array.isArray(inquiries) ? inquiries.filter((inquiry: any) => 
+      inquiry.message?.toLowerCase().includes('949') || 
+      inquiry.message?.toLowerCase().includes('kawaiahao')
+    ) : []
+  };
+
   const handleReply = (inquiry: any) => {
     // Open email client with pre-filled response
     const subject = `Re: Your inquiry about our property`;
@@ -173,7 +200,61 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
   const availableRooms = rooms ? rooms.filter((room: any) => room.status === 'available') : [];
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Building Overview */}
+      {Array.isArray(buildings) && Array.isArray(rooms) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Building Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {buildings.map((building: any) => {
+                const buildingRooms = rooms.filter((room: any) => room.buildingId === building.id);
+                return (
+                  <div key={building.id} className="space-y-3">
+                    <h3 className="font-medium text-lg">{building.name}</h3>
+                    <div className="grid grid-cols-4 gap-2">
+                      {buildingRooms.map((room: any) => (
+                        <div
+                          key={room.id}
+                          className="relative group cursor-pointer"
+                          title={`Room ${room.number} - ${room.status}`}
+                        >
+                          <div
+                            className={`w-8 h-8 rounded ${getRoomStatusColor(room.status)} flex items-center justify-center text-white text-xs font-medium`}
+                          >
+                            {room.number}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-green-500 rounded"></div>
+                        <span>Available</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-red-500 rounded"></div>
+                        <span>Occupied</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                        <span>Maintenance</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                        <span>Cleaning</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Property Inquiries</h3>
         <div className="flex items-center gap-2">
@@ -434,91 +515,144 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
         </div>
       </div>
       
-      {inquiries.length === 0 ? (
+      {/* Inquiries by Building */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 934 Kapahulu Ave Inquiries */}
         <Card>
-          <CardContent className="p-6 text-center text-gray-500">
-            No inquiries at this time.
+          <CardHeader>
+            <CardTitle className="text-lg text-blue-600">934 Kapahulu Ave</CardTitle>
+            <Badge variant="secondary">{inquiriesByBuilding.kapahulu.length} inquiries</Badge>
+          </CardHeader>
+          <CardContent>
+            {inquiriesByBuilding.kapahulu.length === 0 ? (
+              <p className="text-center text-gray-500 py-4">No inquiries for this building</p>
+            ) : (
+              <div className="space-y-3">
+                {inquiriesByBuilding.kapahulu.map((inquiry: any, index: number) => (
+                  <Card key={inquiry.id || index} className="border-l-4 border-l-blue-500">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{inquiry.name}</span>
+                          {inquiry.message && inquiry.message.trim() && (
+                            <MessageSquare className="w-4 h-4 text-blue-500" />
+                          )}
+                        </div>
+                        <Badge variant={inquiry.status === 'pending' ? 'destructive' : 'default'} className="text-xs">
+                          {inquiry.status || 'pending'}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-gray-600 mb-3">
+                        <div className="flex items-center gap-1">
+                          <Mail className="w-3 h-3" />
+                          <span>{inquiry.email}</span>
+                        </div>
+                        {inquiry.phone && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <Phone className="w-3 h-3" />
+                            <span>{inquiry.phone}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {inquiry.message && inquiry.message.trim() && (
+                          <Button size="sm" variant="outline" onClick={() => handleViewMessage(inquiry)} className="text-xs h-7">
+                            <Eye className="w-3 h-3 mr-1" />
+                            View
+                          </Button>
+                        )}
+                        <Button size="sm" variant="outline" onClick={() => handleReply(inquiry)} className="text-xs h-7">
+                          Reply
+                        </Button>
+                        {inquiry.status !== 'resolved' && availableRooms.length > 0 && (
+                          <Button size="sm" onClick={() => handleAssignRoom(inquiry)} className="bg-green-600 hover:bg-green-700 text-white text-xs h-7">
+                            <Home className="w-3 h-3 mr-1" />
+                            Assign
+                          </Button>
+                        )}
+                        <Button size="sm" variant="outline" onClick={() => handleMarkResolved(inquiry)} disabled={inquiry.status === 'resolved'} className="text-xs h-7">
+                          {inquiry.status === 'resolved' ? 'Resolved' : 'Resolve'}
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => deleteInquiryMutation.mutate(inquiry.id)} disabled={deleteInquiryMutation.isPending} className="text-red-600 hover:text-red-700 hover:bg-red-50 text-xs h-7">
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
-      ) : (
-        <div className="space-y-4">
-          {inquiries.map((inquiry: any, index: number) => (
-            <Card key={inquiry.id || index}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-base">{inquiry.name}</CardTitle>
-                    {inquiry.message && inquiry.message.trim() && (
-                      <MessageSquare className="w-4 h-4 text-blue-500" />
-                    )}
-                  </div>
-                  <Badge variant={inquiry.status === 'pending' ? 'destructive' : 'default'}>
-                    {inquiry.status || 'pending'}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 mb-3">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Mail className="w-4 h-4" />
-                    <span>{inquiry.email}</span>
-                  </div>
-                  {inquiry.phone && (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Phone className="w-4 h-4" />
-                      <span>{inquiry.phone}</span>
-                    </div>
-                  )}
-                  {inquiry.contactPreference && (
-                    <div className="text-sm text-gray-500">
-                      <span>Prefers: {inquiry.contactPreference === 'any' ? 'Any method' : inquiry.contactPreference}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  {inquiry.message && inquiry.message.trim() && (
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => handleViewMessage(inquiry)}
-                    >
-                      <Eye className="w-3 h-3 mr-1" />
-                      View Message
-                    </Button>
-                  )}
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    onClick={() => handleReply(inquiry)}
-                    disabled={updateInquiryMutation.isPending}
-                  >
-                    Reply
-                  </Button>
-                  {inquiry.status !== 'resolved' && availableRooms.length > 0 && (
-                    <Button 
-                      size="sm" 
-                      onClick={() => handleAssignRoom(inquiry)}
-                      disabled={assignRoomMutation.isPending}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      <Home className="w-3 h-3 mr-1" />
-                      Assign Room
-                    </Button>
-                  )}
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    onClick={() => handleMarkResolved(inquiry)}
-                    disabled={updateInquiryMutation.isPending || inquiry.status === 'resolved'}
-                  >
-                    {inquiry.status === 'resolved' ? 'Resolved' : 'Mark Resolved'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+
+        {/* 949 Kawaiahao St Inquiries */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg text-purple-600">949 Kawaiahao St</CardTitle>
+            <Badge variant="secondary">{inquiriesByBuilding.kawaiahao.length} inquiries</Badge>
+          </CardHeader>
+          <CardContent>
+            {inquiriesByBuilding.kawaiahao.length === 0 ? (
+              <p className="text-center text-gray-500 py-4">No inquiries for this building</p>
+            ) : (
+              <div className="space-y-3">
+                {inquiriesByBuilding.kawaiahao.map((inquiry: any, index: number) => (
+                  <Card key={inquiry.id || index} className="border-l-4 border-l-purple-500">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{inquiry.name}</span>
+                          {inquiry.message && inquiry.message.trim() && (
+                            <MessageSquare className="w-4 h-4 text-purple-500" />
+                          )}
+                        </div>
+                        <Badge variant={inquiry.status === 'pending' ? 'destructive' : 'default'} className="text-xs">
+                          {inquiry.status || 'pending'}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-gray-600 mb-3">
+                        <div className="flex items-center gap-1">
+                          <Mail className="w-3 h-3" />
+                          <span>{inquiry.email}</span>
+                        </div>
+                        {inquiry.phone && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <Phone className="w-3 h-3" />
+                            <span>{inquiry.phone}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {inquiry.message && inquiry.message.trim() && (
+                          <Button size="sm" variant="outline" onClick={() => handleViewMessage(inquiry)} className="text-xs h-7">
+                            <Eye className="w-3 h-3 mr-1" />
+                            View
+                          </Button>
+                        )}
+                        <Button size="sm" variant="outline" onClick={() => handleReply(inquiry)} className="text-xs h-7">
+                          Reply
+                        </Button>
+                        {inquiry.status !== 'resolved' && availableRooms.length > 0 && (
+                          <Button size="sm" onClick={() => handleAssignRoom(inquiry)} className="bg-green-600 hover:bg-green-700 text-white text-xs h-7">
+                            <Home className="w-3 h-3 mr-1" />
+                            Assign
+                          </Button>
+                        )}
+                        <Button size="sm" variant="outline" onClick={() => handleMarkResolved(inquiry)} disabled={inquiry.status === 'resolved'} className="text-xs h-7">
+                          {inquiry.status === 'resolved' ? 'Resolved' : 'Resolve'}
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => deleteInquiryMutation.mutate(inquiry.id)} disabled={deleteInquiryMutation.isPending} className="text-red-600 hover:text-red-700 hover:bg-red-50 text-xs h-7">
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
