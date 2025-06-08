@@ -14,6 +14,7 @@ import { CalendarTab } from "@/components/CalendarTab";
 import { InventoryTab } from "@/components/InventoryTab";
 import { ReceiptsTab } from "@/components/ReceiptsTab";
 import { TodosTab } from "@/components/TodosTab";
+import QRCodeManager from "@/components/QRCodeManager";
 
 
 export default function AdminTabs() {
@@ -73,6 +74,7 @@ export default function AdminTabs() {
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="receipts">Receipts</TabsTrigger>
             <TabsTrigger value="todos">Todo List</TabsTrigger>
+            <TabsTrigger value="qrcodes">QR Codes</TabsTrigger>
           </TabsList>
         </div>
 
@@ -106,6 +108,10 @@ export default function AdminTabs() {
 
         <TabsContent value="todos" className="p-6">
           <TodosTab todos={todos} />
+        </TabsContent>
+
+        <TabsContent value="qrcodes" className="p-6">
+          <QRCodeManager />
         </TabsContent>
       </Tabs>
     </Card>

@@ -284,6 +284,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   };
 
+  // Generate QR code for a specific room
+  app.get("/api/rooms/:roomId/qr", async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const qrCode = await generateTenantQRCode(roomId);
+      res.json({ qrCode, roomId });
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+      res.status(500).json({ error: "Failed to generate QR code" });
+    }
+  });
+
+  // Generate QR codes for all rooms in a building
+  app.get("/api/buildings/:buildingId/qr-codes", async (req, res) => {
+    try {
+      const buildingId = parseInt(req.params.buildingId);
+      const rooms = await storage.getRooms();
+      const buildingRooms = rooms.filter(room => room.buildingId === buildingId);
+      
+      const qrCodes = await Promise.all(
+        buildingRooms.map(async (room) => {
+          const qrCode = await generateTenantQRCode(room.id);
+          return {
+            roomId: room.id,
+            roomNumber: room.number,
+            qrCode
+          };
+        })
+      );
+      
+      res.json({ buildingId, qrCodes });
+    } catch (error) {
+      console.error("Error generating QR codes:", error);
+      res.status(500).json({ error: "Failed to generate QR codes" });
+    }
+  });
+
+  // Seed database with buildings and rooms
+  app.post("/api/admin/seed-properties", adminAuth, async (req, res) => {
+    try {
+      // Create buildings
+      const building934 = await storage.createBuilding({
+        name: "934 Kapahulu Ave",
+        address: "934 Kapahulu Ave, Honolulu, HI 96816"
+      });
+
+      const building949 = await storage.createBuilding({
+        name: "949 Kawaiahao St", 
+        address: "949 Kawaiahao St, Honolulu, HI 96813"
+      });
+
+      // Create 8 rooms for 934 Kapahulu Ave
+      const rooms934 = [];
+      for (let i = 1; i <= 8; i++) {
+        const room = await storage.createRoom({
+          number: `${i.toString().padStart(3, '0')}`,
+          buildingId: building934.id,
+          status: "available",
+          size: "Studio",
+          floor: Math.ceil(i / 4),
+          rentalRate: "$100/night, $500/week, $2000/month",
+          rentalPeriod: "flexible"
+        });
+        rooms934.push(room);
+      }
+
+      // Create 10 rooms for 949 Kawaiahao St
+      const rooms949 = [];
+      for (let i = 1; i <= 10; i++) {
+        const room = await storage.createRoom({
+          number: `${i.toString().padStart(3, '0')}`,
+          buildingId: building949.id,
+          status: "available", 
+          size: "Suite",
+          floor: Math.ceil(i / 5),
+          rentalRate: "$50/night, $200/week, $600/month",
+          rentalPeriod: "flexible"
+        });
+        rooms949.push(room);
+      }
+
+      res.json({
+        message: "Properties seeded successfully",
+        buildings: [building934, building949],
+        rooms: [...rooms934, ...rooms949]
+      });
+    } catch (error) {
+      console.error("Error seeding properties:", error);
+      res.status(500).json({ error: "Failed to seed properties" });
+    }
+  });
+
   app.get("/api/admin/announcements", adminAuth, async (req, res) => {
     try {
       const announcements = await storage.getAllAnnouncements();
