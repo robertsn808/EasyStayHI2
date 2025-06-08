@@ -132,68 +132,78 @@ export function QuickAccessTab({
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead) : [];
 
   return (
-    <div className="space-y-6">
-      {/* Quick Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Home className="h-8 w-8 text-blue-600" />
+    <div className="space-y-8">
+      {/* Premium Quick Overview Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <Card className="bg-gradient-to-br from-blue-50/80 to-blue-100/60 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                <Home className="h-6 w-6 text-white" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{totalRooms}</p>
-                <p className="text-xs text-muted-foreground">Total Rooms</p>
+                <p className="text-3xl font-bold text-blue-900">{totalRooms}</p>
+                <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Total Rooms</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="h-8 w-8 text-green-600" />
+        <Card className="bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 border-emerald-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                <CheckCircle className="h-6 w-6 text-white" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{availableRooms}</p>
-                <p className="text-xs text-muted-foreground">Available</p>
+                <p className="text-3xl font-bold text-emerald-900">{availableRooms}</p>
+                <p className="text-sm font-semibold text-emerald-700 uppercase tracking-wide">Available</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Users className="h-8 w-8 text-purple-600" />
+        <Card className="bg-gradient-to-br from-indigo-50/80 to-indigo-100/60 border-indigo-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                <Users className="h-6 w-6 text-white" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{occupiedRooms}</p>
-                <p className="text-xs text-muted-foreground">Occupied</p>
+                <p className="text-3xl font-bold text-indigo-900">{occupiedRooms}</p>
+                <p className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Occupied</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Wrench className="h-8 w-8 text-yellow-600" />
+        <Card className="bg-gradient-to-br from-amber-50/80 to-amber-100/60 border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                <Wrench className="h-6 w-6 text-white" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{maintenanceRooms + cleaningRooms}</p>
-                <p className="text-xs text-muted-foreground">Maintenance</p>
+                <p className="text-3xl font-bold text-amber-900">{maintenanceRooms + cleaningRooms}</p>
+                <p className="text-sm font-semibold text-amber-700 uppercase tracking-wide">Maintenance</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Active Items Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4">
+      {/* Premium Active Items Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-gradient-to-br from-slate-50/80 to-slate-100/60 border-slate-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Users className="h-5 w-5 text-blue-600" />
-                <span className="font-medium">Active Guests</span>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
+                  <Users className="h-5 w-5 text-white" />
+                </div>
+                <span className="font-semibold text-slate-800">Active Guests</span>
               </div>
-              <Badge variant="secondary">{totalGuests}</Badge>
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800 font-bold px-3 py-1">{totalGuests}</Badge>
             </div>
           </CardContent>
         </Card>
