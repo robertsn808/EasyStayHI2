@@ -68,6 +68,11 @@ export default function AdminDashboard() {
     enabled: isAdminAuthenticated,
   });
 
+  const { data: rooms } = useQuery({
+    queryKey: ["/api/rooms"],
+    enabled: isAdminAuthenticated,
+  });
+
   // Check admin authentication on component mount
   useEffect(() => {
     const adminAuth = localStorage.getItem('admin-authenticated');
@@ -178,19 +183,19 @@ export default function AdminDashboard() {
           
           {/* Mobile Overview Cards - All Management Functions */}
           <div className="lg:hidden">
-            <h2 className="text-base font-semibold text-gray-900 mb-3">Quick Overview</h2>
-            <div className="grid grid-cols-3 gap-2">
+            <h2 className="text-sm font-semibold text-gray-900 mb-2">Quick Overview</h2>
+            <div className="grid grid-cols-4 gap-1">
               <Card className={`${activeTab === "properties" ? "bg-green-100 border-green-300" : "bg-green-50 border-green-200"} cursor-pointer`}
                 onClick={(e) => {
                   e.preventDefault();
                   setActiveTab("properties");
                 }}
               >
-                <CardContent className="p-2">
+                <CardContent className="p-1">
                   <div className="text-center">
-                    <Home className="h-3 w-3 mx-auto text-green-500 mb-1" />
-                    <h3 className="text-xs font-medium text-green-900">Properties</h3>
-                    <p className="text-sm font-bold text-green-700">2</p>
+                    <Home className="h-2.5 w-2.5 mx-auto text-green-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-green-900">Properties</h3>
+                    <p className="text-xs font-bold text-green-700">2</p>
                   </div>
                 </CardContent>
               </Card>
@@ -201,11 +206,11 @@ export default function AdminDashboard() {
                   setActiveTab("guests");
                 }}
               >
-                <CardContent className="p-2">
+                <CardContent className="p-1">
                   <div className="text-center">
-                    <Users className="h-3 w-3 mx-auto text-blue-500 mb-1" />
-                    <h3 className="text-xs font-medium text-blue-900">Guests</h3>
-                    <p className="text-sm font-bold text-blue-700">{Array.isArray(guests) ? guests.length : 0}</p>
+                    <Users className="h-2.5 w-2.5 mx-auto text-blue-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-blue-900">Guests</h3>
+                    <p className="text-xs font-bold text-blue-700">{Array.isArray(guests) ? guests.length : 0}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -216,11 +221,11 @@ export default function AdminDashboard() {
                   setActiveTab("qr-codes");
                 }}
               >
-                <CardContent className="p-2">
+                <CardContent className="p-1">
                   <div className="text-center">
-                    <QrCode className="h-3 w-3 mx-auto text-purple-500 mb-1" />
-                    <h3 className="text-xs font-medium text-purple-900">QR Codes</h3>
-                    <p className="text-sm font-bold text-purple-700">18</p>
+                    <QrCode className="h-2.5 w-2.5 mx-auto text-purple-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-purple-900">QR Codes</h3>
+                    <p className="text-xs font-bold text-purple-700">18</p>
                   </div>
                 </CardContent>
               </Card>
@@ -231,26 +236,28 @@ export default function AdminDashboard() {
                   setActiveTab("maintenance");
                 }}
               >
-                <CardContent className="p-2">
+                <CardContent className="p-1">
                   <div className="text-center">
-                    <Wrench className="h-3 w-3 mx-auto text-orange-500 mb-1" />
-                    <h3 className="text-xs font-medium text-orange-900">Maintenance</h3>
-                    <p className="text-sm font-bold text-orange-700">{Array.isArray(maintenanceRequests) ? maintenanceRequests.length : 0}</p>
+                    <Wrench className="h-2.5 w-2.5 mx-auto text-orange-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-orange-900">Maintenance</h3>
+                    <p className="text-xs font-bold text-orange-700">{Array.isArray(maintenanceRequests) ? maintenanceRequests.length : 0}</p>
                   </div>
                 </CardContent>
               </Card>
 
+            </div>
+            <div className="grid grid-cols-4 gap-1 mt-2">
               <Card className={`${activeTab === "inquiries" ? "bg-cyan-100 border-cyan-300" : "bg-cyan-50 border-cyan-200"} cursor-pointer`}
                 onClick={(e) => {
                   e.preventDefault();
                   setActiveTab("inquiries");
                 }}
               >
-                <CardContent className="p-2">
+                <CardContent className="p-1">
                   <div className="text-center">
-                    <MessageSquare className="h-3 w-3 mx-auto text-cyan-500 mb-1" />
-                    <h3 className="text-xs font-medium text-cyan-900">Inquiries</h3>
-                    <p className="text-sm font-bold text-cyan-700">{Array.isArray(inquiries) ? inquiries.length : 0}</p>
+                    <MessageSquare className="h-2.5 w-2.5 mx-auto text-cyan-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-cyan-900">Inquiries</h3>
+                    <p className="text-xs font-bold text-cyan-700">{Array.isArray(inquiries) ? inquiries.length : 0}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -261,149 +268,102 @@ export default function AdminDashboard() {
                   setActiveTab("payments");
                 }}
               >
-                <CardContent className="p-2">
+                <CardContent className="p-1">
                   <div className="text-center">
-                    <DollarSign className="h-3 w-3 mx-auto text-emerald-500 mb-1" />
-                    <h3 className="text-xs font-medium text-emerald-900">Payments</h3>
-                    <p className="text-sm font-bold text-emerald-700">{Array.isArray(payments) ? payments.length : 0}</p>
+                    <DollarSign className="h-2.5 w-2.5 mx-auto text-emerald-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-emerald-900">Payments</h3>
+                    <p className="text-xs font-bold text-emerald-700">{Array.isArray(payments) ? payments.length : 0}</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "announcements" ? "bg-gradient-to-r from-red-100 to-red-200 border-red-300" : "bg-gradient-to-r from-red-50 to-red-100 border-red-200"}`}>
-                <CardContent className="p-3">
-                  <div className="space-y-2">
-                    <div className="text-center">
-                      <Megaphone className="h-4 w-4 mx-auto text-red-500 mb-1" />
-                      <h3 className="text-xs font-semibold text-red-900">Announcements</h3>
-                      <p className="text-lg font-bold text-red-700">{Array.isArray(announcements) ? announcements.length : 0}</p>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="w-full text-xs h-6"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setActiveTab("announcements");
-                      }}
-                    >
-                      View
-                    </Button>
+              <Card className={`${activeTab === "announcements" ? "bg-red-100 border-red-300" : "bg-red-50 border-red-200"} cursor-pointer`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTab("announcements");
+                }}
+              >
+                <CardContent className="p-1">
+                  <div className="text-center">
+                    <Megaphone className="h-2.5 w-2.5 mx-auto text-red-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-red-900">Announcements</h3>
+                    <p className="text-xs font-bold text-red-700">{Array.isArray(announcements) ? announcements.length : 0}</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "calendar" ? "bg-gradient-to-r from-indigo-100 to-indigo-200 border-indigo-300" : "bg-gradient-to-r from-indigo-50 to-indigo-100 border-indigo-200"}`}>
-                <CardContent className="p-3">
-                  <div className="space-y-2">
-                    <div className="text-center">
-                      <Calendar className="h-4 w-4 mx-auto text-indigo-500 mb-1" />
-                      <h3 className="text-xs font-semibold text-indigo-900">Calendar</h3>
-                      <p className="text-lg font-bold text-indigo-700">{Array.isArray(calendarEvents) ? calendarEvents.length : 0}</p>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="w-full text-xs h-6"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setActiveTab("calendar");
-                      }}
-                    >
-                      View
-                    </Button>
+              <Card className={`${activeTab === "calendar" ? "bg-indigo-100 border-indigo-300" : "bg-indigo-50 border-indigo-200"} cursor-pointer`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTab("calendar");
+                }}
+              >
+                <CardContent className="p-1">
+                  <div className="text-center">
+                    <Calendar className="h-2.5 w-2.5 mx-auto text-indigo-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-indigo-900">Calendar</h3>
+                    <p className="text-xs font-bold text-indigo-700">{Array.isArray(calendarEvents) ? calendarEvents.length : 0}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="grid grid-cols-4 gap-1 mt-2">
+              <Card className={`${activeTab === "contacts" ? "bg-pink-100 border-pink-300" : "bg-pink-50 border-pink-200"} cursor-pointer`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTab("contacts");
+                }}
+              >
+                <CardContent className="p-1">
+                  <div className="text-center">
+                    <Contact className="h-2.5 w-2.5 mx-auto text-pink-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-pink-900">Contacts</h3>
+                    <p className="text-xs font-bold text-pink-700">{Array.isArray(contacts) ? contacts.length : 0}</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "contacts" ? "bg-gradient-to-r from-pink-100 to-pink-200 border-pink-300" : "bg-gradient-to-r from-pink-50 to-pink-100 border-pink-200"}`}>
-                <CardContent className="p-3">
-                  <div className="space-y-2">
-                    <div className="text-center">
-                      <Contact className="h-4 w-4 mx-auto text-pink-500 mb-1" />
-                      <h3 className="text-xs font-semibold text-pink-900">Contacts</h3>
-                      <p className="text-lg font-bold text-pink-700">{Array.isArray(contacts) ? contacts.length : 0}</p>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="w-full text-xs h-6"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setActiveTab("contacts");
-                      }}
-                    >
-                      View
-                    </Button>
+              <Card className={`${activeTab === "inventory" ? "bg-yellow-100 border-yellow-300" : "bg-yellow-50 border-yellow-200"} cursor-pointer`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTab("inventory");
+                }}
+              >
+                <CardContent className="p-1">
+                  <div className="text-center">
+                    <Package className="h-2.5 w-2.5 mx-auto text-yellow-600 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-yellow-900">Inventory</h3>
+                    <p className="text-xs font-bold text-yellow-700">{Array.isArray(inventory) ? inventory.length : 0}</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "inventory" ? "bg-gradient-to-r from-yellow-100 to-yellow-200 border-yellow-300" : "bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-200"}`}>
-                <CardContent className="p-3">
-                  <div className="space-y-2">
-                    <div className="text-center">
-                      <Package className="h-4 w-4 mx-auto text-yellow-600 mb-1" />
-                      <h3 className="text-xs font-semibold text-yellow-900">Inventory</h3>
-                      <p className="text-lg font-bold text-yellow-700">{Array.isArray(inventory) ? inventory.length : 0}</p>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="w-full text-xs h-6"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setActiveTab("inventory");
-                      }}
-                    >
-                      View
-                    </Button>
+              <Card className={`${activeTab === "receipts" ? "bg-teal-100 border-teal-300" : "bg-teal-50 border-teal-200"} cursor-pointer`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTab("receipts");
+                }}
+              >
+                <CardContent className="p-1">
+                  <div className="text-center">
+                    <Receipt className="h-2.5 w-2.5 mx-auto text-teal-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-teal-900">Receipts</h3>
+                    <p className="text-xs font-bold text-teal-700">{Array.isArray(receipts) ? receipts.length : 0}</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "receipts" ? "bg-gradient-to-r from-teal-100 to-teal-200 border-teal-300" : "bg-gradient-to-r from-teal-50 to-teal-100 border-teal-200"}`}>
-                <CardContent className="p-3">
-                  <div className="space-y-2">
-                    <div className="text-center">
-                      <Receipt className="h-4 w-4 mx-auto text-teal-500 mb-1" />
-                      <h3 className="text-xs font-semibold text-teal-900">Receipts</h3>
-                      <p className="text-lg font-bold text-teal-700">{Array.isArray(receipts) ? receipts.length : 0}</p>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="w-full text-xs h-6"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setActiveTab("receipts");
-                      }}
-                    >
-                      View
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className={`${activeTab === "todos" ? "bg-gradient-to-r from-violet-100 to-violet-200 border-violet-300" : "bg-gradient-to-r from-violet-50 to-violet-100 border-violet-200"}`}>
-                <CardContent className="p-3">
-                  <div className="space-y-2">
-                    <div className="text-center">
-                      <CheckSquare className="h-4 w-4 mx-auto text-violet-500 mb-1" />
-                      <h3 className="text-xs font-semibold text-violet-900">Todos</h3>
-                      <p className="text-lg font-bold text-violet-700">{Array.isArray(todos) ? todos.length : 0}</p>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="w-full text-xs h-6"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setActiveTab("todos");
-                      }}
-                    >
-                      View
-                    </Button>
+              <Card className={`${activeTab === "todos" ? "bg-violet-100 border-violet-300" : "bg-violet-50 border-violet-200"} cursor-pointer`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTab("todos");
+                }}
+              >
+                <CardContent className="p-1">
+                  <div className="text-center">
+                    <CheckSquare className="h-2.5 w-2.5 mx-auto text-violet-500 mb-0.5" />
+                    <h3 className="text-[10px] font-medium text-violet-900">Todos</h3>
+                    <p className="text-xs font-bold text-violet-700">{Array.isArray(todos) ? todos.length : 0}</p>
                   </div>
                 </CardContent>
               </Card>
