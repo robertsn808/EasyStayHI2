@@ -64,6 +64,30 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
     },
   });
 
+  const updatePaymentStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      return await apiRequest("PATCH", `/api/admin/payments/${id}/status`, { status });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Payment status updated successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/payments"] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update payment status.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleStatusUpdate = (paymentId: number, newStatus: string) => {
+    updatePaymentStatusMutation.mutate({ id: paymentId, status: newStatus });
+  };
+
   const handleAddPayment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -278,8 +302,24 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
                       )}
                     </div>
                     <div className="flex gap-2 mt-3">
-                      <Button size="sm" variant="outline">View Details</Button>
-                      <Button size="sm" variant="outline">Update Status</Button>
+                      <Select onValueChange={(value) => handleStatusUpdate(payment.id, value)}>
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue placeholder="Update Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="paid">Paid</SelectItem>
+                          <SelectItem value="overdue">Overdue</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        disabled={updatePaymentStatusMutation.isPending}
+                      >
+                        View Details
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
