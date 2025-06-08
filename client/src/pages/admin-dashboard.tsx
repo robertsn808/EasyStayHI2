@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Bell, LogOut } from "lucide-react";
 import { useLocation } from "wouter";
 import WeeklyCalendar from "@/components/WeeklyCalendar";
@@ -11,15 +13,87 @@ import backgroundImage from "@assets/image_1749351216300.png";
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("properties");
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
+
+  // Check admin authentication on component mount
+  useEffect(() => {
+    const adminAuth = localStorage.getItem('admin-authenticated');
+    if (adminAuth === 'true') {
+      setIsAdminAuthenticated(true);
+    }
+  }, []);
+
+  const handleAdminLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simple admin check - in production this would be more secure
+    if (adminCredentials.username === 'admin' && adminCredentials.password === 'admin123') {
+      localStorage.setItem('admin-authenticated', 'true');
+      setIsAdminAuthenticated(true);
+    } else {
+      alert('Invalid credentials. Use username: admin, password: admin123');
+    }
+  };
 
   const handleLogout = async () => {
     try {
+      localStorage.removeItem('admin-authenticated');
+      setIsAdminAuthenticated(false);
       await fetch("/api/auth/logout", { method: "POST" });
       setLocation("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
+
+  // Show login form if not authenticated
+  if (!isAdminAuthenticated) {
+    return (
+      <div 
+        className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <Card className="w-full max-w-md mx-4">
+          <CardContent className="p-6">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Login</h1>
+              <p className="text-gray-600">Enter your credentials to access the dashboard</p>
+            </div>
+            <form onSubmit={handleAdminLogin} className="space-y-4">
+              <div>
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={adminCredentials.username}
+                  onChange={(e) => setAdminCredentials(prev => ({...prev, username: e.target.value}))}
+                  placeholder="Enter username"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={adminCredentials.password}
+                  onChange={(e) => setAdminCredentials(prev => ({...prev, password: e.target.value}))}
+                  placeholder="Enter password"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                Login
+              </Button>
+              <div className="text-xs text-gray-500 text-center mt-4">
+                Demo credentials: admin / admin123
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div 

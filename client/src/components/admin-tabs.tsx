@@ -32,41 +32,53 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
     setSelectedTab(activeTab);
   }, [activeTab]);
 
+  // Check admin authentication
+  const isAdminAuthenticated = localStorage.getItem('admin-authenticated') === 'true';
+
   // Fetch data for each tab
   const { data: inquiries } = useQuery({
     queryKey: ["/api/admin/inquiries"],
+    enabled: isAdminAuthenticated,
   });
 
   const { data: maintenanceRequests } = useQuery({
     queryKey: ["/api/admin/maintenance"],
+    enabled: isAdminAuthenticated,
   });
 
   const { data: payments } = useQuery({
     queryKey: ["/api/admin/payments"],
+    enabled: isAdminAuthenticated,
   });
 
   const { data: contacts } = useQuery({
     queryKey: ["/api/admin/contacts"],
+    enabled: isAdminAuthenticated,
   });
 
   const { data: calendarEvents } = useQuery({
     queryKey: ["/api/admin/calendar"],
+    enabled: isAdminAuthenticated,
   });
 
   const { data: inventory } = useQuery({
     queryKey: ["/api/admin/inventory"],
+    enabled: isAdminAuthenticated,
   });
 
   const { data: receipts } = useQuery({
     queryKey: ["/api/admin/receipts"],
+    enabled: isAdminAuthenticated,
   });
 
   const { data: todos } = useQuery({
     queryKey: ["/api/admin/todos"],
+    enabled: isAdminAuthenticated,
   });
 
   const { data: rooms } = useQuery({
     queryKey: ["/api/rooms"],
+    enabled: isAdminAuthenticated,
   });
 
   return (

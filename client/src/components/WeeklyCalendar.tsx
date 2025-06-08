@@ -34,9 +34,13 @@ interface WeeklyCalendarProps {
 export default function WeeklyCalendar({ events = [] }: WeeklyCalendarProps) {
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
 
+  // Check admin authentication
+  const isAdminAuthenticated = localStorage.getItem('admin-authenticated') === 'true';
+
   // Fetch todos data
   const { data: todos } = useQuery({
     queryKey: ["/api/admin/todos"],
+    enabled: isAdminAuthenticated,
   });
 
   const getWeekDays = () => {
