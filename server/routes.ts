@@ -284,6 +284,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const authHeader = req.headers.authorization;
     const sessionToken = (req.session as any)?.adminToken;
     
+    console.log("Auth check - Header:", authHeader, "Session:", sessionToken);
+    
     if (authHeader === "Bearer admin-authenticated" || sessionToken === "admin-authenticated") {
       next();
     } else {
