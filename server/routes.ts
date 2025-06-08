@@ -525,7 +525,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const contacts = await storage.getContacts();
       res.json(contacts);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch contacts" });
+      console.error("Contacts fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch contacts", error: error.message });
     }
   });
 
@@ -544,7 +545,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const events = await storage.getCalendarEvents();
       res.json(events);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch calendar events" });
+      console.error("Calendar fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch calendar events", error: error.message });
     }
   });
 
@@ -563,7 +565,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const inventory = await storage.getInventory();
       res.json(inventory);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch inventory" });
+      console.error("Inventory fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch inventory", error: error.message });
     }
   });
 
@@ -582,7 +585,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const receipts = await storage.getReceipts();
       res.json(receipts);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch receipts" });
+      console.error("Receipts fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch receipts", error: error.message });
     }
   });
 
@@ -601,7 +605,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const todos = await storage.getTodos();
       res.json(todos);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch todos" });
+      console.error("Todos fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch todos", error: error.message });
     }
   });
 
