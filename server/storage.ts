@@ -54,6 +54,7 @@ export interface IStorage {
   createRoom(room: InsertRoom): Promise<Room>;
   getRooms(): Promise<Room[]>;
   updateRoom(id: number, room: Partial<InsertRoom>): Promise<Room>;
+  deleteRoom(id: number): Promise<void>;
   getAvailableRoomCount(): Promise<number>;
 
   // Inquiry operations
@@ -188,6 +189,10 @@ export class DatabaseStorage implements IStorage {
   async updateRoom(id: number, room: Partial<InsertRoom>): Promise<Room> {
     const [result] = await db.update(rooms).set(room).where(eq(rooms.id, id)).returning();
     return result;
+  }
+
+  async deleteRoom(id: number): Promise<void> {
+    await db.delete(rooms).where(eq(rooms.id, id));
   }
 
   async getAvailableRoomCount(): Promise<number> {
