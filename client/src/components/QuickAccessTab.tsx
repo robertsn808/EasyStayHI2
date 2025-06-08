@@ -271,54 +271,47 @@ export function QuickAccessTab({
           </div>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-48">
+          <ScrollArea className="h-40">
             {!Array.isArray(notifications) || notifications.length === 0 ? (
-              <div className="text-center py-6 text-muted-foreground">
-                <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No notifications</p>
+              <div className="text-center py-4 text-muted-foreground">
+                <Bell className="h-6 w-6 mx-auto mb-1 opacity-50" />
+                <p className="text-xs">No notifications</p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {notifications.map((notification: any) => (
                   <div
                     key={notification.id}
-                    className={`border-l-3 p-2 rounded-r-md ${getNotificationColor(notification.color)} ${
+                    className={`border-l-2 p-1.5 rounded-r-sm ${getNotificationColor(notification.color)} ${
                       !notification.isRead ? "ring-1 ring-gray-200" : "opacity-75"
                     }`}
                   >
                     <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3 flex-1">
+                      <div className="flex items-start space-x-2 flex-1">
                         {getNotificationIcon(notification.type, notification.priority)}
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <h4 className="font-medium text-xs">{notification.title}</h4>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-1">
+                            <h4 className="font-medium text-xs truncate">{notification.title}</h4>
                             {notification.priority === "urgent" && (
-                              <Badge variant="destructive" className="text-xs py-0 px-1">!</Badge>
+                              <Badge variant="destructive" className="text-xs py-0 px-1 h-3">!</Badge>
                             )}
                             {!notification.isRead && (
-                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                              <div className="w-1 h-1 bg-blue-500 rounded-full flex-shrink-0"></div>
                             )}
                           </div>
-                          <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
-                          <div className="flex items-center space-x-2 mt-1">
+                          <p className="text-xs text-gray-600 truncate">{notification.message}</p>
+                          <div className="flex items-center space-x-1">
                             <span className="text-xs text-gray-500">
-                              {new Date(notification.createdAt).toLocaleTimeString()}
+                              {new Date(notification.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                             </span>
                             {notification.actionType && (
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleNotificationAction(notification)}
-                                className="text-xs h-5 px-2"
+                                className="text-xs h-4 px-1"
                               >
-                                {notification.actionType === "unlock_portal" ? (
-                                  <>
-                                    <Key className="h-2 w-2 mr-1" />
-                                    Unlock
-                                  </>
-                                ) : (
-                                  "Action"
-                                )}
+                                {notification.actionType === "unlock_portal" ? "Unlock" : "Action"}
                               </Button>
                             )}
                           </div>

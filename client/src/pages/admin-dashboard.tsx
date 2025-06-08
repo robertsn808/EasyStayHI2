@@ -3,10 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { 
   Home, Users, QrCode, Wrench, MessageSquare, Calendar, 
   DollarSign, Megaphone, Contact, Package, Receipt, Bell,
-  CheckCircle, AlertTriangle, Clock, User, Settings, Building, LogOut
+  CheckCircle, AlertTriangle, Clock, User, Settings, Building, LogOut, Menu
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
@@ -202,6 +203,126 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
+              {/* Mobile Menu Button */}
+              <div className="lg:hidden">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="sm" className="bg-white/90 backdrop-blur-sm">
+                      <Menu className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-80 p-0 bg-white/95 backdrop-blur-lg">
+                    <div className="p-6 space-y-6 h-full overflow-y-auto">
+                      {/* Mobile Quick Access */}
+                      <div>
+                        <h2 className="text-lg font-bold text-gray-800 mb-4">Quick Access</h2>
+                        
+                        {/* Main Buildings */}
+                        <div className="grid grid-cols-1 gap-3 mb-6">
+                          <Card className={`${activeTab === "934" ? "bg-gradient-to-br from-blue-100 to-blue-50 border-blue-300 shadow-lg" : "bg-white/90 backdrop-blur-sm border-slate-200/60 hover:shadow-lg"} cursor-pointer transition-all duration-300 group`}
+                            onClick={() => setActiveTab("934")}
+                          >
+                            <CardContent className="p-3">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
+                                  <Building className="h-4 w-4 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className="text-sm font-bold text-blue-900">934 Kapahulu Ave</h3>
+                                  <p className="text-xs text-blue-600">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 10).length : 0} rooms</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          <Card className={`${activeTab === "949" ? "bg-gradient-to-br from-purple-100 to-purple-50 border-purple-300 shadow-lg" : "bg-white/90 backdrop-blur-sm border-slate-200/60 hover:shadow-lg"} cursor-pointer transition-all duration-300 group`}
+                            onClick={() => setActiveTab("949")}
+                          >
+                            <CardContent className="p-3">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
+                                  <Building className="h-4 w-4 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className="text-sm font-bold text-purple-900">949 Kawaiahao St</h3>
+                                  <p className="text-xs text-purple-600">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 11).length : 0} suites</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="space-y-2">
+                          <h3 className="text-sm font-semibold text-gray-700">Quick Actions</h3>
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs h-8 justify-start"
+                              onClick={() => setActiveTab("payment-tracker")}
+                            >
+                              <DollarSign className="h-3 w-3 mr-1" />
+                              Payments
+                            </Button>
+                            
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs h-8 justify-start"
+                              onClick={() => setActiveTab("maintenance")}
+                            >
+                              <Wrench className="h-3 w-3 mr-1" />
+                              Maintenance
+                            </Button>
+                            
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs h-8 justify-start"
+                              onClick={() => setActiveTab("inquiries")}
+                            >
+                              <MessageSquare className="h-3 w-3 mr-1" />
+                              Inquiries
+                            </Button>
+                            
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs h-8 justify-start"
+                              onClick={() => setActiveTab("calendar")}
+                            >
+                              <Calendar className="h-3 w-3 mr-1" />
+                              Calendar
+                            </Button>
+
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs h-8 justify-start"
+                              onClick={() => setActiveTab("announcements")}
+                            >
+                              <Megaphone className="h-3 w-3 mr-1" />
+                              Announcements
+                            </Button>
+
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-xs h-8 justify-start"
+                              onClick={() => setActiveTab("contacts")}
+                            >
+                              <Contact className="h-3 w-3 mr-1" />
+                              Contacts
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl blur opacity-20 animate-pulse"></div>
                 <img 
