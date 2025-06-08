@@ -224,12 +224,43 @@ export default function InquiryForm() {
                   </div>
 
                   <div>
-                    <strong>5. Policies:</strong>
+                    <strong>5. Stay Extensions & Checkout:</strong>
                     <ul className="ml-4 mt-1 space-y-1">
+                      <li>• Payment must be sent by 10 AM on checkout date to extend stay</li>
+                      <li>• If extension is not made, renter must leave by 11 AM</li>
+                      <li>• Contact management if items are left behind</li>
+                      <li>• Room codes are changed upon checkout - no re-entry allowed</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <strong>6. Cleanliness & Common Areas:</strong>
+                    <ul className="ml-4 mt-1 space-y-1">
+                      <li>• CLEAN UP AFTER YOURSELVES - no maid service provided</li>
+                      <li>• Keep all common areas clean (kitchen, bathrooms, laundry, hallways)</li>
+                      <li>• Guests may NOT use common areas</li>
+                      <li>• You are responsible for all guest behavior</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <strong>7. Tenant Conduct & Security:</strong>
+                    <ul className="ml-4 mt-1 space-y-1">
+                      <li>• Respect other tenants - no stealing food or personal items</li>
+                      <li>• Theft caught on video = deposit forfeiture + police report + ban</li>
+                      <li>• No fighting - take problems outside the property</li>
+                      <li>• Do NOT give front door code to anyone</li>
+                      <li>• You must personally let guests in</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <strong>8. Prohibited Items & Activities:</strong>
+                    <ul className="ml-4 mt-1 space-y-1">
+                      <li>• No drugs or drug paraphernalia allowed</li>
+                      <li>• No weapons of any kind</li>
                       <li>• No illegal activities</li>
-                      <li>• Respect other tenants and neighbors</li>
-                      <li>• Management may enter room with 24-hour notice</li>
-                      <li>• Violation of rules may result in immediate termination</li>
+                      <li>• Violation = loss of security deposit + police report</li>
                     </ul>
                   </div>
                 </div>
