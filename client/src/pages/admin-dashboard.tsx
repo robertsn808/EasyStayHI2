@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { 
   Home, Users, QrCode, Wrench, MessageSquare, Calendar, 
   DollarSign, Megaphone, Contact, Package, Receipt, Bell,
-  CheckCircle, AlertTriangle, Clock, User, Settings
+  CheckCircle, AlertTriangle, Clock, User, Settings, Building
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import backgroundImage from "@assets/image_1749351216300.png";
@@ -12,6 +12,7 @@ import AdminTabs from "@/components/admin-tabs";
 
 type TabType = 
   | "properties" 
+  | "buildings"
   | "guests" 
   | "qr-codes" 
   | "maintenance" 
@@ -180,6 +181,20 @@ export default function AdminDashboard() {
                     <div>
                       <h3 className="text-xs font-semibold text-green-900">Properties</h3>
                       <p className="text-lg font-bold text-green-700">2</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className={`${activeTab === "buildings" ? "bg-teal-100 border-teal-300" : "bg-teal-50 border-teal-200"} cursor-pointer`}
+                onClick={() => setActiveTab("buildings")}
+              >
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-3">
+                    <Building className="h-4 w-4 text-teal-500 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-xs font-semibold text-teal-900">Buildings</h3>
+                      <p className="text-lg font-bold text-teal-700">2</p>
                     </div>
                   </div>
                 </CardContent>
