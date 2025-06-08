@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { 
   Home, Users, QrCode, Wrench, MessageSquare, Calendar, 
   DollarSign, Megaphone, Contact, Package, Receipt, Bell,
-  CheckCircle, AlertTriangle, Clock, User
+  CheckCircle, AlertTriangle, Clock, User, Settings
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import backgroundImage from "@assets/image_1749351216300.png";
@@ -22,7 +22,8 @@ type TabType =
   | "contacts" 
   | "inventory" 
   | "receipts" 
-  | "todos";
+  | "todos"
+  | "settings";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>("properties");
@@ -91,11 +92,19 @@ export default function AdminDashboard() {
               <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
                 <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-8 w-8 sm:h-10 sm:w-10"
+                onClick={() => setActiveTab("settings")}
+              >
+                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
               <div className="flex items-center space-x-2">
                 <div className="h-6 w-6 sm:h-8 sm:w-8 bg-blue-500 rounded-full flex items-center justify-center">
                   <User className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                 </div>
-                <span className="text-sm font-medium text-gray-700 hidden sm:block">Admin</span>
+                <span className="text-sm font-medium text-gray-700 hidden sm:block">Sesa</span>
               </div>
             </div>
           </div>

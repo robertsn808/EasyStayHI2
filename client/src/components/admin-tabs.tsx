@@ -13,6 +13,7 @@ import { InventoryTab } from "@/components/InventoryTab";
 import { ReceiptsTab } from "@/components/ReceiptsTab";
 import { TodosTab } from "@/components/TodosTab";
 import { AnnouncementsTab } from "@/components/AnnouncementsTab";
+import { SettingsTab } from "@/components/SettingsTab";
 import QRCodeManager from "@/components/QRCodeManager";
 import GuestProfileManager from "@/components/GuestProfileManager";
 
