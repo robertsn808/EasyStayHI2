@@ -73,6 +73,7 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
     floor: "",
     status: "available",
     tenantName: "",
+    tenantPhone: "",
     nextPaymentDue: "",
     rentalRate: "",
     rentalPeriod: "",
@@ -172,6 +173,7 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
         floor: "",
         status: "available",
         tenantName: "",
+        tenantPhone: "",
         nextPaymentDue: "",
         rentalRate: "",
         rentalPeriod: "",
@@ -255,6 +257,7 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
       size: room.size || "",
       floor: room.floor?.toString() || "",
       tenantName: room.tenantName || "",
+      tenantPhone: room.tenantPhone || "",
       nextPaymentDue: room.nextPaymentDue || "",
       rentalRate: room.rentalRate || "",
       rentalPeriod: room.rentalPeriod || "",
@@ -550,6 +553,7 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
                             {room.size && <div>Size: {room.size}</div>}
                             {room.floor && <div>Floor: {room.floor}</div>}
                             {room.tenantName && <div>Tenant: {room.tenantName}</div>}
+                            {room.tenantPhone && <div>Phone: {room.tenantPhone}</div>}
                             {room.rentalRate && <div>Rate: ${room.rentalRate}</div>}
                           </div>
                         </Card>
@@ -565,7 +569,19 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
                         className="mt-2"
                         onClick={() => {
                           setSelectedBuildingId(building.id);
-                          setRoomForm({...roomForm, buildingId: building.id.toString()});
+                          setRoomForm({
+                            number: "",
+                            buildingId: building.id.toString(),
+                            size: "",
+                            floor: "",
+                            status: "available",
+                            tenantName: "",
+                            tenantPhone: "",
+                            nextPaymentDue: "",
+                            rentalRate: "",
+                            rentalPeriod: "",
+                            lastCleaned: ""
+                          });
                           setIsRoomDialogOpen(true);
                         }}
                       >
@@ -724,6 +740,15 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
                   value={roomForm.tenantName}
                   onChange={(e) => setRoomForm({...roomForm, tenantName: e.target.value})}
                   placeholder="Current tenant"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editTenantPhone">Tenant Phone (Optional)</Label>
+                <Input
+                  id="editTenantPhone"
+                  value={roomForm.tenantPhone}
+                  onChange={(e) => setRoomForm({...roomForm, tenantPhone: e.target.value})}
+                  placeholder="(808) 555-0123"
                 />
               </div>
               <div>
