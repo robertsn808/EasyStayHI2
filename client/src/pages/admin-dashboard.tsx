@@ -12,37 +12,14 @@ export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("properties");
 
-  // Check for admin authentication
-  const { data: user, isLoading, error } = useQuery({
-    queryKey: ["/api/auth/user"],
-  });
-
-  useEffect(() => {
-    if (!isLoading && (!user || error)) {
-      setLocation("/admin-login");
-    }
-  }, [user, isLoading, error, setLocation]);
-
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
-      setLocation("/admin-login");
+      setLocation("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
-
-  if (isLoading) {
-    return (
-      <Card className="max-w-md mx-auto mt-20">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <div 
