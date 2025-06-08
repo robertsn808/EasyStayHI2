@@ -462,7 +462,7 @@ export default function TenantPortal() {
                   className="w-full mt-2"
                   onClick={() => {
                     // Manual QR code simulation for testing
-                    handleQRScan(`/tenant/${roomId || 1}`);
+                    handleQRScan(`tenant-access-${Math.floor(Math.random() * 10) + 1}`);
                   }}
                 >
                   Simulate QR Scan (Demo)

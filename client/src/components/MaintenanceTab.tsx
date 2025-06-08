@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { Plus, Wrench, Clock, CheckCircle } from "lucide-react";
 
 interface MaintenanceTabProps {
   requests?: any[];
@@ -102,22 +105,20 @@ export function MaintenanceTab({ requests = [] }: MaintenanceTabProps) {
             <form onSubmit={handleCreateRequest} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Title</label>
-                <input
+                <Input
                   type="text"
                   value={newRequest.title}
                   onChange={(e) => setNewRequest(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full p-2 border rounded-md"
                   placeholder="Brief description of the issue"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Room ID</label>
-                <input
+                <Input
                   type="number"
                   value={newRequest.roomId}
                   onChange={(e) => setNewRequest(prev => ({ ...prev, roomId: e.target.value }))}
-                  className="w-full p-2 border rounded-md"
                   placeholder="Room number"
                   required
                 />
@@ -137,11 +138,11 @@ export function MaintenanceTab({ requests = [] }: MaintenanceTabProps) {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea
+                <Textarea
                   value={newRequest.description}
                   onChange={(e) => setNewRequest(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full p-2 border rounded-md h-24"
                   placeholder="Detailed description of the maintenance issue"
+                  className="h-24"
                   required
                 />
               </div>
