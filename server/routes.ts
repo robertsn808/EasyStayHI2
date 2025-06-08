@@ -262,7 +262,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/announcements", isAuthenticated, async (req, res) => {
+  // Simple admin login endpoint
+  app.post("/api/admin/login", async (req, res) => {
+    const { username, password } = req.body;
+    
+    if (username === "admin" && password === "admin123") {
+      req.session.isAdmin = true;
+      req.session.user = { id: "admin", email: "admin@easystay.com", role: "admin" };
+      res.json({ success: true, user: req.session.user });
+    } else {
+      res.status(401).json({ error: "Invalid credentials" });
+    }
+  });
+
+  // Admin auth middleware
+  const adminAuth = (req: any, res: any, next: any) => {
+    if (req.session?.isAdmin) {
+      next();
+    } else {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  };
+
+  app.get("/api/admin/announcements", adminAuth, async (req, res) => {
     try {
       const announcements = await storage.getAllAnnouncements();
       res.json(announcements);
