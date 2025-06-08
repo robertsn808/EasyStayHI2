@@ -100,6 +100,33 @@ export default function Property934() {
     });
   };
 
+  // QR Code generation mutation
+  const generateQRCodeMutation = useMutation({
+    mutationFn: async (roomId: number) => {
+      const response = await apiRequest("POST", "/api/qr/generate", { roomId });
+      return response;
+    },
+    onSuccess: (data, roomId) => {
+      setQrCodeData({ roomId, qrCode: data.qrCode });
+      setShowQRModal(true);
+      toast({
+        title: "QR Code Generated",
+        description: `QR code created for Room ${rooms.find(r => r.id === roomId)?.number}`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to generate QR code. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const generateRoomQRCode = (roomId: number) => {
+    generateQRCodeMutation.mutate(roomId);
+  };
+
   const handleViewMaintenanceDetails = (requestId: number) => {
     toast({
       title: "View Details",
@@ -281,6 +308,10 @@ export default function Property934() {
                         <Badge variant="outline" className={room.status === 'occupied' ? 'text-green-600 border-green-600' : 'text-gray-600'}>
                           {room.status}
                         </Badge>
+                        <Button size="sm" variant="outline" onClick={() => generateRoomQRCode(room.id)}>
+                          <QrCode className="w-4 h-4 mr-1" />
+                          QR Code
+                        </Button>
                         <Button size="sm" variant="outline" onClick={() => handleEditRoom(room.id)}>Edit</Button>
                       </div>
                     </div>
@@ -403,6 +434,39 @@ export default function Property934() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* QR Code Modal */}
+        <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Room QR Code</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col items-center space-y-4">
+              {qrCodeData && (
+                <>
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold mb-2">
+                      Room {rooms.find(r => r.id === qrCodeData.roomId)?.number}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Scan this QR code to access the tenant portal
+                    </p>
+                  </div>
+                  <div className="p-4 bg-white border rounded-lg">
+                    <img 
+                      src={qrCodeData.qrCode} 
+                      alt="Room QR Code" 
+                      className="w-48 h-48"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 text-center max-w-sm">
+                    Tenants can scan this code with their phone camera to access the tenant portal for this room
+                  </p>
+                </>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

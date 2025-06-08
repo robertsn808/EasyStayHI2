@@ -73,6 +73,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // QR Code generation routes
+  app.post("/api/qr/generate", async (req, res) => {
+    const { roomId } = req.body;
+    try {
+      const qrCode = await generateTenantQRCode(roomId);
+      res.json({ qrCode });
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+      res.status(500).json({ error: "Failed to generate QR code" });
+    }
+  });
+
+  // Tenant portal routes
+  app.post("/api/tenant/signin", async (req, res) => {
+    const { roomId, tenantName, tenantEmail, tenantPhone } = req.body;
+    try {
+      const token = generateTenantToken(roomId, { 
+        name: tenantName, 
+        email: tenantEmail, 
+        phone: tenantPhone 
+      });
+      
+      const sessionData = {
+        roomId,
+        tenantName,
+        tenantEmail: tenantEmail || null,
+        tenantPhone: tenantPhone || null,
+        sessionToken: token,
+        createdAt: new Date(),
+      };
+      
+      const session = await storage.createTenantSession(sessionData);
+      res.json({ sessionToken: token, session });
+    } catch (error) {
+      console.error("Error creating tenant session:", error);
+      res.status(500).json({ error: "Failed to sign in" });
+    }
+  });
+
+  app.get("/api/tenant/dashboard", async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = verifyTenantToken(token);
+      
+      if (!decoded) {
+        return res.status(401).json({ error: "Invalid token" });
+      }
+
+      const roomData = await storage.getRoomWithBuilding(decoded.roomId);
+      const maintenanceRequests = await storage.getMaintenanceRequests(decoded.roomId);
+      const payments = await storage.getPayments(decoded.roomId);
+      const notifications = await storage.getNotifications(decoded.roomId);
+
+      res.json({
+        room: roomData,
+        maintenanceRequests,
+        payments,
+        notifications,
+        tenant: decoded.tenantData
+      });
+    } catch (error) {
+      console.error("Error fetching dashboard:", error);
+      res.status(500).json({ error: "Failed to fetch dashboard data" });
+    }
+  });
+
+  app.post("/api/tenant/maintenance", async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = verifyTenantToken(token);
+      
+      if (!decoded) {
+        return res.status(401).json({ error: "Invalid token" });
+      }
+
+      const maintenanceData = {
+        ...req.body,
+        roomId: decoded.roomId,
+        tenantName: decoded.tenantData.name,
+        status: 'pending',
+        createdAt: new Date(),
+      };
+
+      const request = await storage.createMaintenanceRequest(maintenanceData);
+      res.json(request);
+    } catch (error) {
+      console.error("Error creating maintenance request:", error);
+      res.status(500).json({ error: "Failed to create maintenance request" });
+    }
+  });
+
+  app.post("/api/tenant/payment", async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = verifyTenantToken(token);
+      
+      if (!decoded) {
+        return res.status(401).json({ error: "Invalid token" });
+      }
+
+      const paymentData = {
+        ...req.body,
+        roomId: decoded.roomId,
+        tenantName: decoded.tenantData.name,
+        status: 'pending',
+        createdAt: new Date(),
+      };
+
+      const payment = await storage.createPayment(paymentData);
+      res.json(payment);
+    } catch (error) {
+      console.error("Error creating payment:", error);
+      res.status(500).json({ error: "Failed to create payment" });
+    }
+  });
+
   app.get("/api/admin/announcements", isAuthenticated, async (req, res) => {
     try {
       const announcements = await storage.getAllAnnouncements();
