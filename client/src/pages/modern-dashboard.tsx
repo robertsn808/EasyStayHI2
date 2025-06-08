@@ -12,6 +12,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import AdminTabs from "@/components/admin-tabs";
+import backgroundImage from "@assets/image_1749351216300.png";
 
 type TabType = 
   | "dashboard"
@@ -410,9 +411,21 @@ export default function ModernDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className="min-h-screen bg-gray-50"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Background overlay for better readability */}
+      <div className="fixed inset-0 bg-white/80 backdrop-blur-sm"></div>
+      
       {/* Modern Top Navigation */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div className="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Logo and Search Bar */}
           <div className="flex justify-between items-center py-2">
@@ -628,7 +641,9 @@ export default function ModernDashboard() {
       </div>
 
       {/* Main Content */}
-      {renderContent()}
+      <div className="relative z-10">
+        {renderContent()}
+      </div>
     </div>
   );
 }
