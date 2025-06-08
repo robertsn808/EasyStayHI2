@@ -167,9 +167,9 @@ export default function AdminDashboard() {
               <div className="text-xs text-orange-700">Under Maintenance</div>
             </div>
             <div className="bg-yellow-50 p-3 rounded-lg text-center">
-              <div className="text-2xl mb-1">💰</div>
-              <div className="text-2xl font-bold text-yellow-900">$12,500</div>
-              <div className="text-xs text-yellow-700">Monthly Revenue</div>
+              <div className="text-2xl mb-1">🧹</div>
+              <div className="text-2xl font-bold text-yellow-900">3</div>
+              <div className="text-xs text-yellow-700">Need Cleaning</div>
             </div>
           </div>
 
@@ -263,9 +263,9 @@ export default function AdminDashboard() {
               <div className="text-xs text-orange-700">Under Maintenance</div>
             </div>
             <div className="bg-yellow-50 p-3 rounded-lg text-center">
-              <div className="text-2xl mb-1">💰</div>
-              <div className="text-2xl font-bold text-yellow-900">$18,750</div>
-              <div className="text-xs text-yellow-700">Monthly Revenue</div>
+              <div className="text-2xl mb-1">🧹</div>
+              <div className="text-2xl font-bold text-yellow-900">1</div>
+              <div className="text-xs text-yellow-700">Need Cleaning</div>
             </div>
           </div>
 
