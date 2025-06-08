@@ -60,12 +60,7 @@ export default function GuestProfileManager() {
     enabled: !!localStorage.getItem('admin-authenticated')
   });
 
-  // Fetch payment due guests for dashboard
-  const { data: paymentDueGuests = [], isLoading: loadingPaymentDue } = useQuery({
-    queryKey: ['/api/admin/guests/payment-due'],
-    enabled: !!localStorage.getItem('admin-authenticated'),
-    refetchInterval: 60000 // Refresh every minute
-  });
+
 
   // Fetch rooms for dropdown
   const { data: rooms = [] } = useQuery<Room[]>({
@@ -107,25 +102,7 @@ export default function GuestProfileManager() {
     }
   });
 
-  // Mark payment received mutation
-  const markPaymentMutation = useMutation({
-    mutationFn: async (guestId: number) => {
-      return apiRequest(`/api/admin/guests/${guestId}/payment-received`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('admin-authenticated')}`
-        }
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/guests'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/guests/payment-due'] });
-      toast({ title: "Payment marked as received!" });
-    },
-    onError: () => {
-      toast({ title: "Failed to mark payment", variant: "destructive" });
-    }
-  });
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
