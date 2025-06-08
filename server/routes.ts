@@ -325,9 +325,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Invalid room number or PIN" });
       }
 
-      // Additional security: check room status
-      if (room.status !== 'available') {
-        return res.status(403).json({ error: "Room is not available for tenant access" });
+      // Additional security: check room status (allow occupied rooms for current tenants)
+      if (room.status === 'maintenance' || room.status === 'cleaning') {
+        return res.status(403).json({ error: "Room is currently under maintenance or cleaning" });
       }
 
       // Generate secure tenant session token with room data

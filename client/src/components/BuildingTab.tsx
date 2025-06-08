@@ -153,18 +153,43 @@ export function BuildingTab({ buildingName, buildingId, rooms = [], guests = [],
     if (!selectedRoom) return;
 
     const formData = new FormData(e.currentTarget);
+    const newStatus = formData.get('status') as string;
+    const notes = formData.get('notes') as string;
+    
+    // Validate maintenance status requires notes
+    if (newStatus === 'maintenance' && !notes?.trim()) {
+      toast({
+        title: "Notes Required",
+        description: "Please provide notes when setting status to maintenance",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const updateData: any = {
-      status: formData.get('status'),
+      status: newStatus,
     };
 
-    // Add optional fields only if they have values
-    const tenantName = formData.get('tenantName') as string;
-    const tenantPhone = formData.get('tenantPhone') as string;
-    const accessPin = formData.get('accessPin') as string;
+    // Clear guest info when changing to cleaning or maintenance
+    if (newStatus === 'cleaning' || newStatus === 'maintenance') {
+      updateData.tenantName = null;
+      updateData.tenantPhone = null;
+      updateData.tenantEmail = null;
+    } else {
+      // Add optional fields only if they have values and not cleaning/maintenance
+      const tenantName = formData.get('tenantName') as string;
+      const tenantPhone = formData.get('tenantPhone') as string;
+      const accessPin = formData.get('accessPin') as string;
 
-    if (tenantName?.trim()) updateData.tenantName = tenantName;
-    if (tenantPhone?.trim()) updateData.tenantPhone = tenantPhone;
-    if (accessPin?.trim()) updateData.accessPin = accessPin;
+      if (tenantName?.trim()) updateData.tenantName = tenantName;
+      if (tenantPhone?.trim()) updateData.tenantPhone = tenantPhone;
+      if (accessPin?.trim()) updateData.accessPin = accessPin;
+    }
+
+    // Add notes for maintenance status
+    if (newStatus === 'maintenance' && notes?.trim()) {
+      updateData.notes = notes;
+    }
 
     updateRoomMutation.mutate({
       roomId: selectedRoom.id,
@@ -381,6 +406,17 @@ export function BuildingTab({ buildingName, buildingId, rooms = [], guests = [],
                       defaultValue={selectedRoom.tenantPhone || ''}
                     />
                   </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="notes">Notes (required for maintenance)</Label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    className="w-full p-2 border border-gray-300 rounded-md resize-none"
+                    rows={3}
+                    placeholder="Add notes for maintenance status or general comments..."
+                  />
                 </div>
 
                 <Button type="submit" disabled={updateRoomMutation.isPending}>

@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Bell, Home, Wrench, DollarSign, 
@@ -30,9 +31,14 @@ export default function TenantPortal() {
   });
   
   const [pinForm, setPinForm] = useState({
+    buildingId: "",
     roomNumber: "",
     pin: ""
   });
+
+  const [buildings, setBuildings] = useState<any[]>([]);
+  const [rooms, setRooms] = useState<any[]>([]);
+  const [filteredRooms, setFilteredRooms] = useState<any[]>([]);
 
   const roomId = params?.roomId ? parseInt(params.roomId) : null;
 
