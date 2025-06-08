@@ -11,7 +11,7 @@ export default function BulletinBoard() {
     return (
       <Card className="shadow-sm">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-gray-900">Property Announcements</CardTitle>
+          <CardTitle className="text-2xl font-semibold text-gray-900">934 Property Announcements</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -49,7 +49,7 @@ export default function BulletinBoard() {
   return (
     <Card className="shadow-sm">
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold text-gray-900">Property Announcements</CardTitle>
+        <CardTitle className="text-2xl font-semibold text-gray-900">934 Property Announcements</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

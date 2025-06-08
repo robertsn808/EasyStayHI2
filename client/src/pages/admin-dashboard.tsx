@@ -66,7 +66,7 @@ export default function AdminDashboard() {
         {/* Admin Navigation */}
         <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm p-4 mb-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900">Property Management Dashboard</h2>
+            <h2 className="text-2xl font-bold text-gray-900">934 Property Management Dashboard</h2>
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <Button variant="outline" size="sm">

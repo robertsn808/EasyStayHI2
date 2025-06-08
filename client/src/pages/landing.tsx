@@ -43,9 +43,9 @@ export default function Landing() {
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-12 bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-sm">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Quality Rooms Available for Rent</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">934 - Quality Rooms Available for Rent</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Comfortable, clean accommodations with flexible rental terms. Choose from daily, weekly, or monthly options to suit your needs.
+            Comfortable, clean accommodations at property 934 with flexible rental terms. Choose from daily, weekly, or monthly options to suit your needs.
           </p>
         </div>
 
