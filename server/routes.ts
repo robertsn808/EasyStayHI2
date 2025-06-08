@@ -433,6 +433,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User Management API endpoints
+  app.get("/api/admin/users", simpleAdminAuth, async (req, res) => {
+    try {
+      // Return mock admin users for now - Sesa and webmaster
+      const users = [
+        {
+          id: "sesa",
+          username: "Sesa",
+          role: "admin",
+          createdAt: "2024-01-01T00:00:00Z",
+          lastLogin: new Date().toISOString()
+        },
+        {
+          id: "webmaster",
+          username: "webmaster",
+          role: "maintenance",
+          createdAt: "2024-01-01T00:00:00Z",
+          lastLogin: null
+        }
+      ];
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.post("/api/admin/change-password", simpleAdminAuth, async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      
+      // In a real implementation, you would verify the current password
+      // and update it in your user database
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current and new password required" });
+      }
+      
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters long" });
+      }
+      
+      // Mock successful password change
+      res.json({ success: true, message: "Password updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
+  app.post("/api/admin/update-profile", simpleAdminAuth, async (req, res) => {
+    try {
+      const { username, newPassword } = req.body;
+      
+      if (!username) {
+        return res.status(400).json({ message: "Username is required" });
+      }
+      
+      if (newPassword && newPassword.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters long" });
+      }
+      
+      // Mock successful profile update
+      res.json({ success: true, message: "Profile updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  app.post("/api/admin/create-user", simpleAdminAuth, async (req, res) => {
+    try {
+      const { username, password, role } = req.body;
+      
+      if (!username || !password || !role) {
+        return res.status(400).json({ message: "Username, password, and role are required" });
+      }
+      
+      if (password.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters long" });
+      }
+      
+      if (!["admin", "maintenance"].includes(role)) {
+        return res.status(400).json({ message: "Invalid role specified" });
+      }
+      
+      // Mock successful user creation
+      const newUser = {
+        id: username.toLowerCase(),
+        username,
+        role,
+        createdAt: new Date().toISOString(),
+        lastLogin: null
+      };
+      
+      res.json(newUser);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
+  app.delete("/api/admin/delete-user/:userId", simpleAdminAuth, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      if (userId === "sesa") {
+        return res.status(400).json({ message: "Cannot delete main admin account" });
+      }
+      
+      // Mock successful user deletion
+      res.json({ success: true, message: "User deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
   // Protected admin routes
   app.get("/api/buildings", async (req, res) => {
     try {

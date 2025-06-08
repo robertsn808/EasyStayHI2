@@ -306,6 +306,7 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
           {selectedTab === "inventory" && <InventoryTab items={inventory as any[]} />}
           {selectedTab === "receipts" && <ReceiptsTab receipts={receipts as any[]} />}
           {selectedTab === "todos" && <TodosTab todos={todos as any[]} />}
+          {selectedTab === "settings" && <SettingsTab />}
         </div>
       </Card>
     </div>

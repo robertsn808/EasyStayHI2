@@ -59,11 +59,10 @@ export function SettingsTab() {
     mutationFn: async (data: any) => {
       return await apiRequest("/api/admin/change-password", {
         method: "POST",
+        body: data,
         headers: {
-          "Content-Type": "application/json",
           "x-admin-token": "admin-authenticated"
-        },
-        body: JSON.stringify(data)
+        }
       });
     },
     onSuccess: () => {
@@ -88,11 +87,10 @@ export function SettingsTab() {
     mutationFn: async (data: any) => {
       return await apiRequest("/api/admin/update-profile", {
         method: "POST",
+        body: data,
         headers: {
-          "Content-Type": "application/json",
           "x-admin-token": "admin-authenticated"
-        },
-        body: JSON.stringify(data)
+        }
       });
     },
     onSuccess: () => {
@@ -116,11 +114,10 @@ export function SettingsTab() {
     mutationFn: async (data: any) => {
       return await apiRequest("/api/admin/create-user", {
         method: "POST",
+        body: data,
         headers: {
-          "Content-Type": "application/json",
           "x-admin-token": "admin-authenticated"
-        },
-        body: JSON.stringify(data)
+        }
       });
     },
     onSuccess: () => {
@@ -144,12 +141,19 @@ export function SettingsTab() {
   // Delete user mutation
   const deleteUserMutation = useMutation({
     mutationFn: async (userId: string) => {
-      return await apiRequest(`/api/admin/delete-user/${userId}`, {
+      const response = await fetch(`/api/admin/delete-user/${userId}`, {
         method: "DELETE",
         headers: {
           "x-admin-token": "admin-authenticated"
         }
       });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to delete user");
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       toast({
