@@ -320,7 +320,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const qrCodes = await Promise.all(
         buildingRooms.map(async (room) => {
-          const qrCode = await generateTenantQRCode(room.id);
+          const qrCode = await generateTenantQRCode(room.id, room.number);
           return {
             roomId: room.id,
             roomNumber: room.number,

@@ -4,12 +4,12 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-export async function generateTenantQRCode(roomId: number): Promise<string> {
+export async function generateTenantQRCode(roomId: number, roomNumber: string): Promise<string> {
   const baseUrl = process.env.REPL_SLUG 
     ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`
     : 'http://localhost:5000';
   
-  const tenantPortalUrl = `${baseUrl}/tenant/${roomId}`;
+  const tenantPortalUrl = `${baseUrl}/tenant/${roomNumber}`;
   
   try {
     const qrCodeDataURL = await QRCode.toDataURL(tenantPortalUrl, {
