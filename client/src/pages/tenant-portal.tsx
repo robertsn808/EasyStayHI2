@@ -457,16 +457,50 @@ export default function TenantPortal() {
                 <p className="text-center text-sm text-gray-600">
                   Point your camera at the QR code in your room
                 </p>
-                <Button 
-                  variant="outline" 
-                  className="w-full mt-2"
-                  onClick={() => {
-                    // Manual QR code simulation for testing
-                    handleQRScan(`tenant-access-${Math.floor(Math.random() * 10) + 1}`);
-                  }}
-                >
-                  Simulate QR Scan (Demo)
-                </Button>
+                <div className="flex gap-2 mt-2">
+                  <Button 
+                    variant="default" 
+                    className="flex-1"
+                    onClick={() => {
+                      // Manual capture from video feed
+                      if (videoRef.current && canvasRef.current) {
+                        const canvas = canvasRef.current;
+                        const context = canvas.getContext('2d');
+                        
+                        if (context) {
+                          canvas.width = videoRef.current.videoWidth;
+                          canvas.height = videoRef.current.videoHeight;
+                          context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+                          
+                          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                          const data = scanImageDataForQR(imageData);
+                          if (data) {
+                            handleQRScan(data);
+                          } else {
+                            toast({
+                              title: "No QR Code Found",
+                              description: "Position a QR code in the viewfinder and try again",
+                              variant: "destructive"
+                            });
+                          }
+                        }
+                      }
+                    }}
+                  >
+                    <Camera className="w-4 h-4 mr-2" />
+                    Capture
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => {
+                      // Demo simulation for testing
+                      handleQRScan(`tenant-access-${Math.floor(Math.random() * 10) + 1}`);
+                    }}
+                  >
+                    Demo Scan
+                  </Button>
+                </div>
               </DialogContent>
             </Dialog>
           </CardContent>
