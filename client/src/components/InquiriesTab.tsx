@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Home } from "lucide-react";
+import { Plus, Home, MessageSquare, Eye, Phone, Mail } from "lucide-react";
 import { useState } from "react";
 
 interface InquiriesTabProps {
@@ -21,6 +21,7 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
   const queryClient = useQueryClient();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [assignRoomDialogOpen, setAssignRoomDialogOpen] = useState(false);
+  const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [selectedInquiry, setSelectedInquiry] = useState<any>(null);
 
   // Fetch available rooms for assignment
@@ -108,6 +109,11 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
   const handleAssignRoom = (inquiry: any) => {
     setSelectedInquiry(inquiry);
     setAssignRoomDialogOpen(true);
+  };
+
+  const handleViewMessage = (inquiry: any) => {
+    setSelectedInquiry(inquiry);
+    setMessageDialogOpen(true);
   };
 
   const handleRoomAssignment = (e: React.FormEvent<HTMLFormElement>) => {
@@ -349,6 +355,58 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* Message Viewing Dialog */}
+          <Dialog open={messageDialogOpen} onOpenChange={setMessageDialogOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Message from {selectedInquiry?.name}</DialogTitle>
+              </DialogHeader>
+              {selectedInquiry && (
+                <div className="space-y-4">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <span className="font-semibold">Email:</span> {selectedInquiry.email}
+                      </div>
+                      {selectedInquiry.phone && (
+                        <div>
+                          <span className="font-semibold">Phone:</span> {selectedInquiry.phone}
+                        </div>
+                      )}
+                      {selectedInquiry.contactPreference && (
+                        <div>
+                          <span className="font-semibold">Contact Preference:</span> {selectedInquiry.contactPreference === 'any' ? 'Any method' : selectedInquiry.contactPreference}
+                        </div>
+                      )}
+                      <div>
+                        <span className="font-semibold">Status:</span> {selectedInquiry.status || 'pending'}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-base font-semibold">Message:</Label>
+                    <div className="mt-2 p-3 bg-white border rounded-lg min-h-[100px] whitespace-pre-wrap">
+                      {selectedInquiry.message || 'No message provided'}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => setMessageDialogOpen(false)}>
+                      Close
+                    </Button>
+                    <Button onClick={() => {
+                      setMessageDialogOpen(false);
+                      handleReply(selectedInquiry);
+                    }}>
+                      Reply to Inquiry
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       
@@ -364,16 +422,46 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
             <Card key={inquiry.id || index}>
               <CardHeader>
                 <div className="flex justify-between items-start">
-                  <CardTitle className="text-base">{inquiry.name}</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-base">{inquiry.name}</CardTitle>
+                    {inquiry.message && inquiry.message.trim() && (
+                      <MessageSquare className="w-4 h-4 text-blue-500" />
+                    )}
+                  </div>
                   <Badge variant={inquiry.status === 'pending' ? 'destructive' : 'default'}>
                     {inquiry.status || 'pending'}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-600 mb-2">{inquiry.email}</p>
-                <p className="text-sm mb-3">{inquiry.message}</p>
+                <div className="space-y-2 mb-3">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Mail className="w-4 h-4" />
+                    <span>{inquiry.email}</span>
+                  </div>
+                  {inquiry.phone && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Phone className="w-4 h-4" />
+                      <span>{inquiry.phone}</span>
+                    </div>
+                  )}
+                  {inquiry.contactPreference && (
+                    <div className="text-sm text-gray-500">
+                      <span>Prefers: {inquiry.contactPreference === 'any' ? 'Any method' : inquiry.contactPreference}</span>
+                    </div>
+                  )}
+                </div>
                 <div className="flex gap-2">
+                  {inquiry.message && inquiry.message.trim() && (
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => handleViewMessage(inquiry)}
+                    >
+                      <Eye className="w-3 h-3 mr-1" />
+                      View Message
+                    </Button>
+                  )}
                   <Button 
                     size="sm" 
                     variant="outline" 
