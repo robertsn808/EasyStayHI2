@@ -205,6 +205,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/tenant/checkout", async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = verifyTenantToken(token);
+      
+      if (!decoded) {
+        return res.status(401).json({ error: "Invalid token" });
+      }
+
+      // Update room status to "needs cleaning"
+      await storage.updateRoomStatus(decoded.roomId, "needs cleaning", {
+        tenantName: null,
+        lastCleaned: null,
+        nextPaymentDue: null
+      });
+
+      // Create automatic cleaning maintenance request
+      const cleaningRequest = {
+        roomId: decoded.roomId,
+        tenantName: "System",
+        title: "Room Check-Out Cleaning",
+        description: `Automated cleaning request generated from tenant check-out for room ${decoded.roomId}. Room requires full cleaning and preparation for next tenant.`,
+        priority: "high",
+        status: "pending",
+        assignedTo: "Housekeeping",
+        createdAt: new Date()
+      };
+
+      await storage.createMaintenanceRequest(cleaningRequest);
+
+      // Create notification for management
+      const notification = {
+        roomId: decoded.roomId,
+        title: "Tenant Check-Out Completed",
+        message: `Tenant ${decoded.tenantData.name} has checked out of room ${decoded.roomId}. Cleaning request has been automatically scheduled.`,
+        type: "info",
+        createdAt: new Date()
+      };
+
+      await storage.createNotification(notification);
+
+      res.json({ 
+        success: true, 
+        message: "Check-out completed successfully. Room cleaning has been scheduled." 
+      });
+
+    } catch (error) {
+      console.error("Error processing check-out:", error);
+      res.status(500).json({ error: "Failed to process check-out" });
+    }
+  });
+
   app.get("/api/admin/announcements", isAuthenticated, async (req, res) => {
     try {
       const announcements = await storage.getAllAnnouncements();

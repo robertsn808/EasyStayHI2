@@ -177,6 +177,36 @@ export default function TenantPortal() {
     }
   });
 
+  // Check-out mutation
+  const checkOutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/tenant/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`
+        }
+      });
+      if (!response.ok) throw new Error("Failed to process check-out");
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Check-Out Successful",
+        description: "You have successfully checked out. A cleaning request has been automatically scheduled.",
+      });
+      // Sign out the tenant after successful check-out
+      handleSignOut();
+    },
+    onError: () => {
+      toast({
+        title: "Check-Out Failed",
+        description: "Unable to process check-out. Please try again or contact management.",
+        variant: "destructive",
+      });
+    }
+  });
+
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
     if (!signInForm.tenantName.trim()) {
@@ -327,9 +357,19 @@ export default function TenantPortal() {
               Room {roomId} - {dashboardData?.room?.room?.number || 'Loading...'}
             </h1>
           </div>
-          <Button variant="outline" onClick={handleSignOut}>
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="default" 
+              onClick={() => checkOutMutation.mutate()}
+              disabled={checkOutMutation.isPending}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {checkOutMutation.isPending ? "Processing..." : "Check Out"}
+            </Button>
+            <Button variant="outline" onClick={handleSignOut}>
+              Sign Out
+            </Button>
+          </div>
         </div>
       </div>
 
