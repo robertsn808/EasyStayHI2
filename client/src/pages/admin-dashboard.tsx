@@ -61,10 +61,10 @@ export default function AdminDashboard() {
   const monthlyRevenue = occupiedRooms * 2000; // Assuming average monthly rate
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Admin Navigation */}
-        <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm p-4 mb-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-900">Property Management Dashboard</h2>
             <div className="flex items-center space-x-4">
@@ -88,7 +88,7 @@ export default function AdminDashboard() {
 
         {/* Quick Stats */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm p-6">
             <div className="flex items-center">
               <div className="p-3 bg-green-100 rounded-full">
                 <div className="text-green-600 text-xl">🏠</div>

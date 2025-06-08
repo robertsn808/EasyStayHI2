@@ -10,9 +10,9 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b">
+      <nav className="bg-white/90 backdrop-blur-sm shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -42,7 +42,7 @@ export default function Landing() {
 
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-sm">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Quality Rooms Available for Rent</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Comfortable, clean accommodations with flexible rental terms. Choose from daily, weekly, or monthly options to suit your needs.
@@ -50,7 +50,7 @@ export default function Landing() {
         </div>
 
         {/* Pricing Information */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm p-6 mb-8">
           <h3 className="text-2xl font-semibold text-gray-900 mb-6 text-center">Rental Rates</h3>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center p-4 border rounded-lg">
