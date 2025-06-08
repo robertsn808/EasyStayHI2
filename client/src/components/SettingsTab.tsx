@@ -31,6 +31,10 @@ export function SettingsTab() {
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [editingBuilding, setEditingBuilding] = useState<any | null>(null);
   const [showBuildingDialog, setShowBuildingDialog] = useState(false);
+  const [selectedBuilding, setSelectedBuilding] = useState<any | null>(null);
+  const [showRoomsDialog, setShowRoomsDialog] = useState(false);
+  const [editingRoom, setEditingRoom] = useState<any | null>(null);
+  const [showAddRoomDialog, setShowAddRoomDialog] = useState(false);
   
   // Form states
   const [passwordData, setPasswordData] = useState({
@@ -59,6 +63,11 @@ export function SettingsTab() {
   // Fetch buildings data
   const { data: buildingsData = [] } = useQuery({
     queryKey: ["/api/admin/buildings"],
+  });
+
+  // Fetch rooms data
+  const { data: roomsData = [] } = useQuery({
+    queryKey: ["/api/rooms"],
   });
 
   // Change password mutation
@@ -246,6 +255,93 @@ export function SettingsTab() {
       password: "Camputer69!",
       role: "maintenance"
     });
+  };
+
+  // Room management mutations
+  const updateRoomMutation = useMutation({
+    mutationFn: async ({ roomId, data }: { roomId: number; data: any }) => {
+      const response = await fetch(`/api/admin/rooms/${roomId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'admin-authenticated'
+        },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to update room');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/rooms'] });
+      toast({ title: "Success", description: "Room updated successfully" });
+      setEditingRoom(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update room", variant: "destructive" });
+    }
+  });
+
+  const createRoomMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/admin/rooms', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'admin-authenticated'
+        },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to create room');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/rooms'] });
+      toast({ title: "Success", description: "Room created successfully" });
+      setShowAddRoomDialog(false);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to create room", variant: "destructive" });
+    }
+  });
+
+  const deleteRoomMutation = useMutation({
+    mutationFn: async (roomId: number) => {
+      const response = await fetch(`/api/admin/rooms/${roomId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-token': 'admin-authenticated'
+        }
+      });
+      if (!response.ok) throw new Error('Failed to delete room');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/rooms'] });
+      toast({ title: "Success", description: "Room deleted successfully" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete room", variant: "destructive" });
+    }
+  });
+
+  // Handler functions
+  const handleEditRooms = (building: any) => {
+    setSelectedBuilding(building);
+    setShowRoomsDialog(true);
+  };
+
+  const handleEditRoom = (room: any) => {
+    setEditingRoom(room);
+  };
+
+  const handleAddRoom = () => {
+    setShowAddRoomDialog(true);
+  };
+
+  const handleDeleteRoom = (roomId: number) => {
+    if (confirm('Are you sure you want to delete this room? This action cannot be undone.')) {
+      deleteRoomMutation.mutate(roomId);
+    }
   };
 
   const handleEditBuilding = (building: any) => {
@@ -497,9 +593,10 @@ export function SettingsTab() {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => window.location.href = `/admin?tab=rooms&building=${building.id}`}
+                            onClick={() => handleEditRooms(building)}
                           >
-                            View Rooms
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit Rooms
                           </Button>
                         </div>
                       </div>
@@ -639,6 +736,179 @@ export function SettingsTab() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Room Management Dialog */}
+      <Dialog open={showRoomsDialog} onOpenChange={setShowRoomsDialog}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Edit Rooms - {selectedBuilding?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">
+                Rooms ({Array.isArray(roomsData) ? roomsData.filter(room => room.buildingId === selectedBuilding?.id).length : 0})
+              </h3>
+              <Button onClick={handleAddRoom}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Room
+              </Button>
+            </div>
+            
+            <div className="grid gap-4">
+              {Array.isArray(roomsData) && roomsData
+                .filter(room => room.buildingId === selectedBuilding?.id)
+                .map((room: any) => (
+                  <div key={room.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex-1">
+                      {editingRoom?.id === room.id ? (
+                        <form onSubmit={(e) => {
+                          e.preventDefault();
+                          const formData = new FormData(e.currentTarget);
+                          const updateData = {
+                            number: formData.get('number'),
+                            size: formData.get('size'),
+                            floor: parseInt(formData.get('floor') as string)
+                          };
+                          updateRoomMutation.mutate({ roomId: room.id, data: updateData });
+                        }} className="grid grid-cols-3 gap-4">
+                          <div>
+                            <Label htmlFor="number">Room Number</Label>
+                            <Input
+                              name="number"
+                              defaultValue={room.number}
+                              placeholder="Room number"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="size">Size</Label>
+                            <Input
+                              name="size"
+                              defaultValue={room.size || ''}
+                              placeholder="Room size"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="floor">Floor</Label>
+                            <Input
+                              name="floor"
+                              type="number"
+                              defaultValue={room.floor || ''}
+                              placeholder="Floor number"
+                            />
+                          </div>
+                          <div className="flex gap-2 col-span-3">
+                            <Button type="submit" size="sm" disabled={updateRoomMutation.isPending}>
+                              <Save className="w-4 h-4 mr-1" />
+                              {updateRoomMutation.isPending ? "Saving..." : "Save"}
+                            </Button>
+                            <Button type="button" variant="outline" size="sm" onClick={() => setEditingRoom(null)}>
+                              Cancel
+                            </Button>
+                          </div>
+                        </form>
+                      ) : (
+                        <div className="grid grid-cols-4 gap-4 items-center">
+                          <div>
+                            <strong>Room {room.number}</strong>
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {room.size || 'No size specified'}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            Floor {room.floor || 'N/A'}
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handleEditRoom(room)}>
+                              <Edit className="w-4 h-4 mr-1" />
+                              Edit
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleDeleteRoom(room.id)}
+                              disabled={deleteRoomMutation.isPending}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            {Array.isArray(roomsData) && roomsData.filter(room => room.buildingId === selectedBuilding?.id).length === 0 && (
+              <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  No rooms found for this building. Click "Add Room" to create the first room.
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Room Dialog */}
+      <Dialog open={showAddRoomDialog} onOpenChange={setShowAddRoomDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Room</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            const roomData = {
+              buildingId: selectedBuilding?.id,
+              number: formData.get('number'),
+              size: formData.get('size'),
+              floor: parseInt(formData.get('floor') as string) || 1,
+              status: 'available'
+            };
+            createRoomMutation.mutate(roomData);
+          }} className="space-y-4">
+            <div>
+              <Label htmlFor="number">Room Number *</Label>
+              <Input
+                name="number"
+                placeholder="e.g., 101, A1, Suite 1"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="size">Room Size</Label>
+              <Input
+                name="size"
+                placeholder="e.g., 1 bedroom, Studio, 2BR/1BA"
+              />
+            </div>
+            <div>
+              <Label htmlFor="floor">Floor Number</Label>
+              <Input
+                name="floor"
+                type="number"
+                placeholder="1"
+                defaultValue="1"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button type="submit" disabled={createRoomMutation.isPending}>
+                <Plus className="w-4 h-4 mr-2" />
+                {createRoomMutation.isPending ? "Creating..." : "Create Room"}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setShowAddRoomDialog(false)}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

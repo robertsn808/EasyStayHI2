@@ -707,6 +707,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/admin/rooms/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // Check if room has active guests before deletion
+      const guests = await storage.getGuestProfilesByRoom(id);
+      if (guests && guests.length > 0) {
+        return res.status(400).json({ 
+          message: "Cannot delete room with active guests. Please check out all guests first." 
+        });
+      }
+      
+      await storage.deleteRoom(id);
+      res.json({ success: true, message: "Room deleted successfully" });
+    } catch (error) {
+      console.error("Room deletion error:", error);
+      res.status(500).json({ message: "Failed to delete room", error: error.message });
+    }
+  });
+
   app.get("/api/admin/inquiries", simpleAdminAuth, async (req, res) => {
     try {
       const inquiries = await storage.getInquiries();
