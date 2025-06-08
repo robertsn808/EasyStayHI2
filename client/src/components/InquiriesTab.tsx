@@ -2,14 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Plus, Home } from "lucide-react";
 import { useState } from "react";
 
 interface InquiriesTabProps {
@@ -20,6 +20,11 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [assignRoomDialogOpen, setAssignRoomDialogOpen] = useState(false);
+  const [selectedInquiry, setSelectedInquiry] = useState<any>(null);
+
+  // Fetch available rooms for assignment
+  const { data: rooms } = useQuery({ queryKey: ["/api/rooms"] });
 
   const updateInquiryMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
@@ -45,6 +50,32 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to create inquiry", variant: "destructive" });
+    }
+  });
+
+  const assignRoomMutation = useMutation({
+    mutationFn: async ({ inquiryId, roomId, guestData }: { inquiryId: number; roomId: number; guestData: any }) => {
+      // First create the guest profile
+      const guestProfile = await apiRequest('POST', '/api/admin/guests', guestData);
+      
+      // Then update the room status to occupied
+      await apiRequest('PUT', `/api/admin/rooms/${roomId}/status`, { status: 'occupied' });
+      
+      // Finally mark the inquiry as resolved
+      await apiRequest('PATCH', `/api/admin/inquiries/${inquiryId}/status`, { status: 'resolved' });
+      
+      return guestProfile;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/inquiries'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/guests'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/rooms'] });
+      toast({ title: "Success", description: "Room assigned successfully" });
+      setAssignRoomDialogOpen(false);
+      setSelectedInquiry(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to assign room", variant: "destructive" });
     }
   });
 
