@@ -68,26 +68,14 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
     <Card className="shadow-sm">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <div className="border-b border-gray-200">
-          <TabsList className="grid w-full grid-cols-11">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="properties">Properties</TabsTrigger>
-            <TabsTrigger value="inquiries" className="relative">
-              Inquiries
-              {inquiries?.length > 0 && (
-                <Badge variant="destructive" className="ml-2 h-5 w-5 p-0 text-xs">
-                  {inquiries.length}
-                </Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="contacts">Contacts</TabsTrigger>
-            <TabsTrigger value="vendors">Vendors</TabsTrigger>
-            <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="receipts">Receipts</TabsTrigger>
-            <TabsTrigger value="todos">Todo List</TabsTrigger>
             <TabsTrigger value="guests">Guest Management</TabsTrigger>
-            <TabsTrigger value="qrcodes">QR Codes</TabsTrigger>
+            <TabsTrigger value="current-guests">Current Guests</TabsTrigger>
           </TabsList>
         </div>
 
@@ -127,53 +115,23 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
           </div>
         </TabsContent>
 
-        <TabsContent value="inquiries" className="p-6">
-          <InquiriesTab inquiries={inquiries} />
-        </TabsContent>
-
-        <TabsContent value="maintenance" className="p-6">
-          <MaintenanceTab requests={maintenanceRequests} />
-        </TabsContent>
-
         <TabsContent value="payments" className="p-6">
           <PaymentsTab payments={payments} />
         </TabsContent>
 
         <TabsContent value="contacts" className="p-6">
-          <ContactsTab contacts={contacts} />
-        </TabsContent>
-
-        <TabsContent value="vendors" className="p-6">
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Vendor Management</h2>
-              <Button>Add New Vendor</Button>
+              <h2 className="text-2xl font-bold">Contacts Management</h2>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm">
+                  Show Vendors Only
+                </Button>
+                <Button>Add New Contact</Button>
+              </div>
             </div>
-            <div className="grid gap-4">
-              <Card className="p-4">
-                <h3 className="font-semibold">Hawaiian Cleaning Services</h3>
-                <p className="text-sm text-gray-600">Cleaning & Maintenance</p>
-                <p className="text-sm">Contact: (808) 555-0123</p>
-                <div className="flex gap-2 mt-2">
-                  <Button size="sm" variant="outline">Contact</Button>
-                  <Button size="sm" variant="outline">Edit</Button>
-                </div>
-              </Card>
-              <Card className="p-4">
-                <h3 className="font-semibold">Aloha Repairs LLC</h3>
-                <p className="text-sm text-gray-600">Plumbing & Electrical</p>
-                <p className="text-sm">Contact: (808) 555-0456</p>
-                <div className="flex gap-2 mt-2">
-                  <Button size="sm" variant="outline">Contact</Button>
-                  <Button size="sm" variant="outline">Edit</Button>
-                </div>
-              </Card>
-            </div>
+            <ContactsTab contacts={contacts} />
           </div>
-        </TabsContent>
-
-        <TabsContent value="calendar" className="p-6">
-          <CalendarTab events={calendarEvents} />
         </TabsContent>
 
         <TabsContent value="inventory" className="p-6">
@@ -184,16 +142,63 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
           <ReceiptsTab receipts={receipts} />
         </TabsContent>
 
-        <TabsContent value="todos" className="p-6">
-          <TodosTab todos={todos} />
-        </TabsContent>
-
         <TabsContent value="guests" className="p-6">
           <GuestProfileManager />
         </TabsContent>
 
-        <TabsContent value="qrcodes" className="p-6">
-          <QRCodeManager />
+        <TabsContent value="current-guests" className="p-6">
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Current Guests</h2>
+              <div className="text-sm text-gray-600">
+                Showing guests currently checked in
+              </div>
+            </div>
+            <div className="grid gap-4">
+              <Card className="p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold">John Smith</h3>
+                    <p className="text-sm text-gray-600">Room 001 - 934 Kapahulu</p>
+                    <p className="text-sm">Check-in: Dec 1, 2024</p>
+                    <p className="text-sm">Monthly Rate: $2000</p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
+                    <Badge variant="outline">Payment Due: Dec 15</Badge>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold">Maria Garcia</h3>
+                    <p className="text-sm text-gray-600">Room 003 - 949 Kawaiahao</p>
+                    <p className="text-sm">Check-in: Nov 28, 2024</p>
+                    <p className="text-sm">Weekly Rate: $200</p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
+                    <Badge className="bg-orange-100 text-orange-800">Payment Overdue</Badge>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold">David Chen</h3>
+                    <p className="text-sm text-gray-600">Room 005 - 934 Kapahulu</p>
+                    <p className="text-sm">Check-in: Dec 5, 2024</p>
+                    <p className="text-sm">Daily Rate: $100</p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
+                    <Badge className="bg-green-100 text-green-800">Payment Current</Badge>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
     </Card>
