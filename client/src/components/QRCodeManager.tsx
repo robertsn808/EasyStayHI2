@@ -27,6 +27,14 @@ export default function QRCodeManager() {
     queryKey: ["/api/buildings"],
   });
 
+  // Auto-select first building with rooms (buildings 10 or 11)
+  const activeBuildings = buildings?.filter((building: any) => building.id >= 10) || [];
+  
+  // Set default building if none selected and buildings are available
+  if (!selectedBuilding && activeBuildings.length > 0) {
+    setSelectedBuilding(activeBuildings[0].id);
+  }
+
   // Fetch QR codes for selected building
   const { data: qrData, isLoading: isLoadingQR } = useQuery({
     queryKey: ["/api/buildings", selectedBuilding, "qr-codes"],
@@ -130,11 +138,11 @@ export default function QRCodeManager() {
 
       {/* Building Selection */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {buildings?.map((building: any) => (
+        {activeBuildings.map((building: any) => (
           <Card 
             key={building.id} 
             className={`cursor-pointer transition-colors ${
-              selectedBuilding === building.id ? "ring-2 ring-blue-500" : ""
+              selectedBuilding === building.id ? "ring-2 ring-blue-500 bg-blue-50" : ""
             }`}
             onClick={() => setSelectedBuilding(building.id)}
           >
@@ -147,6 +155,7 @@ export default function QRCodeManager() {
                   onClick={(e) => {
                     e.stopPropagation();
                     generateQRMutation.mutate(building.id);
+                    setSelectedBuilding(building.id);
                   }}
                 >
                   {generateQRMutation.isPending ? (
@@ -160,8 +169,8 @@ export default function QRCodeManager() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600">{building.address}</p>
-              <p className="text-sm font-medium mt-2">
-                Click to view/generate QR codes for all rooms
+              <p className="text-sm font-medium mt-2 text-green-600">
+                {selectedBuilding === building.id ? "✓ Selected - QR codes shown below" : "Click to view QR codes"}
               </p>
             </CardContent>
           </Card>
