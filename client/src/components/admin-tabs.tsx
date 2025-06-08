@@ -97,11 +97,11 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
                 <h3 className="text-xl font-semibold mb-4">934 Kapahulu Ave</h3>
                 <div className="space-y-2">
                   <p className="text-gray-600">
-                    {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 8 && room.status === 'available').length : 0} of {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 8).length : 0} Rooms Available
+                    {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10 && room.status === 'available').length : 0} of {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 0} Rooms Available
                   </p>
                   <p className="text-sm">Daily: $100 | Weekly: $500 | Monthly: $2000</p>
                   <div className="grid grid-cols-4 gap-2 mt-4">
-                    {Array.isArray(rooms) && rooms.filter((room: any) => room.buildingId === 8).map((room: any) => (
+                    {Array.isArray(rooms) && rooms.filter((room: any) => room.buildingId === 10).map((room: any) => (
                       <div 
                         key={room.id} 
                         className={`p-2 border rounded text-center text-xs ${
@@ -121,11 +121,11 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
                 <h3 className="text-xl font-semibold mb-4">949 Kawaiahao St</h3>
                 <div className="space-y-2">
                   <p className="text-gray-600">
-                    {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 9 && room.status === 'available').length : 0} of {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 9).length : 0} Suites Available
+                    {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11 && room.status === 'available').length : 0} of {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 0} Suites Available
                   </p>
                   <p className="text-sm">Daily: $50 | Weekly: $200 | Monthly: $600</p>
                   <div className="grid grid-cols-5 gap-2 mt-4">
-                    {Array.isArray(rooms) && rooms.filter((room: any) => room.buildingId === 9).map((room: any) => (
+                    {Array.isArray(rooms) && rooms.filter((room: any) => room.buildingId === 11).map((room: any) => (
                       <div 
                         key={room.id} 
                         className={`p-2 border rounded text-center text-xs ${

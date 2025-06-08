@@ -167,7 +167,7 @@ export default function WeeklyCalendar({ events = [] }: WeeklyCalendarProps) {
                   </div>
                 </div>
                 
-                <div className="space-y-1 min-h-[200px]">
+                <div className="space-y-1 min-h-[100px]">
                   {dayEvents.map((event) => (
                     <div
                       key={event.id}
