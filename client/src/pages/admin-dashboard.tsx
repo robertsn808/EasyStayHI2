@@ -30,7 +30,7 @@ type TabType =
   | "settings";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<TabType>("934");
+  const [activeTab, setActiveTab] = useState<TabType>("quick-access");
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
   const [, setLocation] = useLocation();

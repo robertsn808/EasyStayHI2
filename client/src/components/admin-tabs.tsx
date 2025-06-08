@@ -13,6 +13,7 @@ import { AnnouncementsTab } from "@/components/AnnouncementsTab";
 import { SettingsTab } from "@/components/SettingsTab";
 import { BuildingTab } from "@/components/BuildingTab";
 import { PaymentTrackerTab } from "@/components/PaymentTrackerTab";
+import { QuickAccessTab } from "@/components/QuickAccessTab";
 
 interface AdminTabsProps {
   activeTab?: string;
@@ -81,6 +82,11 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
 
   const { data: guests } = useQuery({
     queryKey: ["/api/admin/guests"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: buildings } = useQuery({
+    queryKey: ["/api/buildings"],
     enabled: isAdminAuthenticated,
   });
 

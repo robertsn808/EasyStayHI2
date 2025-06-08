@@ -46,12 +46,12 @@ export function QuickAccessTab({
   // Fetch notifications
   const { data: notifications = [] } = useQuery({
     queryKey: ["/api/admin/notifications", selectedBuilding !== "all" ? selectedBuilding : undefined],
-    queryFn: () => apiRequest(`/api/admin/notifications${selectedBuilding !== "all" ? `?buildingId=${selectedBuilding}` : ""}`),
+    enabled: true,
   });
 
   // Delete notification mutation
   const deleteNotification = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/admin/notifications/${id}`, { method: "DELETE" }),
+    mutationFn: (id: number) => apiRequest(`/api/admin/notifications/${id}`, "DELETE"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
       toast({ title: "Notification deleted" });
@@ -60,7 +60,7 @@ export function QuickAccessTab({
 
   // Clear all notifications mutation
   const clearAllNotifications = useMutation({
-    mutationFn: () => apiRequest(`/api/admin/notifications${selectedBuilding !== "all" ? `?buildingId=${selectedBuilding}` : ""}`, { method: "DELETE" }),
+    mutationFn: () => apiRequest(`/api/admin/notifications${selectedBuilding !== "all" ? `?buildingId=${selectedBuilding}` : ""}`, "DELETE"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
       toast({ title: "All notifications cleared" });
@@ -69,7 +69,7 @@ export function QuickAccessTab({
 
   // Mark as read mutation
   const markAsRead = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/admin/notifications/${id}/read`, { method: "PATCH" }),
+    mutationFn: (id: number) => apiRequest(`/api/admin/notifications/${id}/read`, "PATCH"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
     },
@@ -77,7 +77,7 @@ export function QuickAccessTab({
 
   // Unlock portal mutation
   const unlockPortal = useMutation({
-    mutationFn: (roomId: number) => apiRequest(`/api/admin/portal/unlock/${roomId}`, { method: "POST" }),
+    mutationFn: (roomId: number) => apiRequest(`/api/admin/portal/unlock/${roomId}`, "POST"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
       toast({ title: "Portal unlocked successfully" });
@@ -129,7 +129,7 @@ export function QuickAccessTab({
   const activeInquiries = Array.isArray(inquiries) ? inquiries.filter(i => i.status === "pending").length : 0;
   const pendingMaintenance = Array.isArray(maintenanceRequests) ? maintenanceRequests.filter(m => m.request?.status === "submitted").length : 0;
 
-  const unreadNotifications = notifications.filter((n: any) => !n.isRead);
+  const unreadNotifications = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead) : [];
 
   return (
     <div className="space-y-6">
@@ -252,7 +252,7 @@ export function QuickAccessTab({
                 variant="outline"
                 size="sm"
                 onClick={() => clearAllNotifications.mutate()}
-                disabled={notifications.length === 0}
+                disabled={!Array.isArray(notifications) || notifications.length === 0}
               >
                 <Trash2 className="h-4 w-4 mr-1" />
                 Clear All
@@ -262,7 +262,7 @@ export function QuickAccessTab({
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-96">
-            {notifications.length === 0 ? (
+            {!Array.isArray(notifications) || notifications.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>No notifications</p>
