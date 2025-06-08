@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Bell, LogOut, Users, Calendar, Wrench, MessageSquare, DollarSign, Megaphone, Contact, Package, Receipt, CheckSquare, QrCode, Home } from "lucide-react";
 import { useLocation } from "wouter";
-import WeeklyCalendar from "@/components/WeeklyCalendar";
+
 import AdminTabs from "@/components/admin-tabs";
 import backgroundImage from "@assets/image_1749351216300.png";
 
@@ -797,9 +797,6 @@ export default function AdminDashboard() {
 
           {/* Main Content Area */}
           <div className="flex-1 space-y-4 lg:space-y-8">
-            {/* Weekly Calendar */}
-            <WeeklyCalendar />
-            
             <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
         </div>
