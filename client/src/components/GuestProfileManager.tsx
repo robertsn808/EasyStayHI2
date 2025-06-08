@@ -37,7 +37,7 @@ interface Room {
 }
 
 export default function GuestProfileManager() {
-  const [selectedRoom, setSelectedRoom] = useState<string>('');
+  const [selectedRoom, setSelectedRoom] = useState<string>('all');
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     roomId: '',
@@ -159,7 +159,7 @@ export default function GuestProfileManager() {
     }
   };
 
-  const filteredGuests = selectedRoom 
+  const filteredGuests = selectedRoom && selectedRoom !== "all"
     ? guests.filter((guest: GuestProfile) => guest.roomId === parseInt(selectedRoom))
     : guests;
 
@@ -232,7 +232,7 @@ export default function GuestProfileManager() {
               <SelectValue placeholder="All rooms" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All rooms</SelectItem>
+              <SelectItem value="all">All rooms</SelectItem>
               {rooms.map((room) => (
                 <SelectItem key={room.id} value={room.id.toString()}>
                   Room {room.number}

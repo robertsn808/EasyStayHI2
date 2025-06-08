@@ -73,13 +73,12 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
     <Card className="shadow-sm">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <div className="border-b border-gray-200">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="properties">Properties</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="contacts">Contacts</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="receipts">Receipts</TabsTrigger>
-            <TabsTrigger value="guests">Guest Management</TabsTrigger>
             <TabsTrigger value="current-guests">Current Guests</TabsTrigger>
           </TabsList>
         </div>
@@ -171,10 +170,6 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
 
         <TabsContent value="receipts" className="p-6">
           <ReceiptsTab receipts={receipts} />
-        </TabsContent>
-
-        <TabsContent value="guests" className="p-6">
-          <GuestProfileManager />
         </TabsContent>
 
         <TabsContent value="current-guests" className="p-6">
