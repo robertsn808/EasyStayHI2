@@ -101,6 +101,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         tenantEmail: tenantEmail || null,
         tenantPhone: tenantPhone || null,
         sessionToken: token,
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
         createdAt: new Date(),
       };
       

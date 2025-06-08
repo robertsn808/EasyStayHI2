@@ -103,8 +103,13 @@ export default function Property934() {
   // QR Code generation mutation
   const generateQRCodeMutation = useMutation({
     mutationFn: async (roomId: number) => {
-      const response = await apiRequest("POST", "/api/qr/generate", { roomId });
-      return response;
+      const response = await fetch("/api/qr/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomId }),
+      });
+      if (!response.ok) throw new Error("Failed to generate QR code");
+      return await response.json();
     },
     onSuccess: (data, roomId) => {
       setQrCodeData({ roomId, qrCode: data.qrCode });

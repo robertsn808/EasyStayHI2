@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ArrowLeft, Plus, Users, Wrench, DollarSign, MessageCircle, Calendar } from "lucide-react";
+import { ArrowLeft, Plus, Users, Wrench, DollarSign, MessageCircle, Calendar, QrCode } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Property949() {
@@ -20,6 +20,8 @@ export default function Property949() {
   const [showAddMaintenance, setShowAddMaintenance] = useState(false);
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [showAddGuest, setShowAddGuest] = useState(false);
+  const [qrCodeData, setQrCodeData] = useState<{roomId: number, qrCode: string} | null>(null);
+  const [showQRModal, setShowQRModal] = useState(false);
 
   // Sample data for Property 949
   const propertyData = {
@@ -127,6 +129,38 @@ export default function Property949() {
       title: "Reminder Sent",
       description: `Payment reminder sent to ${tenantName}.`,
     });
+  };
+
+  // QR Code generation mutation
+  const generateQRCodeMutation = useMutation({
+    mutationFn: async (roomId: number) => {
+      const response = await fetch("/api/qr/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomId }),
+      });
+      if (!response.ok) throw new Error("Failed to generate QR code");
+      return await response.json();
+    },
+    onSuccess: (data, roomId) => {
+      setQrCodeData({ roomId, qrCode: data.qrCode });
+      setShowQRModal(true);
+      toast({
+        title: "QR Code Generated",
+        description: `QR code created for ${rooms.find(r => r.id === roomId)?.number}`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to generate QR code. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const generateSuiteQRCode = (roomId: number) => {
+    generateQRCodeMutation.mutate(roomId);
   };
 
   const handleContactGuest = (tenantName: string) => {
