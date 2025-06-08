@@ -269,6 +269,86 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
               </form>
             </DialogContent>
           </Dialog>
+
+          {/* Assign from Inquiries Dialog */}
+          <Dialog open={assignRoomDialogOpen} onOpenChange={setAssignRoomDialogOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Assign Room from Inquiries</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label>Select Inquiry to Assign</Label>
+                  <Select onValueChange={(value) => setSelectedInquiry(inquiries.find((inq: any) => inq.id === parseInt(value)))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose an inquiry" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.isArray(inquiries) && inquiries.map((inquiry: any) => (
+                        <SelectItem key={inquiry.id} value={inquiry.id.toString()}>
+                          {inquiry.name} - {inquiry.inquiryType} ({inquiry.email})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {selectedInquiry && (
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-medium mb-2">Selected Inquiry Details</h4>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div><strong>Name:</strong> {selectedInquiry.name}</div>
+                      <div><strong>Email:</strong> {selectedInquiry.email}</div>
+                      <div><strong>Phone:</strong> {selectedInquiry.phone || 'N/A'}</div>
+                      <div><strong>Type:</strong> {selectedInquiry.inquiryType}</div>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <Label>Available Rooms</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-2">
+                    {Array.isArray(rooms) && rooms.filter((room: any) => room.status === 'available').map((room: any) => (
+                      <Button
+                        key={room.id}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (selectedInquiry) {
+                            // Auto-assign room and create guest profile
+                            const assignData = {
+                              inquiryId: selectedInquiry.id,
+                              roomId: room.id,
+                              guestName: selectedInquiry.name,
+                              email: selectedInquiry.email,
+                              phone: selectedInquiry.phone,
+                              bookingType: 'monthly',
+                              checkInDate: new Date().toISOString().split('T')[0],
+                              paymentAmount: room.rentalRate || '0',
+                              paymentDueDay: 1
+                            };
+                            handleAssignRoom(assignData);
+                          }
+                        }}
+                        className="text-left"
+                      >
+                        <div>
+                          <div className="font-medium">Room {room.number}</div>
+                          <div className="text-xs text-gray-500">${room.rentalRate}/month</div>
+                        </div>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button type="button" variant="outline" onClick={() => setAssignRoomDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       
