@@ -428,15 +428,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getNotifications(roomId?: number, tenantSessionId?: number) {
-    let query = db.select().from(schema.notifications);
-
+    const conditions = [];
     if (roomId) {
-      query = query.where(eq(schema.notifications.roomId, roomId));
+      conditions.push(eq(schema.notifications.roomId, roomId));
     }
     if (tenantSessionId) {
-      query = query.where(eq(schema.notifications.tenantSessionId, tenantSessionId));
+      conditions.push(eq(schema.notifications.tenantSessionId, tenantSessionId));
     }
 
+    const query = db.select().from(schema.notifications);
+    
+    if (conditions.length > 0) {
+      return await query.where(and(...conditions)).orderBy(desc(schema.notifications.createdAt));
+    }
+    
     return await query.orderBy(desc(schema.notifications.createdAt));
   }
 
