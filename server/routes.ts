@@ -599,11 +599,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/rooms/:id", simpleAdminAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const validatedData = insertRoomSchema.parse(req.body);
-      const room = await storage.updateRoom(id, validatedData);
+      // For updates, we only validate the fields that are being updated
+      const updateData = req.body;
+      
+      // Convert floor to integer if provided
+      if (updateData.floor !== undefined) {
+        updateData.floor = parseInt(updateData.floor);
+      }
+      
+      const room = await storage.updateRoom(id, updateData);
       res.json(room);
     } catch (error) {
-      res.status(400).json({ message: "Failed to update room" });
+      console.error("Room update error:", error);
+      res.status(400).json({ message: "Failed to update room", error: error.message });
     }
   });
 
