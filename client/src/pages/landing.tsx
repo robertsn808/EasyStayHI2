@@ -37,7 +37,7 @@ export default function Landing() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3"
+                className="border-white text-yellow-300 hover:bg-white hover:text-blue-600 px-8 py-3"
                 onClick={() => window.location.href = '/admin'}
               >
                 Management Portal
@@ -94,16 +94,9 @@ export default function Landing() {
               <div className="flex gap-2">
                 <Button 
                   onClick={() => window.open('/inquiry?property=934', '_blank')}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700"
                 >
                   Inquire Now
-                </Button>
-                <Button 
-                  onClick={() => window.open('/property-934', '_blank')} 
-                  variant="outline" 
-                  className="flex-1"
-                >
-                  View Details
                 </Button>
               </div>
             </CardContent>
@@ -152,16 +145,9 @@ export default function Landing() {
               <div className="flex gap-2">
                 <Button 
                   onClick={() => window.open('/inquiry?property=949', '_blank')}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700"
+                  className="w-full bg-purple-600 hover:bg-purple-700"
                 >
                   Inquire Now
-                </Button>
-                <Button 
-                  onClick={() => window.open('/property-949', '_blank')} 
-                  variant="outline" 
-                  className="flex-1"
-                >
-                  View Details
                 </Button>
               </div>
             </CardContent>
