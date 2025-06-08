@@ -196,43 +196,76 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
-    >
-      {/* Header */}
-      <div className="bg-white shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50">
+      {/* Premium Header */}
+      <div className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-slate-200/60 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl blur opacity-20 animate-pulse"></div>
+                <img 
+                  src={backgroundImage} 
+                  alt="EasyStay HI" 
+                  className="relative h-10 w-10 rounded-xl object-cover shadow-lg ring-2 ring-white"
+                />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                  EasyStay HI
+                </h1>
+                <p className="text-sm text-slate-500 font-medium">Property Management</p>
+              </div>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
-                <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
+            
+            <div className="flex items-center space-x-3">
+              <div className="hidden md:flex items-center space-x-4 mr-4">
+                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-3 py-1.5 rounded-full shadow-sm">
+                  <span className="text-white text-xs font-semibold">LIVE</span>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Revenue</p>
+                  <p className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                    $15,240
+                  </p>
+                </div>
+              </div>
+              
+              <Button variant="ghost" size="icon" className="relative h-9 w-9 hover:bg-slate-100">
+                <Bell className="h-4 w-4 text-slate-600" />
+                <div className="absolute -top-1 -right-1 bg-red-500 rounded-full w-2 h-2"></div>
               </Button>
+              
               <Button 
-                variant="outline" 
+                variant="ghost" 
                 size="icon" 
-                className="h-8 w-8 sm:h-10 sm:w-10"
+                className="h-9 w-9 hover:bg-slate-100"
                 onClick={() => setActiveTab("settings")}
               >
-                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Settings className="h-4 w-4 text-slate-600" />
               </Button>
-              <div className="flex items-center space-x-2">
-                <div className="h-6 w-6 sm:h-8 sm:w-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <User className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+              
+              <div className="flex items-center space-x-3 pl-3 border-l border-slate-200">
+                <div className="relative">
+                  <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-md">
+                    <User className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 bg-emerald-500 rounded-full w-3 h-3 border-2 border-white"></div>
                 </div>
-                <span className="text-sm font-medium text-gray-700 hidden sm:block">Sesa</span>
+                <div className="hidden sm:block">
+                  <p className="text-sm font-semibold text-slate-900">Admin</p>
+                  <p className="text-xs text-slate-500">Online</p>
+                </div>
               </div>
+              
               <Button 
-                variant="outline" 
+                variant="ghost" 
                 size="icon" 
-                className="h-8 w-8 sm:h-10 sm:w-10"
+                className="h-9 w-9 hover:bg-red-50 hover:text-red-600 transition-colors"
                 onClick={handleLogout}
                 title="Logout"
               >
-                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
+                <LogOut className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -242,61 +275,72 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Mobile Overview Cards */}
-        <div className="lg:hidden grid grid-cols-4 gap-2 mb-6">
-          <Card className={`${activeTab === "quick-access" ? "bg-gray-100 border-gray-300" : "bg-gray-50 border-gray-200"} cursor-pointer`}
+        <div className="lg:hidden grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <Card className={`${activeTab === "quick-access" ? "bg-gradient-to-br from-slate-100 to-slate-50 border-slate-300 shadow-md" : "bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-md"} cursor-pointer transition-all duration-200`}
             onClick={() => setActiveTab("quick-access")}
           >
-            <CardContent className="p-2">
+            <CardContent className="p-4">
               <div className="text-center">
-                <Home className="h-4 w-4 text-gray-500 mx-auto mb-1" />
-                <p className="text-xs font-medium text-gray-900">Quick</p>
-                <p className="text-xs text-gray-600">Access</p>
+                <div className="mx-auto mb-2 w-8 h-8 bg-gradient-to-br from-slate-500 to-slate-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <Home className="h-4 w-4 text-white" />
+                </div>
+                <p className="text-xs font-semibold text-slate-900">Quick</p>
+                <p className="text-xs text-slate-500">Access</p>
               </div>
             </CardContent>
           </Card>
-          <Card className={`${activeTab === "934" ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"} cursor-pointer`}
+          
+          <Card className={`${activeTab === "934" ? "bg-gradient-to-br from-blue-100 to-blue-50 border-blue-300 shadow-md" : "bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-md"} cursor-pointer transition-all duration-200`}
             onClick={() => setActiveTab("934")}
           >
-            <CardContent className="p-2">
+            <CardContent className="p-4">
               <div className="text-center">
-                <Building className="h-4 w-4 text-blue-500 mx-auto mb-1" />
-                <p className="text-xs font-medium text-blue-900">934</p>
+                <div className="mx-auto mb-2 w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <Building className="h-4 w-4 text-white" />
+                </div>
+                <p className="text-xs font-semibold text-blue-900">934</p>
                 <p className="text-sm font-bold text-blue-700">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 10).length : 0}</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className={`${activeTab === "949" ? "bg-purple-100 border-purple-300" : "bg-purple-50 border-purple-200"} cursor-pointer`}
+          <Card className={`${activeTab === "949" ? "bg-gradient-to-br from-purple-100 to-purple-50 border-purple-300 shadow-md" : "bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-md"} cursor-pointer transition-all duration-200`}
             onClick={() => setActiveTab("949")}
           >
-            <CardContent className="p-2">
+            <CardContent className="p-4">
               <div className="text-center">
-                <Building className="h-4 w-4 text-purple-500 mx-auto mb-1" />
-                <p className="text-xs font-medium text-purple-900">949</p>
+                <div className="mx-auto mb-2 w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <Building className="h-4 w-4 text-white" />
+                </div>
+                <p className="text-xs font-semibold text-purple-900">949</p>
                 <p className="text-sm font-bold text-purple-700">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 11).length : 0}</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className={`${activeTab === "maintenance" ? "bg-orange-100 border-orange-300" : "bg-orange-50 border-orange-200"} cursor-pointer`}
+          <Card className={`${activeTab === "maintenance" ? "bg-gradient-to-br from-orange-100 to-orange-50 border-orange-300 shadow-md" : "bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-md"} cursor-pointer transition-all duration-200`}
             onClick={() => setActiveTab("maintenance")}
           >
-            <CardContent className="p-2">
+            <CardContent className="p-4">
               <div className="text-center">
-                <Wrench className="h-4 w-4 text-orange-500 mx-auto mb-1" />
-                <p className="text-xs font-medium text-orange-900">Maintenance</p>
+                <div className="mx-auto mb-2 w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <Wrench className="h-4 w-4 text-white" />
+                </div>
+                <p className="text-xs font-semibold text-orange-900">Maintenance</p>
                 <p className="text-sm font-bold text-orange-700">{Array.isArray(maintenanceRequests) ? maintenanceRequests.length : 0}</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className={`${activeTab === "inquiries" ? "bg-cyan-100 border-cyan-300" : "bg-cyan-50 border-cyan-200"} cursor-pointer`}
+          <Card className={`${activeTab === "inquiries" ? "bg-gradient-to-br from-cyan-100 to-cyan-50 border-cyan-300 shadow-md" : "bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-md"} cursor-pointer transition-all duration-200`}
             onClick={() => setActiveTab("inquiries")}
           >
-            <CardContent className="p-2">
+            <CardContent className="p-4">
               <div className="text-center">
-                <MessageSquare className="h-4 w-4 text-cyan-500 mx-auto mb-1" />
-                <p className="text-xs font-medium text-cyan-900">Inquiries</p>
+                <div className="mx-auto mb-2 w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <MessageSquare className="h-4 w-4 text-white" />
+                </div>
+                <p className="text-xs font-semibold text-cyan-900">Inquiries</p>
                 <p className="text-sm font-bold text-cyan-700">{Array.isArray(inquiries) ? inquiries.length : 0}</p>
               </div>
             </CardContent>
@@ -304,21 +348,26 @@ export default function AdminDashboard() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Desktop Sidebar with Condensed Overview */}
-          <div className="hidden lg:block w-80 space-y-4 flex-shrink-0">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Overview</h2>
+          {/* Premium Desktop Sidebar */}
+          <div className="hidden lg:block w-80 space-y-6 flex-shrink-0">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
+              <h2 className="text-lg font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Property Overview</h2>
+            </div>
             
             {/* Quick Access */}
-            <div className="mb-4">
-              <Card className={`${activeTab === "quick-access" ? "bg-gray-100 border-gray-300" : "bg-gray-50 border-gray-200"} cursor-pointer`}
+            <div className="mb-6">
+              <Card className={`${activeTab === "quick-access" ? "bg-gradient-to-br from-slate-100 to-slate-50 border-slate-300 shadow-lg" : "bg-white/90 backdrop-blur-sm border-slate-200/60 hover:shadow-lg"} cursor-pointer transition-all duration-300 group`}
                 onClick={() => setActiveTab("quick-access")}
               >
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-3">
-                    <Home className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-gradient-to-br from-slate-500 to-slate-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                      <Home className="h-5 w-5 text-white" />
+                    </div>
                     <div>
-                      <h3 className="text-xs font-semibold text-gray-900">Quick Access</h3>
-                      <p className="text-xs text-gray-600">Dashboard & Notifications</p>
+                      <h3 className="text-sm font-bold text-slate-900">Quick Access</h3>
+                      <p className="text-xs text-slate-500 font-medium">Dashboard & Notifications</p>
                     </div>
                   </div>
                 </CardContent>
@@ -326,32 +375,42 @@ export default function AdminDashboard() {
             </div>
 
             {/* Building Management Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <Card className={`${activeTab === "934" ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"} cursor-pointer`}
+            <div className="grid grid-cols-1 gap-4 mb-6">
+              <Card className={`${activeTab === "934" ? "bg-gradient-to-br from-blue-100 to-blue-50 border-blue-300 shadow-lg" : "bg-white/90 backdrop-blur-sm border-slate-200/60 hover:shadow-lg"} cursor-pointer transition-all duration-300 group`}
                 onClick={() => setActiveTab("934")}
               >
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-3">
-                    <Building className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                    <div>
-                      <h3 className="text-xs font-semibold text-blue-900">934 Kapahulu</h3>
-                      <p className="text-lg font-bold text-blue-700">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 10).length : 0} rooms</p>
-                      <p className="text-xs text-blue-600">{Array.isArray(inquiries) ? inquiries.filter((i: any) => i.message?.toLowerCase().includes('934') || i.message?.toLowerCase().includes('kapahulu') || (!i.message?.toLowerCase().includes('949') && !i.message?.toLowerCase().includes('kawaiahao'))).length : 0} inquiries</p>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                      <Building className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-bold text-blue-900">934 Kapahulu Ave</h3>
+                      <div className="flex justify-between items-center mt-1">
+                        <p className="text-xl font-bold text-blue-700">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 10).length : 0}</p>
+                        <span className="text-xs text-blue-600 font-medium">rooms</span>
+                      </div>
+                      <p className="text-xs text-blue-500 mt-1">{Array.isArray(inquiries) ? inquiries.filter((i: any) => i.message?.toLowerCase().includes('934') || i.message?.toLowerCase().includes('kapahulu') || (!i.message?.toLowerCase().includes('949') && !i.message?.toLowerCase().includes('kawaiahao'))).length : 0} inquiries pending</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className={`${activeTab === "949" ? "bg-purple-100 border-purple-300" : "bg-purple-50 border-purple-200"} cursor-pointer`}
+              <Card className={`${activeTab === "949" ? "bg-gradient-to-br from-purple-100 to-purple-50 border-purple-300 shadow-lg" : "bg-white/90 backdrop-blur-sm border-slate-200/60 hover:shadow-lg"} cursor-pointer transition-all duration-300 group`}
                 onClick={() => setActiveTab("949")}
               >
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-3">
-                    <Building className="h-4 w-4 text-purple-500 flex-shrink-0" />
-                    <div>
-                      <h3 className="text-xs font-semibold text-purple-900">949 Kawaiahao</h3>
-                      <p className="text-lg font-bold text-purple-700">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 11).length : 0} rooms</p>
-                      <p className="text-xs text-purple-600">{Array.isArray(inquiries) ? inquiries.filter((i: any) => i.message?.toLowerCase().includes('949') || i.message?.toLowerCase().includes('kawaiahao')).length : 0} inquiries</p>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                      <Building className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-bold text-purple-900">949 Kawaiahao St</h3>
+                      <div className="flex justify-between items-center mt-1">
+                        <p className="text-xl font-bold text-purple-700">{Array.isArray(rooms) ? rooms.filter((r: any) => r.buildingId === 11).length : 0}</p>
+                        <span className="text-xs text-purple-600 font-medium">suites</span>
+                      </div>
+                      <p className="text-xs text-purple-500 mt-1">{Array.isArray(inquiries) ? inquiries.filter((i: any) => i.message?.toLowerCase().includes('949') || i.message?.toLowerCase().includes('kawaiahao')).length : 0} inquiries pending</p>
                     </div>
                   </div>
                 </CardContent>
