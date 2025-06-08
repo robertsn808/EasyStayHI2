@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 
 interface InquiriesTabProps {
   inquiries?: any[];
@@ -12,6 +19,7 @@ interface InquiriesTabProps {
 export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   const updateInquiryMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
@@ -26,6 +34,20 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
     }
   });
 
+  const createInquiryMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest('POST', '/api/admin/inquiries', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/inquiries'] });
+      toast({ title: "Success", description: "Inquiry created successfully" });
+      setIsAddDialogOpen(false);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to create inquiry", variant: "destructive" });
+    }
+  });
+
   const handleMarkResolved = (inquiry: any) => {
     updateInquiryMutation.mutate({ id: inquiry.id, status: 'resolved' });
   };
@@ -37,12 +59,76 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
     const mailtoLink = `mailto:${inquiry.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(mailtoLink);
   };
+
+  const handleCreateInquiry = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      message: formData.get('message'),
+      inquiryType: formData.get('inquiryType'),
+      status: 'pending'
+    };
+    createInquiryMutation.mutate(data);
+  };
   
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Property Inquiries</h3>
-        <Badge variant="secondary">{inquiries.length} total</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary">{inquiries.length} total</Badge>
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Plus className="w-4 h-4 mr-1" />
+                Add Inquiry
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Inquiry</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleCreateInquiry} className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Name</Label>
+                  <Input id="name" name="name" required />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" name="email" type="email" required />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input id="phone" name="phone" />
+                </div>
+                <div>
+                  <Label htmlFor="inquiryType">Inquiry Type</Label>
+                  <Select name="inquiryType" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="booking">Booking</SelectItem>
+                      <SelectItem value="pricing">Pricing</SelectItem>
+                      <SelectItem value="general">General</SelectItem>
+                      <SelectItem value="complaint">Complaint</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea id="message" name="message" required />
+                </div>
+                <Button type="submit" className="w-full" disabled={createInquiryMutation.isPending}>
+                  {createInquiryMutation.isPending ? "Adding..." : "Add Inquiry"}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       
       {inquiries.length === 0 ? (
