@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import Property949 from "@/pages/property-949";
+import Property934 from "@/pages/property-934";
 import AdminDashboard from "@/pages/admin-dashboard";
 import TenantPortal from "@/pages/tenant-portal";
 import NotFound from "@/pages/not-found";
@@ -16,12 +17,17 @@ function Router() {
   return (
     <Switch>
       <Route path="/tenant/:roomId" component={TenantPortal} />
+      <Route path="/inquiry" component={Landing} />
+      <Route path="/public" component={Landing} />
+      <Route path="/property-949" component={Property949} />
+      <Route path="/property-934" component={Property934} />
       <Route path="/949" component={Property949} />
       {isLoading || !isAuthenticated ? (
         <Route path="/" component={Landing} />
       ) : (
         <>
           <Route path="/" component={AdminDashboard} />
+          <Route path="/admin" component={AdminDashboard} />
         </>
       )}
       <Route component={NotFound} />

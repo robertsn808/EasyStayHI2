@@ -13,45 +13,42 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ArrowLeft, Plus, Users, Wrench, DollarSign, MessageCircle, Calendar } from "lucide-react";
 import { Link } from "wouter";
 
-export default function Property949() {
+export default function Property934() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   const [showAddRoom, setShowAddRoom] = useState(false);
 
-  // Sample data for Property 949
+  // Sample data for Property 934
   const propertyData = {
-    id: 949,
-    address: "949 Kawaiahao St",
-    totalRooms: 10,
-    occupiedRooms: 7,
+    id: 934,
+    address: "934 Kapahulu Ave",
+    totalRooms: 8,
+    occupiedRooms: 5,
     availableRooms: 3,
     maintenanceRooms: 0,
     cleaningRooms: 0,
   };
 
   const rooms = [
-    { id: 1, number: "Suite 1", status: "occupied", tenant: "Emma Davis", rent: 600, dueDate: "2024-06-15" },
-    { id: 2, number: "Suite 2", status: "available", tenant: null, rent: 600, dueDate: null },
-    { id: 3, number: "Suite 3", status: "occupied", tenant: "David Chen", rent: 600, dueDate: "2024-06-20" },
-    { id: 4, number: "Suite 4", status: "occupied", tenant: "Maria Rodriguez", rent: 600, dueDate: "2024-06-10" },
-    { id: 5, number: "Suite 5", status: "available", tenant: null, rent: 600, dueDate: null },
-    { id: 6, number: "Suite 6", status: "occupied", tenant: "James Wilson", rent: 600, dueDate: "2024-06-25" },
-    { id: 7, number: "Suite 7", status: "occupied", tenant: "Anna Thompson", rent: 600, dueDate: "2024-06-18" },
-    { id: 8, number: "Suite 8", status: "available", tenant: null, rent: 600, dueDate: null },
-    { id: 9, number: "Suite 9", status: "occupied", tenant: "Robert Kim", rent: 600, dueDate: "2024-06-12" },
-    { id: 10, number: "Suite 10", status: "occupied", tenant: "Sophie Martinez", rent: 600, dueDate: "2024-06-22" },
+    { id: 1, number: "1A", status: "occupied", tenant: "John Smith", rent: 2000, dueDate: "2024-06-15" },
+    { id: 2, number: "1B", status: "available", tenant: null, rent: 2000, dueDate: null },
+    { id: 3, number: "2A", status: "occupied", tenant: "Sarah Johnson", rent: 2000, dueDate: "2024-06-20" },
+    { id: 4, number: "2B", status: "occupied", tenant: "Mike Chen", rent: 2000, dueDate: "2024-06-10" },
+    { id: 5, number: "3A", status: "available", tenant: null, rent: 2000, dueDate: null },
+    { id: 6, number: "3B", status: "occupied", tenant: "Lisa Wong", rent: 2000, dueDate: "2024-06-25" },
+    { id: 7, number: "4A", status: "occupied", tenant: "David Park", rent: 2000, dueDate: "2024-06-18" },
+    { id: 8, number: "4B", status: "available", tenant: null, rent: 2000, dueDate: null },
   ];
 
   const maintenanceRequests = [
-    { id: 1, room: "Suite 3", issue: "WiFi connectivity issues", priority: "medium", status: "pending", date: "2024-06-08" },
-    { id: 2, room: "Suite 7", issue: "Bathroom sink drain slow", priority: "low", status: "in-progress", date: "2024-06-06" },
+    { id: 1, room: "2A", issue: "Leaky faucet", priority: "medium", status: "pending", date: "2024-06-08" },
+    { id: 2, room: "3B", issue: "AC not working", priority: "high", status: "in-progress", date: "2024-06-07" },
   ];
 
   const payments = [
-    { id: 1, room: "Suite 1", tenant: "Emma Davis", amount: 600, status: "paid", date: "2024-06-01" },
-    { id: 2, room: "Suite 4", tenant: "Maria Rodriguez", amount: 600, status: "overdue", date: "2024-05-28" },
-    { id: 3, room: "Suite 6", tenant: "James Wilson", amount: 600, status: "pending", date: "2024-06-20" },
-    { id: 4, room: "Suite 9", tenant: "Robert Kim", amount: 600, status: "paid", date: "2024-06-05" },
+    { id: 1, room: "1A", tenant: "John Smith", amount: 2000, status: "paid", date: "2024-06-01" },
+    { id: 2, room: "2B", tenant: "Mike Chen", amount: 2000, status: "overdue", date: "2024-05-25" },
+    { id: 3, room: "3B", tenant: "Lisa Wong", amount: 2000, status: "pending", date: "2024-06-20" },
   ];
 
   const getStatusColor = (status: string) => {
@@ -74,7 +71,7 @@ export default function Property949() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Header */}
       <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,33 +84,33 @@ export default function Property949() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Property 949</h1>
-                <p className="text-gray-600">949 Kawaiahao St, Honolulu, HI</p>
+                <h1 className="text-2xl font-bold text-gray-900">Property 934</h1>
+                <p className="text-gray-600">934 Kapahulu Ave, Honolulu, HI</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="text-purple-600 border-purple-600">
-                10 Total Suites
+              <Badge variant="outline" className="text-blue-600 border-blue-600">
+                8 Total Rooms
               </Badge>
               <Dialog open={showAddRoom} onOpenChange={setShowAddRoom}>
                 <DialogTrigger asChild>
-                  <Button className="bg-purple-600 hover:bg-purple-700">
+                  <Button className="bg-blue-600 hover:bg-blue-700">
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Suite
+                    Add Room
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Add New Suite</DialogTitle>
+                    <DialogTitle>Add New Room</DialogTitle>
                   </DialogHeader>
                   <form className="space-y-4">
                     <div>
-                      <Label htmlFor="suiteNumber">Suite Number</Label>
-                      <Input id="suiteNumber" name="suiteNumber" required />
+                      <Label htmlFor="roomNumber">Room Number</Label>
+                      <Input id="roomNumber" name="roomNumber" required />
                     </div>
                     <div>
                       <Label htmlFor="rent">Monthly Rent</Label>
-                      <Input id="rent" name="rent" type="number" step="0.01" defaultValue="600" required />
+                      <Input id="rent" name="rent" type="number" step="0.01" defaultValue="2000" required />
                     </div>
                     <div>
                       <Label htmlFor="status">Initial Status</Label>
@@ -128,7 +125,7 @@ export default function Property949() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <Button type="submit" className="w-full">Add Suite</Button>
+                    <Button type="submit" className="w-full">Add Room</Button>
                   </form>
                 </DialogContent>
               </Dialog>
@@ -146,17 +143,17 @@ export default function Property949() {
                 <Users className="h-6 w-6 text-green-600" />
               </div>
               <div className="text-2xl font-bold text-green-600">{propertyData.occupiedRooms}</div>
-              <div className="text-sm text-gray-600">Occupied Suites</div>
+              <div className="text-sm text-gray-600">Occupied Rooms</div>
             </CardContent>
           </Card>
           
           <Card>
             <CardContent className="p-6 text-center">
-              <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mx-auto mb-4">
-                <Users className="h-6 w-6 text-purple-600" />
+              <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mx-auto mb-4">
+                <Users className="h-6 w-6 text-blue-600" />
               </div>
-              <div className="text-2xl font-bold text-purple-600">{propertyData.availableRooms}</div>
-              <div className="text-sm text-gray-600">Available Suites</div>
+              <div className="text-2xl font-bold text-blue-600">{propertyData.availableRooms}</div>
+              <div className="text-sm text-gray-600">Available Rooms</div>
             </CardContent>
           </Card>
 
@@ -175,7 +172,7 @@ export default function Property949() {
               <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mx-auto mb-4">
                 <DollarSign className="h-6 w-6 text-green-600" />
               </div>
-              <div className="text-2xl font-bold text-green-600">${propertyData.occupiedRooms * 600}</div>
+              <div className="text-2xl font-bold text-green-600">${propertyData.occupiedRooms * 2000}</div>
               <div className="text-sm text-gray-600">Monthly Revenue</div>
             </CardContent>
           </Card>
@@ -184,7 +181,7 @@ export default function Property949() {
         {/* Tabs Section */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Suite Overview</TabsTrigger>
+            <TabsTrigger value="overview">Room Overview</TabsTrigger>
             <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="guests">Guest Management</TabsTrigger>
@@ -193,7 +190,7 @@ export default function Property949() {
           <TabsContent value="overview" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Suite Status Overview</CardTitle>
+                <CardTitle>Room Status Overview</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
@@ -202,7 +199,7 @@ export default function Property949() {
                       <div className="flex items-center space-x-4">
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(room.status)}`}></div>
                         <div>
-                          <div className="font-medium">{room.number}</div>
+                          <div className="font-medium">Room {room.number}</div>
                           <div className="text-sm text-gray-600">
                             {room.tenant || "Available"} • ${room.rent}/month
                           </div>
@@ -238,12 +235,12 @@ export default function Property949() {
                     <div key={request.id} className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
-                          <div className="font-medium">{request.room}</div>
+                          <div className="font-medium">Room {request.room}</div>
                           <div className="text-sm text-gray-600">{request.issue}</div>
                           <div className="text-xs text-gray-500">Reported: {request.date}</div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Badge variant={request.priority === 'high' ? 'destructive' : request.priority === 'medium' ? 'secondary' : 'outline'}>
+                          <Badge variant={request.priority === 'high' ? 'destructive' : 'secondary'}>
                             {request.priority}
                           </Badge>
                           <Badge variant="outline">
@@ -279,7 +276,7 @@ export default function Property949() {
                     <div key={payment.id} className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
-                          <div className="font-medium">{payment.room} - {payment.tenant}</div>
+                          <div className="font-medium">Room {payment.room} - {payment.tenant}</div>
                           <div className="text-sm text-gray-600">${payment.amount}</div>
                           <div className="text-xs text-gray-500">Due: {payment.date}</div>
                         </div>
@@ -316,7 +313,7 @@ export default function Property949() {
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="font-medium">{room.tenant}</div>
-                          <div className="text-sm text-gray-600">{room.number}</div>
+                          <div className="text-sm text-gray-600">Room {room.number}</div>
                           <div className="text-xs text-gray-500">Rent Due: {room.dueDate}</div>
                         </div>
                         <div className="flex gap-2">
