@@ -28,21 +28,19 @@ export default function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
-                onClick={() => window.open('/inquiry', '_blank')}
+                onClick={() => window.location.href = '/tenant'}
                 size="lg" 
                 className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3"
               >
-                Make an Inquiry
+                Tenant Portal
               </Button>
               <Button 
                 variant="outline" 
                 size="lg" 
                 className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3"
-                onClick={() => {
-                  document.getElementById('properties')?.scrollIntoView({ behavior: 'smooth' });
-                }}
+                onClick={() => window.location.href = '/admin'}
               >
-                View Properties
+                Management Portal
               </Button>
             </div>
           </div>
