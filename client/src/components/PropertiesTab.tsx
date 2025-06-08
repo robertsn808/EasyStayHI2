@@ -50,7 +50,9 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
   const [isBuildingDialogOpen, setIsBuildingDialogOpen] = useState(false);
   const [isRoomDialogOpen, setIsRoomDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isEditRoomDialogOpen, setIsEditRoomDialogOpen] = useState(false);
   const [editingBuilding, setEditingBuilding] = useState<Building | null>(null);
+  const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
   
   const [buildingForm, setBuildingForm] = useState({
@@ -113,9 +115,7 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
 
   const updateBuildingMutation = useMutation({
     mutationFn: async (data: any) => {
-      await apiRequest("PUT", `/api/admin/buildings/${editingBuilding?.id}`, data, {
-        headers: { "x-admin-token": "admin-authenticated" }
-      });
+      await apiRequest("PUT", `/api/admin/buildings/${editingBuilding?.id}`, data);
     },
     onSuccess: () => {
       toast({ title: "Success", description: "Building updated successfully!" });
@@ -134,9 +134,7 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
 
   const deleteBuildingMutation = useMutation({
     mutationFn: async (id: number) => {
-      await apiRequest("DELETE", `/api/admin/buildings/${id}`, undefined, {
-        headers: { "x-admin-token": "admin-authenticated" }
-      });
+      await apiRequest("DELETE", `/api/admin/buildings/${id}`);
     },
     onSuccess: () => {
       toast({ title: "Success", description: "Building deleted successfully!" });
@@ -154,9 +152,7 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
   // Room mutations
   const createRoomMutation = useMutation({
     mutationFn: async (data: any) => {
-      await apiRequest("POST", "/api/admin/rooms", data, {
-        headers: { "x-admin-token": "admin-authenticated" }
-      });
+      await apiRequest("POST", "/api/admin/rooms", data);
     },
     onSuccess: () => {
       toast({ title: "Success", description: "Room created successfully!" });
@@ -179,6 +175,26 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
     },
   });
 
+  // Room update mutation
+  const updateRoomMutation = useMutation({
+    mutationFn: async (data: any) => {
+      await apiRequest("PUT", `/api/admin/rooms/${editingRoom?.id}`, data);
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Room updated successfully!" });
+      queryClient.invalidateQueries({ queryKey: ["/api/rooms"] });
+      setIsEditRoomDialogOpen(false);
+      setEditingRoom(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update room",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleBuildingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingBuilding) {
@@ -190,11 +206,19 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
 
   const handleRoomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createRoomMutation.mutate({
-      ...roomForm,
-      buildingId: parseInt(roomForm.buildingId),
-      floor: roomForm.floor ? parseInt(roomForm.floor) : null
-    });
+    if (editingRoom) {
+      updateRoomMutation.mutate({
+        ...roomForm,
+        buildingId: parseInt(roomForm.buildingId),
+        floor: roomForm.floor ? parseInt(roomForm.floor) : null
+      });
+    } else {
+      createRoomMutation.mutate({
+        ...roomForm,
+        buildingId: parseInt(roomForm.buildingId),
+        floor: roomForm.floor ? parseInt(roomForm.floor) : null
+      });
+    }
   };
 
   const handleEditBuilding = (building: Building) => {
@@ -208,6 +232,23 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
       monthlyRate: building.monthlyRate || ""
     });
     setIsEditDialogOpen(true);
+  };
+
+  const handleEditRoom = (room: Room) => {
+    setEditingRoom(room);
+    setRoomForm({
+      number: room.number,
+      buildingId: room.buildingId?.toString() || "",
+      status: room.status,
+      size: room.size || "",
+      floor: room.floor?.toString() || "",
+      tenantName: room.tenantName || "",
+      nextPaymentDue: room.nextPaymentDue || "",
+      rentalRate: room.rentalRate || "",
+      rentalPeriod: room.rentalPeriod || "",
+      lastCleaned: room.lastCleaned || ""
+    });
+    setIsEditRoomDialogOpen(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -479,9 +520,19 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
                         <Card key={room.id} className="p-3 hover:shadow-md transition-shadow">
                           <div className="flex justify-between items-start mb-2">
                             <div className="font-semibold">Room {room.number}</div>
-                            <Badge className={getStatusColor(room.status)}>
-                              {room.status.replace('_', ' ')}
-                            </Badge>
+                            <div className="flex items-center space-x-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditRoom(room)}
+                                className="h-6 w-6 p-0"
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Badge className={getStatusColor(room.status)}>
+                                {room.status.replace('_', ' ')}
+                              </Badge>
+                            </div>
                           </div>
                           <div className="text-sm text-gray-600 space-y-1">
                             {room.size && <div>Size: {room.size}</div>}
