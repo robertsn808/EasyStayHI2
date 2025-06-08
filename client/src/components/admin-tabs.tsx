@@ -125,38 +125,93 @@ export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTa
           {selectedTab === "qr-codes" && <QRCodeManager />}
           {selectedTab === "rooms" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Room Management</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {Array.isArray(rooms) && rooms.map((room: any) => (
-                  <Card key={room.id} className="p-4">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold">Room {room.number}</h3>
-                        <p className="text-sm text-gray-600">Building ID: {room.buildingId}</p>
-                      </div>
-                      <Badge 
-                        className={
-                          room.status === 'occupied' ? 'bg-red-100 text-red-800' :
-                          room.status === 'available' ? 'bg-green-100 text-green-800' :
-                          room.status === 'needs_cleaning' ? 'bg-orange-100 text-orange-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }
-                      >
-                        {room.status}
-                      </Badge>
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Room Management</h2>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Room
+                </Button>
+              </div>
+              
+              {/* Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <Card className="p-4 bg-green-50 border-green-200">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-700">
+                      {Array.isArray(rooms) ? rooms.filter((r: any) => r.status === 'available').length : 0}
                     </div>
-                    <div className="space-y-2 text-sm">
-                      <p><strong>Type:</strong> {room.type || 'Standard'}</p>
-                      <p><strong>Size:</strong> {room.size || 'Not specified'}</p>
-                      <p><strong>Amenities:</strong> {room.amenities || 'Basic amenities'}</p>
-                      <p><strong>Notes:</strong> {room.notes || 'No notes'}</p>
+                    <div className="text-sm text-green-600">Available</div>
+                  </div>
+                </Card>
+                <Card className="p-4 bg-red-50 border-red-200">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-red-700">
+                      {Array.isArray(rooms) ? rooms.filter((r: any) => r.status === 'occupied').length : 0}
                     </div>
-                    <div className="flex gap-2 mt-4">
-                      <Button size="sm" variant="outline">Edit</Button>
-                      <Button size="sm" variant="outline">Update Status</Button>
+                    <div className="text-sm text-red-600">Occupied</div>
+                  </div>
+                </Card>
+                <Card className="p-4 bg-orange-50 border-orange-200">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-700">
+                      {Array.isArray(rooms) ? rooms.filter((r: any) => r.status === 'needs_cleaning').length : 0}
                     </div>
-                  </Card>
-                ))}
+                    <div className="text-sm text-orange-600">Cleaning</div>
+                  </div>
+                </Card>
+                <Card className="p-4 bg-blue-50 border-blue-200">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-700">
+                      {Array.isArray(rooms) ? rooms.length : 0}
+                    </div>
+                    <div className="text-sm text-blue-600">Total Rooms</div>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Rooms Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {Array.isArray(rooms) && rooms.map((room: any) => {
+                  const building = Array.isArray(buildings) ? buildings.find((b: any) => b.id === room.buildingId) : null;
+                  return (
+                    <Card key={room.id} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h3 className="font-bold text-lg">#{room.number}</h3>
+                            <p className="text-xs text-gray-500">{building?.name || `Building ${room.buildingId}`}</p>
+                          </div>
+                          <Badge 
+                            variant={
+                              room.status === 'occupied' ? 'destructive' :
+                              room.status === 'available' ? 'default' :
+                              room.status === 'needs_cleaning' ? 'secondary' :
+                              'outline'
+                            }
+                            className="text-xs"
+                          >
+                            {room.status?.replace('_', ' ')}
+                          </Badge>
+                        </div>
+                        
+                        <div className="space-y-1 text-xs text-gray-600 mb-3">
+                          {room.size && <p><strong>Size:</strong> {room.size}</p>}
+                          {room.tenantName && <p><strong>Tenant:</strong> {room.tenantName}</p>}
+                          {room.accessPin && <p><strong>PIN:</strong> {room.accessPin}</p>}
+                        </div>
+                        
+                        <div className="flex gap-1">
+                          <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-7 flex-1">
+                            Edit
+                          </Button>
+                          <Button size="sm" variant="outline" className="text-xs px-2 py-1 h-7 flex-1">
+                            Status
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           )}

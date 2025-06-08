@@ -29,6 +29,8 @@ export function SettingsTab() {
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [editingBuilding, setEditingBuilding] = useState<any | null>(null);
+  const [showBuildingDialog, setShowBuildingDialog] = useState(false);
   
   // Form states
   const [passwordData, setPasswordData] = useState({
@@ -52,6 +54,11 @@ export function SettingsTab() {
   // Fetch current admin users
   const { data: adminUsers = [] } = useQuery<AdminUser[]>({
     queryKey: ["/api/admin/users"],
+  });
+
+  // Fetch buildings data
+  const { data: buildingsData = [] } = useQuery({
+    queryKey: ["/api/admin/buildings"],
   });
 
   // Change password mutation
@@ -239,6 +246,11 @@ export function SettingsTab() {
       password: "Camputer69!",
       role: "maintenance"
     });
+  };
+
+  const handleEditBuilding = (building: any) => {
+    setEditingBuilding(building);
+    setShowBuildingDialog(true);
   };
 
   return (
@@ -466,37 +478,32 @@ export function SettingsTab() {
                 <div>
                   <h3 className="text-lg font-semibold mb-4">Buildings</h3>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">934 Kapahulu Ave</h4>
-                        <p className="text-sm text-gray-600">8 rooms • $100/$500/$2000 pricing</p>
+                    {Array.isArray(buildingsData) && buildingsData.map((building: any) => (
+                      <div key={building.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <h4 className="font-medium">{building.name}</h4>
+                          <p className="text-sm text-gray-600">{building.address}</p>
+                          <p className="text-xs text-gray-500">Building ID: {building.id}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditBuilding(building)}
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => window.location.href = `/admin?tab=rooms&building=${building.id}`}
+                          >
+                            View Rooms
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          View Rooms
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">949 Kawaiahao St</h4>
-                        <p className="text-sm text-gray-600">10 suites • $50/$200/$600 pricing</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          View Rooms
-                        </Button>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                   
                   <Button className="mt-4">
