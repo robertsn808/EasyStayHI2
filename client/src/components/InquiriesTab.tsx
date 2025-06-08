@@ -104,6 +104,43 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
     };
     createInquiryMutation.mutate(data);
   };
+
+  const handleAssignRoom = (inquiry: any) => {
+    setSelectedInquiry(inquiry);
+    setAssignRoomDialogOpen(true);
+  };
+
+  const handleRoomAssignment = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedInquiry) return;
+
+    const formData = new FormData(e.currentTarget);
+    const roomId = parseInt(formData.get('roomId') as string);
+    
+    const guestData = {
+      roomId,
+      guestName: selectedInquiry.name,
+      email: selectedInquiry.email,
+      phone: selectedInquiry.phone || '',
+      bookingType: formData.get('bookingType') as string,
+      checkInDate: formData.get('checkInDate') as string,
+      checkOutDate: formData.get('checkOutDate') as string || undefined,
+      paymentAmount: formData.get('paymentAmount') as string,
+      paymentDueDay: formData.get('paymentDueDay') ? parseInt(formData.get('paymentDueDay') as string) : undefined,
+      paymentStatus: 'pending' as const,
+      isActive: true,
+      notes: formData.get('notes') as string || undefined
+    };
+
+    assignRoomMutation.mutate({
+      inquiryId: selectedInquiry.id,
+      roomId,
+      guestData
+    });
+  };
+
+  // Filter available rooms
+  const availableRooms = rooms ? rooms.filter((room: any) => room.status === 'available') : [];
   
   return (
     <div className="space-y-4">
@@ -159,6 +196,75 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
               </form>
             </DialogContent>
           </Dialog>
+
+          {/* Assign Room Dialog */}
+          <Dialog open={assignRoomDialogOpen} onOpenChange={setAssignRoomDialogOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Assign Room to {selectedInquiry?.name}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleRoomAssignment} className="space-y-4">
+                <div>
+                  <Label htmlFor="roomId">Select Room</Label>
+                  <Select name="roomId" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose available room" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableRooms.map((room: any) => (
+                        <SelectItem key={room.id} value={room.id.toString()}>
+                          Room {room.number} - {room.size} (${room.rentalRate}/{room.rentalPeriod})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="bookingType">Booking Type</Label>
+                  <Select name="bookingType" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select booking type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Daily</SelectItem>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="checkInDate">Check-in Date</Label>
+                  <Input id="checkInDate" name="checkInDate" type="date" required />
+                </div>
+
+                <div>
+                  <Label htmlFor="checkOutDate">Check-out Date (Optional)</Label>
+                  <Input id="checkOutDate" name="checkOutDate" type="date" />
+                </div>
+
+                <div>
+                  <Label htmlFor="paymentAmount">Payment Amount ($)</Label>
+                  <Input id="paymentAmount" name="paymentAmount" type="number" step="0.01" required placeholder="0.00" />
+                </div>
+
+                <div>
+                  <Label htmlFor="paymentDueDay">Payment Due Day (for monthly)</Label>
+                  <Input id="paymentDueDay" name="paymentDueDay" type="number" min="1" max="31" placeholder="e.g., 15" />
+                </div>
+
+                <div>
+                  <Label htmlFor="notes">Notes (Optional)</Label>
+                  <Textarea id="notes" name="notes" placeholder="Additional notes about the booking" />
+                </div>
+
+                <Button type="submit" className="w-full" disabled={assignRoomMutation.isPending}>
+                  {assignRoomMutation.isPending ? "Assigning..." : "Assign Room & Create Guest Profile"}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       
@@ -192,6 +298,17 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
                   >
                     Reply
                   </Button>
+                  {inquiry.status !== 'resolved' && availableRooms.length > 0 && (
+                    <Button 
+                      size="sm" 
+                      onClick={() => handleAssignRoom(inquiry)}
+                      disabled={assignRoomMutation.isPending}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <Home className="w-3 h-3 mr-1" />
+                      Assign Room
+                    </Button>
+                  )}
                   <Button 
                     size="sm" 
                     variant="outline" 
