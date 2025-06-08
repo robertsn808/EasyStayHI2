@@ -112,9 +112,10 @@ export const notifications = pgTable("notifications", {
 export const announcements = pgTable("announcements", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
-  message: text("message").notNull(),
+  content: text("content").notNull(),
+  type: varchar("type", { length: 50 }).default("info"), // info, warning, success
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const calendarEvents = pgTable("calendar_events", {
