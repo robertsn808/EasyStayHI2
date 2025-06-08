@@ -164,5 +164,26 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
 // Simple admin authentication for demo purposes
 export function validateAdminCredentials(username: string, password: string): boolean {
-  return username === "Bo$$l@dy" && password === "Wordpass3211";
+  return username === "admin" && password === "admin123";
 }
+
+export const isAdminAuthenticated: RequestHandler = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    
+    // For simplicity, we're using a static token validation
+    // In production, you'd want to use JWT or another secure token system
+    if (token === 'admin-authenticated') {
+      return next();
+    }
+
+    return res.status(401).json({ message: "Unauthorized" });
+  } catch (error) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+};

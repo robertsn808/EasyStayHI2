@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated, validateAdminCredentials } from "./replitAuth";
+import { setupAuth, isAuthenticated, isAdminAuthenticated, validateAdminCredentials } from "./replitAuth";
 import { 
   insertInquirySchema, 
   insertContactSchema, 
@@ -390,7 +390,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/announcements", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/announcements", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertAnnouncementSchema.parse(req.body);
       const announcement = await storage.createAnnouncement(validatedData);
@@ -400,7 +400,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/announcements/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/announcements/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertAnnouncementSchema.parse(req.body);
@@ -411,7 +411,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/announcements/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/announcements/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       // For simplicity, we'll return not implemented
@@ -441,7 +441,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/buildings", isAuthenticated, async (req, res) => {
+  app.post("/api/buildings", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertBuildingSchema.parse(req.body);
       const building = await storage.createBuilding(validatedData);
@@ -460,7 +460,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/rooms", isAuthenticated, async (req, res) => {
+  app.post("/api/rooms", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertRoomSchema.parse(req.body);
       const room = await storage.createRoom(validatedData);
@@ -470,7 +470,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/rooms", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/rooms", isAdminAuthenticated, async (req, res) => {
     try {
       const rooms = await storage.getRooms();
       res.json(rooms);
@@ -479,7 +479,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/rooms", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/rooms", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertRoomSchema.parse(req.body);
       const room = await storage.createRoom(validatedData);
@@ -489,7 +489,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/rooms/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/rooms/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertRoomSchema.parse(req.body);
@@ -509,7 +509,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/inquiries/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/inquiries/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const inquiry = await storage.updateInquiryStatus(id, req.body.status);
@@ -519,7 +519,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/contacts", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/contacts", isAdminAuthenticated, async (req, res) => {
     try {
       const contacts = await storage.getContacts();
       res.json(contacts);
@@ -528,7 +528,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/contacts", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/contacts", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertContactSchema.parse(req.body);
       const contact = await storage.createContact(validatedData);
@@ -538,7 +538,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/calendar", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/calendar", isAdminAuthenticated, async (req, res) => {
     try {
       const events = await storage.getCalendarEvents();
       res.json(events);
@@ -547,7 +547,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/calendar", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/calendar", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertCalendarEventSchema.parse(req.body);
       const event = await storage.createCalendarEvent(validatedData);
@@ -557,7 +557,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/inventory", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/inventory", isAdminAuthenticated, async (req, res) => {
     try {
       const inventory = await storage.getInventory();
       res.json(inventory);
@@ -566,7 +566,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/inventory", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/inventory", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertInventorySchema.parse(req.body);
       const item = await storage.createInventoryItem(validatedData);
@@ -576,7 +576,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/receipts", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/receipts", isAdminAuthenticated, async (req, res) => {
     try {
       const receipts = await storage.getReceipts();
       res.json(receipts);
@@ -585,7 +585,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/receipts", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/receipts", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertReceiptSchema.parse(req.body);
       const receipt = await storage.createReceipt(validatedData);
@@ -595,7 +595,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/todos", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/todos", isAdminAuthenticated, async (req, res) => {
     try {
       const todos = await storage.getTodos();
       res.json(todos);
@@ -604,7 +604,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/todos", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/todos", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertTodoSchema.parse(req.body);
       const todo = await storage.createTodo(validatedData);
@@ -614,7 +614,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/todos/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/todos/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const todo = await storage.updateTodo(id, req.body);
@@ -624,7 +624,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/todos/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/todos/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteTodo(id);
@@ -634,7 +634,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/announcements", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/announcements", isAdminAuthenticated, async (req, res) => {
     try {
       const announcements = await storage.getAllAnnouncements();
       res.json(announcements);
@@ -643,7 +643,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/announcements", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/announcements", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertAnnouncementSchema.parse(req.body);
       const announcement = await storage.createAnnouncement(validatedData);
@@ -653,7 +653,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/buildings", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/buildings", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertBuildingSchema.parse(req.body);
       const building = await storage.createBuilding(validatedData);
@@ -664,7 +664,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // QR Code generation for rooms
-  app.get("/api/admin/rooms/:id/qr", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/rooms/:id/qr", isAdminAuthenticated, async (req, res) => {
     try {
       const roomId = parseInt(req.params.id);
       const qrCode = await generateTenantQRCode(roomId);
@@ -766,7 +766,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/maintenance", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/maintenance", isAdminAuthenticated, async (req, res) => {
     try {
       const requests = await storage.getMaintenanceRequests();
       res.json(requests);
@@ -775,7 +775,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/maintenance/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/maintenance/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const request = await storage.updateMaintenanceRequest(id, req.body);
@@ -800,7 +800,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/payments", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/payments", isAdminAuthenticated, async (req, res) => {
     try {
       const payments = await storage.getPayments();
       res.json(payments);
@@ -809,7 +809,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/payments/:id/status", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/payments/:id/status", isAdminAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const { status } = req.body;
@@ -821,7 +821,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Notifications
-  app.post("/api/admin/notifications", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/notifications", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertNotificationSchema.parse(req.body);
       const notification = await storage.createNotification(validatedData);
@@ -842,7 +842,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Enhanced Room Management
-  app.put("/api/admin/rooms/:id/status", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/rooms/:id/status", isAdminAuthenticated, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const { status, ...additionalData } = req.body;
@@ -854,7 +854,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Guest Profile Management Routes
-  app.post("/api/admin/guests", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/guests", isAdminAuthenticated, async (req, res) => {
     try {
       const validatedData = insertGuestProfileSchema.parse(req.body);
       
@@ -896,7 +896,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/guests", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/guests", isAdminAuthenticated, async (req, res) => {
     try {
       const guests = await storage.getGuestProfiles();
       res.json(guests);
@@ -905,7 +905,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/guests/payment-due", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/guests/payment-due", isAdminAuthenticated, async (req, res) => {
     try {
       const paymentDueGuests = await storage.getTodaysPaymentDueGuests();
       res.json(paymentDueGuests);
@@ -914,7 +914,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/guests/:id/payment-received", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/guests/:id/payment-received", isAdminAuthenticated, async (req, res) => {
     try {
       const guestId = parseInt(req.params.id);
       const updatedGuest = await storage.markPaymentReceived(guestId);
@@ -924,7 +924,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/guests/room/:roomId", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/guests/room/:roomId", isAdminAuthenticated, async (req, res) => {
     try {
       const roomId = parseInt(req.params.roomId);
       const guests = await storage.getGuestProfilesByRoom(roomId);
