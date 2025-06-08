@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Calendar, CheckSquare, Trash2, Edit } from "lucide-react";
+import { Plus, Calendar, CheckSquare, Trash2 } from "lucide-react";
 import { useState } from "react";
 import WeeklyCalendar from "@/components/WeeklyCalendar";
 
@@ -138,7 +138,50 @@ export function CalendarTab({ events = [] }: CalendarTabProps) {
                 Add Event
               </Button>
             </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Calendar Event</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleCreateEvent} className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Title</Label>
+                  <Input id="title" name="title" required />
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea id="description" name="description" />
+                </div>
+                <div>
+                  <Label htmlFor="date">Date</Label>
+                  <Input id="date" name="date" type="datetime-local" required />
+                </div>
+                <div>
+                  <Label htmlFor="type">Event Type</Label>
+                  <Select name="type" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select event type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cleaning">Cleaning</SelectItem>
+                      <SelectItem value="maintenance">Maintenance</SelectItem>
+                      <SelectItem value="inspection">Inspection</SelectItem>
+                      <SelectItem value="checkout">Check-out</SelectItem>
+                      <SelectItem value="checkin">Check-in</SelectItem>
+                      <SelectItem value="meeting">Meeting</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="roomId">Room (Optional)</Label>
+                  <Input id="roomId" name="roomId" type="number" placeholder="Enter room ID" />
+                </div>
+                <Button type="submit" className="w-full" disabled={createEventMutation.isPending}>
+                  {createEventMutation.isPending ? "Adding..." : "Add Event"}
+                </Button>
+              </form>
+            </DialogContent>
           </Dialog>
+          
           <Dialog open={isAddTodoDialogOpen} onOpenChange={setIsAddTodoDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm" variant="outline">
@@ -306,93 +349,6 @@ export function CalendarTab({ events = [] }: CalendarTabProps) {
           </CardContent>
         </Card>
       </div>
-
-      {/* Event Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Calendar Event</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleCreateEvent} className="space-y-4">
-                <div>
-                  <Label htmlFor="title">Title</Label>
-                  <Input id="title" name="title" required />
-                </div>
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea id="description" name="description" />
-                </div>
-                <div>
-                  <Label htmlFor="date">Date</Label>
-                  <Input id="date" name="date" type="datetime-local" required />
-                </div>
-                <div>
-                  <Label htmlFor="type">Event Type</Label>
-                  <Select name="type" required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select event type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cleaning">Cleaning</SelectItem>
-                      <SelectItem value="maintenance">Maintenance</SelectItem>
-                      <SelectItem value="inspection">Inspection</SelectItem>
-                      <SelectItem value="checkout">Check-out</SelectItem>
-                      <SelectItem value="checkin">Check-in</SelectItem>
-                      <SelectItem value="meeting">Meeting</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="roomId">Room (Optional)</Label>
-                  <Input id="roomId" name="roomId" type="number" placeholder="Enter room ID" />
-                </div>
-                <Button type="submit" className="w-full" disabled={createEventMutation.isPending}>
-                  {createEventMutation.isPending ? "Adding..." : "Add Event"}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-      
-      {events.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-center text-gray-500">
-            No calendar events scheduled.
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {events.map((event: any, index: number) => (
-            <Card key={event.id || index}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-base">{event.title}</CardTitle>
-                  <Badge variant="secondary">{event.type || 'General'}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-gray-500" />
-                    <span>{new Date(event.date).toLocaleDateString()}</span>
-                  </div>
-                  {event.description && (
-                    <p className="text-gray-600">{event.description}</p>
-                  )}
-                  {event.roomId && (
-                    <p className="text-sm text-gray-500">Room: {event.roomId}</p>
-                  )}
-                </div>
-                <div className="flex gap-2 mt-3">
-                  <Button size="sm" variant="outline">Edit</Button>
-                  <Button size="sm" variant="outline">Delete</Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
