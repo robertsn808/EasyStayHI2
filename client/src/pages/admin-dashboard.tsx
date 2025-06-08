@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bell, LogOut } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Bell, LogOut, Users, Calendar, Wrench, MessageSquare, DollarSign, Megaphone, Contact, Package, Receipt, CheckSquare, QrCode, Home } from "lucide-react";
 import { useLocation } from "wouter";
 import WeeklyCalendar from "@/components/WeeklyCalendar";
 import AdminTabs from "@/components/admin-tabs";
@@ -15,6 +16,57 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("properties");
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
+
+  // Fetch data for overview cards
+  const { data: inquiries } = useQuery({
+    queryKey: ["/api/admin/inquiries"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: maintenanceRequests } = useQuery({
+    queryKey: ["/api/admin/maintenance"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: payments } = useQuery({
+    queryKey: ["/api/admin/payments"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: announcements } = useQuery({
+    queryKey: ["/api/admin/announcements"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: calendarEvents } = useQuery({
+    queryKey: ["/api/admin/calendar"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: contacts } = useQuery({
+    queryKey: ["/api/admin/contacts"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: inventory } = useQuery({
+    queryKey: ["/api/admin/inventory"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: receipts } = useQuery({
+    queryKey: ["/api/admin/receipts"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: todos } = useQuery({
+    queryKey: ["/api/admin/todos"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: guests } = useQuery({
+    queryKey: ["/api/admin/guests"],
+    enabled: isAdminAuthenticated,
+  });
 
   // Check admin authentication on component mount
   useEffect(() => {
@@ -215,9 +267,9 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Desktop Sidebar with Quick Overview Cards */}
+          {/* Desktop Sidebar with All Management Functions */}
           <div className="hidden lg:block w-80 space-y-4 flex-shrink-0">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Overview</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Overview - Management</h2>
             
             <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
               <CardContent className="p-4">
