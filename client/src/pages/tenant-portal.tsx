@@ -355,7 +355,7 @@ export default function TenantPortal() {
         {/* Contact Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Property Management Contact</CardTitle>
+            <CardTitle>Room Management Contact</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

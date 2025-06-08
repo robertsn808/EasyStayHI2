@@ -24,7 +24,7 @@ interface AdminTabsProps {
   setActiveTab?: (tab: string) => void;
 }
 
-export default function AdminTabs({ activeTab = "properties", setActiveTab }: AdminTabsProps) {
+export default function AdminTabs({ activeTab = "rooms", setActiveTab }: AdminTabsProps) {
   const [selectedTab, setSelectedTab] = useState(activeTab);
 
   useEffect(() => {
@@ -119,9 +119,7 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
       {/* Content Area */}
       <Card className="w-full">
         <div className="p-6">
-          {selectedTab === "properties" && (
-            <PropertiesTab buildings={Array.isArray(buildings) ? buildings : []} rooms={Array.isArray(rooms) ? rooms : []} />
-          )}
+
 
           {selectedTab === "guests" && <GuestProfileManager />}
           {selectedTab === "qr-codes" && <QRCodeManager />}
