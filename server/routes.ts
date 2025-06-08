@@ -391,24 +391,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/announcements", adminAuth, async (req, res) => {
-    try {
-      const announcements = await storage.getAllAnnouncements();
-      res.json(announcements);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch announcements" });
-    }
-  });
-
-  app.post("/api/admin/announcements", simpleAdminAuth, async (req, res) => {
-    try {
-      const validatedData = insertAnnouncementSchema.parse(req.body);
-      const announcement = await storage.createAnnouncement(validatedData);
-      res.json(announcement);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid announcement data" });
-    }
-  });
+  
 
   app.put("/api/admin/announcements/:id", simpleAdminAuth, async (req, res) => {
     try {
@@ -480,24 +463,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/rooms", simpleAdminAuth, async (req, res) => {
-    try {
-      const rooms = await storage.getRooms();
-      res.json(rooms);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch rooms" });
-    }
-  });
-
-  app.post("/api/admin/rooms", simpleAdminAuth, async (req, res) => {
-    try {
-      const validatedData = insertRoomSchema.parse(req.body);
-      const room = await storage.createRoom(validatedData);
-      res.json(room);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid room data" });
-    }
-  });
+  
 
   app.put("/api/admin/rooms/:id", simpleAdminAuth, async (req, res) => {
     try {
@@ -690,42 +656,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Tenant Portal Authentication
-  app.post("/api/tenant/signin", async (req, res) => {
-    try {
-      const { roomId, tenantName, tenantEmail, tenantPhone } = req.body;
-      
-      if (!roomId || !tenantName) {
-        return res.status(400).json({ message: "Room ID and tenant name required" });
-      }
-
-      // Check if room exists
-      const room = await storage.getRoomWithBuilding(roomId);
-      if (!room) {
-        return res.status(404).json({ message: "Room not found" });
-      }
-
-      // Generate session token
-      const sessionToken = generateTenantToken(roomId, { name: tenantName, email: tenantEmail, phone: tenantPhone });
-      
-      // Create tenant session
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 30); // 30 days
-
-      const session = await storage.createTenantSession({
-        roomId,
-        sessionToken,
-        tenantName,
-        tenantEmail,
-        tenantPhone,
-        expiresAt
-      });
-
-      res.json({ sessionToken, session });
-    } catch (error) {
-      res.status(500).json({ message: "Failed to create tenant session" });
-    }
-  });
+  
 
   // Tenant authentication middleware
   const authenticateTenant = async (req: any, res: any, next: any) => {
@@ -953,19 +884,3 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   return httpServer;
 }
-import express from 'express';
-import { generateQRCode } from './qrGenerator';
-
-const router = express.Router();
-
-router.get('/api/generate-qrcode/:tenantId', async (req, res) => {
-    const { tenantId } = req.params;
-    try {
-        const qrCodeDataUrl = await generateQRCode(tenantId);
-        res.json({ qrCodeDataUrl });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to generate QR code' });
-    }
-});
-
-export default router;
