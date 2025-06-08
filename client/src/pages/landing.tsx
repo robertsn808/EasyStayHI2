@@ -182,15 +182,15 @@ export default function Landing() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-900">$130</div>
+                  <div className="text-2xl font-bold text-blue-900">$50</div>
                   <div className="text-xs text-blue-700">Daily</div>
                 </div>
                 <div className="p-3 bg-yellow-50 rounded-lg border-2 border-yellow-400">
-                  <div className="text-2xl font-bold text-yellow-900">$750</div>
+                  <div className="text-2xl font-bold text-yellow-900">$200</div>
                   <div className="text-xs text-yellow-700">Weekly</div>
                 </div>
                 <div className="p-3 bg-purple-50 rounded-lg">
-                  <div className="text-2xl font-bold text-purple-900">$2,800</div>
+                  <div className="text-2xl font-bold text-purple-900">$600</div>
                   <div className="text-xs text-purple-700">Monthly</div>
                 </div>
               </div>

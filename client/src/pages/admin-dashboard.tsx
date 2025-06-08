@@ -97,12 +97,12 @@ export default function AdminDashboard() {
               </div>
               <div className="bg-orange-50 p-3 rounded-lg text-center">
                 <div className="text-xl mb-1">🔧</div>
-                <div className="text-lg font-bold text-orange-900">2</div>
+                <div className="text-lg font-bold text-orange-900">0</div>
                 <div className="text-xs text-orange-700">Maintenance</div>
               </div>
               <div className="bg-yellow-50 p-3 rounded-lg text-center">
                 <div className="text-xl mb-1">🧹</div>
-                <div className="text-lg font-bold text-yellow-900">3</div>
+                <div className="text-lg font-bold text-yellow-900">0</div>
                 <div className="text-xs text-yellow-700">Cleaning</div>
               </div>
             </div>
@@ -162,12 +162,12 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-4 gap-3 mb-6">
               <div className="bg-blue-50 p-3 rounded-lg text-center">
                 <div className="text-xl mb-1">🏠</div>
-                <div className="text-lg font-bold text-blue-900">2</div>
+                <div className="text-lg font-bold text-blue-900">3</div>
                 <div className="text-xs text-blue-700">Available</div>
               </div>
               <div className="bg-green-50 p-3 rounded-lg text-center">
                 <div className="text-xl mb-1">👤</div>
-                <div className="text-lg font-bold text-green-900">8</div>
+                <div className="text-lg font-bold text-green-900">7</div>
                 <div className="text-xs text-green-700">Occupied</div>
               </div>
               <div className="bg-orange-50 p-3 rounded-lg text-center">
@@ -177,7 +177,7 @@ export default function AdminDashboard() {
               </div>
               <div className="bg-yellow-50 p-3 rounded-lg text-center">
                 <div className="text-xl mb-1">🧹</div>
-                <div className="text-lg font-bold text-yellow-900">1</div>
+                <div className="text-lg font-bold text-yellow-900">0</div>
                 <div className="text-xs text-yellow-700">Cleaning</div>
               </div>
             </div>
