@@ -56,26 +56,23 @@ export default function Property949() {
         </div>
 
         {/* Pricing Information */}
-        <div className="luxury-card rounded-2xl shadow-2xl p-8 mb-12">
-          <h3 className="text-3xl font-semibold text-gray-900 mb-8 text-center">Exclusive Rental Rates</h3>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-8 border border-gray-200 rounded-xl hover:shadow-lg transition-all duration-300">
-              <div className="text-4xl font-bold text-gray-800 mb-3">$130</div>
-              <div className="text-gray-600 text-lg">Daily Rate</div>
-              <div className="text-sm text-gray-500 mt-2">Premium daily experience</div>
+        <div className="luxury-card rounded-xl shadow-lg p-6 mb-8">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-4 text-center">Exclusive Rental Rates</h3>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="text-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-all duration-300">
+              <div className="text-2xl font-bold text-gray-800 mb-2">$130</div>
+              <div className="text-gray-600">Daily Rate</div>
             </div>
-            <div className="text-center p-8 luxury-gradient rounded-xl border-2 border-yellow-400 relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-semibold">
+            <div className="text-center p-4 luxury-gradient rounded-lg border-2 border-yellow-400 relative">
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
                 Premium Choice
               </div>
-              <div className="text-4xl font-bold text-gray-900 mb-3">$750</div>
-              <div className="text-gray-700 text-lg font-medium">Weekly Rate</div>
-              <div className="text-sm text-gray-600 mt-2">Extended luxury stays</div>
+              <div className="text-2xl font-bold text-gray-900 mb-2">$750</div>
+              <div className="text-gray-700 font-medium">Weekly Rate</div>
             </div>
-            <div className="text-center p-8 border border-gray-200 rounded-xl hover:shadow-lg transition-all duration-300">
-              <div className="text-4xl font-bold text-gray-800 mb-3">$2,800</div>
-              <div className="text-gray-600 text-lg">Monthly Rate</div>
-              <div className="text-sm text-gray-500 mt-2">Executive monthly residence</div>
+            <div className="text-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-all duration-300">
+              <div className="text-2xl font-bold text-gray-800 mb-2">$2,800</div>
+              <div className="text-gray-600">Monthly Rate</div>
             </div>
           </div>
         </div>
