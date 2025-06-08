@@ -27,6 +27,7 @@ export default function InquiryPage() {
     phone: "",
     rentalPeriod: "",
     message: "",
+    contactPreference: "",
   });
   const [showAgreement, setShowAgreement] = useState(false);
   const [hasReadAgreement, setHasReadAgreement] = useState(false);
@@ -59,6 +60,7 @@ export default function InquiryPage() {
         phone: "",
         rentalPeriod: "",
         message: "",
+        contactPreference: "",
       });
       setSelectedProperty("");
       setHasReadAgreement(false);
@@ -75,6 +77,16 @@ export default function InquiryPage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!formData.contactPreference) {
+      toast({
+        title: "Error",
+        description: "Please select a contact preference.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const propertyPrefix = selectedProperty === "934" ? "Property 934" : "Property 949";
     const roomType = selectedProperty === "934" ? "Room" : "Suite";
     
@@ -82,7 +94,8 @@ export default function InquiryPage() {
       name: formData.name,
       email: formData.email,
       phone: formData.phone || null,
-      message: `${propertyPrefix} - ${roomType}: Any available | Rental Period: ${formData.rentalPeriod || 'Not specified'} | Message: ${formData.message}`,
+      message: `${propertyPrefix} - ${roomType}: Any available | Rental Period: ${formData.rentalPeriod || 'Not specified'}${formData.message ? ` | Message: ${formData.message}` : ''}`,
+      contactPreference: formData.contactPreference,
     };
     
     createInquiryMutation.mutate(inquiryData);
@@ -202,6 +215,21 @@ export default function InquiryPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="contactPreference">How would you like us to contact you? *</Label>
+                  <Select onValueChange={(value) => handleInputChange("contactPreference", value)} required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select contact method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="phone">Phone Call</SelectItem>
+                      <SelectItem value="text">Text Message</SelectItem>
+                      <SelectItem value="email">Email</SelectItem>
+                      <SelectItem value="any">Any Method</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="rentalPeriod">Rental Period</Label>
                   <Select onValueChange={(value) => handleInputChange("rentalPeriod", value)}>
                     <SelectTrigger>
@@ -221,14 +249,13 @@ export default function InquiryPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="message">Message *</Label>
+                  <Label htmlFor="message">Message (Optional)</Label>
                   <Textarea
                     id="message"
                     value={formData.message}
                     onChange={(e) => handleInputChange("message", e.target.value)}
                     placeholder={`Tell us about your interest in Property ${selectedProperty}...`}
                     rows={4}
-                    required
                   />
                 </div>
 
