@@ -125,6 +125,12 @@ export async function setupAuth(app: Express) {
       );
     });
   });
+
+  app.post("/api/logout", (req, res) => {
+    req.logout(() => {
+      res.json({ success: true, message: "Logged out successfully" });
+    });
+  });
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {

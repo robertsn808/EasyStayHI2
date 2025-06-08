@@ -20,14 +20,29 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/logout", { method: "POST" });
-      window.location.href = "/";
+      const response = await fetch("/api/logout", { 
+        method: "POST",
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        // Clear any local storage or session storage if needed
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Force reload to clear auth state
+        window.location.replace("/");
+      } else {
+        throw new Error('Logout failed');
+      }
     } catch (error) {
       toast({
-        title: "Error",
+        title: "Error", 
         description: "Failed to logout",
         variant: "destructive",
       });
+      // Even if logout fails, redirect to home
+      window.location.replace("/");
     }
   };
 
