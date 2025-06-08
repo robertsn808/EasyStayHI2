@@ -204,10 +204,10 @@ export default function MobileNavigation({
             <Menu className="h-4 w-4" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-80 p-0 bg-white/95 backdrop-blur-lg">
+        <SheetContent side="left" className="w-full max-w-sm p-0 bg-white/95 backdrop-blur-lg">
           <div className="h-full overflow-y-auto">
             {/* Header */}
-            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+            <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
               <h2 className="text-lg font-bold text-gray-800">Navigation</h2>
               <p className="text-sm text-gray-600">EasyStay HI Property Management</p>
             </div>
@@ -220,7 +220,7 @@ export default function MobileNavigation({
                     <CollapsibleTrigger asChild>
                       <Button
                         variant="ghost"
-                        className="w-full justify-between text-sm font-semibold text-gray-700 hover:bg-gray-100"
+                        className="w-full justify-between text-sm font-semibold text-gray-700 hover:bg-gray-100 min-h-[48px]"
                       >
                         <div className="flex items-center gap-2">
                           <section.icon className="h-4 w-4" />
@@ -242,7 +242,7 @@ export default function MobileNavigation({
                           <Button
                             key={item.id}
                             variant="ghost"
-                            className={`w-full justify-start text-sm h-10 ${
+                            className={`w-full justify-start text-sm min-h-[48px] ${
                               isActive 
                                 ? `${colors.bg} ${colors.text} ${colors.border} border-l-4 shadow-sm` 
                                 : "hover:bg-gray-50"
@@ -278,7 +278,7 @@ export default function MobileNavigation({
               <div className="pt-4 border-t border-gray-200">
                 <Button
                   variant="ghost"
-                  className={`w-full justify-start text-sm h-10 ${
+                  className={`w-full justify-start text-sm min-h-[48px] ${
                     activeTab === "settings" 
                       ? "bg-gray-100 text-gray-700 border-l-4 border-gray-300 shadow-sm" 
                       : "hover:bg-gray-50"

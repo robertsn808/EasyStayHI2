@@ -62,6 +62,32 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     min-height: 100vh;
+    /* Mobile optimizations */
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+  }
+
+  /* Mobile-specific styles */
+  @media (max-width: 768px) {
+    body {
+      background-attachment: scroll;
+    }
+    
+    /* Improve touch targets */
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Better mobile scrolling */
+    .overflow-y-auto {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Reduce motion on mobile for better performance */
+    * {
+      transition-duration: 0.1s !important;
+    }
   }
   
   /* Add overlay for better content readability */

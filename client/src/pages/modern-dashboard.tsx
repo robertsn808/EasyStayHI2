@@ -428,12 +428,12 @@ export default function ModernDashboard() {
       <div className="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Logo and Search Bar */}
-          <div className="flex justify-between items-center py-2">
+          <div className="flex justify-between items-center py-3">
             <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                <Home className="h-3 w-3 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                <Home className="h-4 w-4 text-white" />
               </div>
-              <span className="text-sm font-semibold text-gray-900">EasyStay</span>
+              <span className="text-base font-semibold text-gray-900">EasyStay</span>
             </div>
 
             <div className="flex items-center space-x-3">

@@ -293,16 +293,16 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Mobile Overview Cards */}
-        <div className="lg:hidden grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="lg:hidden grid grid-cols-2 gap-3 mb-6">
           <Card className={`${activeTab === "quick-access" ? "bg-gradient-to-br from-slate-100 to-slate-50 border-slate-300 shadow-md" : "bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-md"} cursor-pointer transition-all duration-200`}
             onClick={() => setActiveTab("quick-access")}
           >
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <div className="text-center">
-                <div className="mx-auto mb-2 w-8 h-8 bg-gradient-to-br from-slate-500 to-slate-600 rounded-lg flex items-center justify-center shadow-sm">
-                  <Home className="h-4 w-4 text-white" />
+                <div className="mx-auto mb-2 w-10 h-10 bg-gradient-to-br from-slate-500 to-slate-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <Home className="h-5 w-5 text-white" />
                 </div>
-                <p className="text-xs font-semibold text-slate-900">Quick</p>
+                <p className="text-sm font-semibold text-slate-900">Quick</p>
                 <p className="text-xs text-slate-500">Access</p>
               </div>
             </CardContent>
