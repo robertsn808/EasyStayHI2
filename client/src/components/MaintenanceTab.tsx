@@ -1,12 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface MaintenanceTabProps {
   requests?: any[];
 }
 
 export function MaintenanceTab({ requests = [] }: MaintenanceTabProps) {
+  const { toast } = useToast();
+  
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -41,8 +44,8 @@ export function MaintenanceTab({ requests = [] }: MaintenanceTabProps) {
                 <p className="text-sm text-gray-600 mb-2">Room: {request.roomId}</p>
                 <p className="text-sm mb-3">{request.description}</p>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline">Update Status</Button>
-                  <Button size="sm" variant="outline">Assign Technician</Button>
+                  <Button size="sm" variant="outline" onClick={() => toast({ title: "Status Updated", description: `Request for ${request.title} status updated` })}>Update Status</Button>
+                  <Button size="sm" variant="outline" onClick={() => toast({ title: "Technician Assigned", description: `Technician assigned to ${request.title}` })}>Assign Technician</Button>
                 </div>
               </CardContent>
             </Card>

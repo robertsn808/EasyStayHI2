@@ -1,12 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface ReceiptsTabProps {
   receipts?: any[];
 }
 
 export function ReceiptsTab({ receipts = [] }: ReceiptsTabProps) {
+  const { toast } = useToast();
+  
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">

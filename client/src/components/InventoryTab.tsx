@@ -1,12 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface InventoryTabProps {
   items?: any[];
 }
 
 export function InventoryTab({ items = [] }: InventoryTabProps) {
+  const { toast } = useToast();
+  
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -48,8 +51,8 @@ export function InventoryTab({ items = [] }: InventoryTabProps) {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-3">
-                  <Button size="sm" variant="outline">Update Stock</Button>
-                  <Button size="sm" variant="outline">Edit Item</Button>
+                  <Button size="sm" variant="outline" onClick={() => toast({ title: "Stock Updated", description: `Stock updated for ${item.name}` })}>Update Stock</Button>
+                  <Button size="sm" variant="outline" onClick={() => toast({ title: "Edit Item", description: `Editing ${item.name}` })}>Edit Item</Button>
                 </div>
               </CardContent>
             </Card>

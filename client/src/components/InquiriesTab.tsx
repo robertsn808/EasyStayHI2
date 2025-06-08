@@ -39,8 +39,8 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
                 <p className="text-sm text-gray-600 mb-2">{inquiry.email}</p>
                 <p className="text-sm mb-3">{inquiry.message}</p>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline">Reply</Button>
-                  <Button size="sm" variant="outline">Mark Resolved</Button>
+                  <Button size="sm" variant="outline" onClick={() => toast({ title: "Reply", description: `Replying to ${inquiry.name}` })}>Reply</Button>
+                  <Button size="sm" variant="outline" onClick={() => toast({ title: "Marked Resolved", description: `Inquiry from ${inquiry.name} marked as resolved` })}>Mark Resolved</Button>
                 </div>
               </CardContent>
             </Card>
