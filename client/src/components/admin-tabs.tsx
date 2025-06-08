@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus } from "lucide-react";
 import { InquiriesTab } from "@/components/InquiriesTab";
 import { MaintenanceTab } from "@/components/MaintenanceTab";
 import { PaymentsTab } from "@/components/PaymentsTab";
@@ -64,6 +65,10 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
     queryKey: ["/api/admin/todos"],
   });
 
+  const { data: rooms } = useQuery({
+    queryKey: ["/api/rooms"],
+  });
+
   return (
     <Card className="shadow-sm">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
@@ -81,17 +86,33 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
 
         <TabsContent value="properties" className="p-6">
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Property Management</h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Property Management</h2>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Manage Rooms
+              </Button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="p-6">
                 <h3 className="text-xl font-semibold mb-4">934 Kapahulu Ave</h3>
                 <div className="space-y-2">
-                  <p className="text-gray-600">8 Rooms Available</p>
+                  <p className="text-gray-600">
+                    {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 8 && room.status === 'available').length : 0} of {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 8).length : 0} Rooms Available
+                  </p>
                   <p className="text-sm">Daily: $100 | Weekly: $500 | Monthly: $2000</p>
                   <div className="grid grid-cols-4 gap-2 mt-4">
-                    {Array.from({ length: 8 }, (_, i) => (
-                      <div key={i} className="p-2 border rounded text-center bg-green-100">
-                        {String(i + 1).padStart(3, '0')}
+                    {Array.isArray(rooms) && rooms.filter((room: any) => room.buildingId === 8).map((room: any) => (
+                      <div 
+                        key={room.id} 
+                        className={`p-2 border rounded text-center text-xs ${
+                          room.status === 'occupied' ? 'bg-red-100 text-red-800' :
+                          room.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-green-100 text-green-800'
+                        }`}
+                      >
+                        {room.number}
+                        <div className="text-[10px] mt-1 capitalize">{room.status}</div>
                       </div>
                     ))}
                   </div>
@@ -100,12 +121,22 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
               <Card className="p-6">
                 <h3 className="text-xl font-semibold mb-4">949 Kawaiahao St</h3>
                 <div className="space-y-2">
-                  <p className="text-gray-600">10 Suites Available</p>
+                  <p className="text-gray-600">
+                    {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 9 && room.status === 'available').length : 0} of {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 9).length : 0} Suites Available
+                  </p>
                   <p className="text-sm">Daily: $50 | Weekly: $200 | Monthly: $600</p>
                   <div className="grid grid-cols-5 gap-2 mt-4">
-                    {Array.from({ length: 10 }, (_, i) => (
-                      <div key={i} className="p-2 border rounded text-center bg-blue-100">
-                        {String(i + 1).padStart(3, '0')}
+                    {Array.isArray(rooms) && rooms.filter((room: any) => room.buildingId === 9).map((room: any) => (
+                      <div 
+                        key={room.id} 
+                        className={`p-2 border rounded text-center text-xs ${
+                          room.status === 'occupied' ? 'bg-red-100 text-red-800' :
+                          room.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-blue-100 text-blue-800'
+                        }`}
+                      >
+                        {room.number}
+                        <div className="text-[10px] mt-1 capitalize">{room.status}</div>
                       </div>
                     ))}
                   </div>
