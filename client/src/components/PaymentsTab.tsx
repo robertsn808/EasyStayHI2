@@ -24,11 +24,7 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
 
   const addPaymentMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest({
-        url: "/api/payments",
-        method: "POST",
-        body: data,
-      });
+      return await apiRequest("POST", "/api/payments", data);
     },
     onSuccess: () => {
       toast({
@@ -49,11 +45,7 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
 
   const addExpenseMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest({
-        url: "/api/expenses",
-        method: "POST",
-        body: data,
-      });
+      return await apiRequest("POST", "/api/expenses", data);
     },
     onSuccess: () => {
       toast({

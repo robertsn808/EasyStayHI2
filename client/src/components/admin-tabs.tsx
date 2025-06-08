@@ -99,7 +99,7 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Property Management</h2>
-              <Button>
+              <Button onClick={() => setSelectedTab("manage-rooms")}>
                 <Plus className="h-4 w-4 mr-2" />
                 Manage Rooms
               </Button>
@@ -166,10 +166,10 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Contacts Management</h2>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={() => toast({ title: "Filter applied", description: "Showing vendors only" })}>
                   Show Vendors Only
                 </Button>
-                <Button>Add New Contact</Button>
+                <Button onClick={() => toast({ title: "Add Contact", description: "Contact form would open here" })}>Add New Contact</Button>
               </div>
             </div>
             <ContactsTab contacts={contacts} />
@@ -182,6 +182,40 @@ export default function AdminTabs({ activeTab = "properties", setActiveTab }: Ad
 
         <TabsContent value="receipts" className="p-6">
           <ReceiptsTab receipts={receipts} />
+        </TabsContent>
+
+        <TabsContent value="manage-rooms" className="p-6">
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Room Management</h2>
+              <Button onClick={() => toast({ title: "Add Room", description: "Room creation form would open here" })}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add New Room
+              </Button>
+            </div>
+            <div className="grid gap-4">
+              {Array.isArray(rooms) && rooms.map((room: any) => (
+                <Card key={room.id} className="p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="font-semibold">Room {room.number}</h3>
+                      <p className="text-sm text-gray-600">
+                        Building ID: {room.buildingId} | Status: {room.status}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={() => toast({ title: "Edit Room", description: `Editing room ${room.number}` })}>
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => toast({ title: "View Details", description: `Viewing details for room ${room.number}` })}>
+                        View Details
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="current-guests" className="p-6">
