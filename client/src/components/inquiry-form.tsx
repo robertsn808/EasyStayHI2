@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -16,12 +17,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Send } from "lucide-react";
+import { Send, FileText, AlertTriangle } from "lucide-react";
 import { insertInquirySchema, type InsertInquiry } from "@shared/schema";
 
 export default function InquiryForm() {
   const { toast } = useToast();
   const [selectedPeriod, setSelectedPeriod] = useState("");
+  const [hasReadAgreement, setHasReadAgreement] = useState(false);
+  const [showAgreement, setShowAgreement] = useState(false);
 
   const form = useForm<InsertInquiry>({
     resolver: zodResolver(insertInquirySchema),
@@ -35,6 +38,9 @@ export default function InquiryForm() {
 
   const mutation = useMutation({
     mutationFn: async (data: InsertInquiry) => {
+      if (!hasReadAgreement) {
+        throw new Error("Please read and agree to the rental agreement first.");
+      }
       await apiRequest("POST", "/api/inquiries", data);
     },
     onSuccess: () => {
@@ -44,11 +50,12 @@ export default function InquiryForm() {
       });
       form.reset();
       setSelectedPeriod("");
+      setHasReadAgreement(false);
     },
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to send inquiry. Please try again.",
+        description: error.message || "Failed to send inquiry. Please try again.",
         variant: "destructive",
       });
     },
@@ -155,6 +162,91 @@ export default function InquiryForm() {
           </div>
           
           <div className="md:col-span-2">
+            {/* Rental Agreement Section */}
+            <div className="bg-yellow-50 p-4 rounded-lg mb-4 border border-yellow-200">
+              <div className="flex items-center mb-3">
+                <FileText className="h-5 w-5 text-yellow-600 mr-2" />
+                <h4 className="font-semibold text-yellow-900">Rental Agreement</h4>
+              </div>
+              
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowAgreement(!showAgreement)}
+                className="mb-3 text-sm"
+              >
+                {showAgreement ? "Hide Agreement" : "Read Rental Agreement"}
+              </Button>
+
+              {showAgreement && (
+                <div className="bg-white p-4 rounded border max-h-60 overflow-y-auto text-sm text-gray-700 space-y-3">
+                  <h5 className="font-semibold text-gray-900">EasyStay Hawaii Rental Terms & Conditions</h5>
+                  
+                  <div>
+                    <strong>1. Property Rules:</strong>
+                    <ul className="ml-4 mt-1 space-y-1">
+                      <li>• No smoking inside any part of the building</li>
+                      <li>• Quiet hours: 10 PM - 7 AM daily</li>
+                      <li>• Maximum occupancy must not exceed agreed amount</li>
+                      <li>• No parties or large gatherings</li>
+                      <li>• Guests must check in with management</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <strong>2. Payment Terms:</strong>
+                    <ul className="ml-4 mt-1 space-y-1">
+                      <li>• Payment due before check-in via Cashapp: $selarazmami</li>
+                      <li>• Security deposit: $100 + $50 per pet (refundable)</li>
+                      <li>• Late payment fee: $25 per day after due date</li>
+                      <li>• No refunds for early departure</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <strong>3. Check-in/Check-out:</strong>
+                    <ul className="ml-4 mt-1 space-y-1">
+                      <li>• Check-in: 3:00 PM or later</li>
+                      <li>• Check-out: 11:00 AM or earlier</li>
+                      <li>• Room must be left clean and undamaged</li>
+                      <li>• Lost keys/access cards: $50 replacement fee</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <strong>4. Property Care:</strong>
+                    <ul className="ml-4 mt-1 space-y-1">
+                      <li>• Tenant responsible for any damages beyond normal wear</li>
+                      <li>• Report maintenance issues immediately</li>
+                      <li>• No alterations to room without permission</li>
+                      <li>• Keep room clean and sanitary</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <strong>5. Policies:</strong>
+                    <ul className="ml-4 mt-1 space-y-1">
+                      <li>• No illegal activities</li>
+                      <li>• Respect other tenants and neighbors</li>
+                      <li>• Management may enter room with 24-hour notice</li>
+                      <li>• Violation of rules may result in immediate termination</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center mt-3">
+                <Checkbox
+                  id="agreement"
+                  checked={hasReadAgreement}
+                  onCheckedChange={(checked) => setHasReadAgreement(!!checked)}
+                />
+                <Label htmlFor="agreement" className="ml-2 text-sm font-medium">
+                  I have read and agree to the rental terms and conditions
+                </Label>
+              </div>
+            </div>
+
             <div className="bg-blue-50 p-4 rounded-lg mb-4 border border-blue-200">
               <h4 className="font-semibold text-blue-900 mb-2">Payment & Contact Information:</h4>
               <ul className="text-sm text-blue-800 space-y-1">
@@ -166,10 +258,19 @@ export default function InquiryForm() {
               </ul>
             </div>
             
+            {!hasReadAgreement && (
+              <div className="bg-red-50 p-3 rounded-lg mb-4 border border-red-200">
+                <div className="flex items-center">
+                  <AlertTriangle className="h-4 w-4 text-red-600 mr-2" />
+                  <p className="text-sm text-red-800">Please read and agree to the rental agreement before submitting your inquiry.</p>
+                </div>
+              </div>
+            )}
+            
             <Button
               type="submit"
-              disabled={mutation.isPending}
-              className="bg-primary text-white hover:bg-blue-700"
+              disabled={mutation.isPending || !hasReadAgreement}
+              className="bg-primary text-white hover:bg-blue-700 disabled:opacity-50"
             >
               <Send className="w-4 h-4 mr-2" />
               {mutation.isPending ? "Sending..." : "Send Inquiry"}
