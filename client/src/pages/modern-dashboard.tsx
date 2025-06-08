@@ -86,8 +86,27 @@ export default function ModernDashboard() {
   const occupied934 = building934Rooms.filter((r: any) => r.status === 'occupied').length;
   const occupied949 = building949Rooms.filter((r: any) => r.status === 'occupied').length;
   const pendingInquiries = Array.isArray(inquiries) ? inquiries.filter((i: any) => i.status === 'pending').length : 0;
-  const urgentMaintenance = Array.isArray(maintenanceRequests) ? maintenanceRequests.filter((m: any) => m.priority === 'urgent').length : 0;
-  const totalEarnings = 4923.68; // This would come from actual revenue calculation
+  const urgentMaintenance = Array.isArray(maintenanceRequests) ? maintenanceRequests.filter((m: any) => m.request?.priority === 'urgent').length : 0;
+  
+  // Calculate real earnings from payments and room occupancy
+  const calculateEarnings = () => {
+    let totalEarnings = 0;
+    
+    // Add revenue from payments
+    if (Array.isArray(payments)) {
+      totalEarnings += payments.reduce((sum: number, payment: any) => {
+        return sum + (parseFloat(payment.amount) || 0);
+      }, 0);
+    }
+    
+    // Estimate monthly revenue from occupied rooms
+    const occupiedRooms = Array.isArray(rooms) ? rooms.filter((r: any) => r.status === 'occupied') : [];
+    const estimatedMonthlyRevenue = occupiedRooms.length * 1500; // Average rent per room
+    
+    return Math.max(totalEarnings, estimatedMonthlyRevenue);
+  };
+
+  const totalEarnings = calculateEarnings();
 
   const renderDashboard = () => (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -108,7 +127,15 @@ export default function ModernDashboard() {
             <option>This month</option>
             <option>Last week</option>
           </select>
-          <Button className="bg-green-600 hover:bg-green-700 text-white px-6">
+          <Button 
+            className="bg-green-600 hover:bg-green-700 text-white px-6"
+            onClick={() => {
+              toast({
+                title: "Analytics Coming Soon",
+                description: "Advanced analytics dashboard will be available in the next update.",
+              });
+            }}
+          >
             Analytics
           </Button>
         </div>
@@ -117,22 +144,28 @@ export default function ModernDashboard() {
       {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         {/* In-House */}
-        <Card className="bg-white border border-gray-200">
+        <Card 
+          className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => setActiveTab("934")}
+        >
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-700">In-House</h3>
+              <h3 className="text-sm font-medium text-gray-700">In-House Guests</h3>
               <CheckCircle className="h-5 w-5 text-green-500" />
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-gray-500">Daily: <span className="font-semibold">4</span></div>
-              <div className="text-xs text-gray-500">Weekly: <span className="font-semibold">3</span></div>
-              <div className="text-xs text-gray-500">Monthly: <span className="font-semibold">0</span></div>
+              <div className="text-xs text-gray-500">Daily: <span className="font-semibold">{Array.isArray(guests) ? guests.filter((g: any) => g.checkInDate && new Date(g.checkInDate).toDateString() === new Date().toDateString()).length : 0}</span></div>
+              <div className="text-xs text-gray-500">Weekly: <span className="font-semibold">{Array.isArray(guests) ? guests.filter((g: any) => g.checkInDate && (Date.now() - new Date(g.checkInDate).getTime()) < 7 * 24 * 60 * 60 * 1000).length : 0}</span></div>
+              <div className="text-xs text-gray-500">Total: <span className="font-semibold">{Array.isArray(guests) ? guests.length : 0}</span></div>
             </div>
           </CardContent>
         </Card>
 
         {/* Open Rooms */}
-        <Card className="bg-white border border-gray-200">
+        <Card 
+          className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => setActiveTab("949")}
+        >
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-700">Open Rooms</h3>
@@ -152,28 +185,34 @@ export default function ModernDashboard() {
         </Card>
 
         {/* Earnings */}
-        <Card className="bg-white border border-gray-200">
+        <Card 
+          className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => setActiveTab("rent-tracker")}
+        >
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-700">Earnings</h3>
               <DollarSign className="h-5 w-5 text-green-500" />
             </div>
             <div className="text-2xl font-bold text-gray-900">
-              ${totalEarnings.toLocaleString()}<span className="text-sm font-normal text-gray-500">.68</span>
+              ${Math.floor(totalEarnings).toLocaleString()}<span className="text-sm font-normal text-gray-500">.{String(Math.floor((totalEarnings % 1) * 100)).padStart(2, '0')}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Work Orders */}
-        <Card className="bg-white border border-gray-200">
+        <Card 
+          className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => setActiveTab("maintenance")}
+        >
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-700">Work Orders</h3>
-              <Wrench className="h-5 w-5 text-orange-500" />
+              <Wrench className={`h-5 w-5 ${urgentMaintenance > 0 ? 'text-red-500' : 'text-orange-500'}`} />
             </div>
             <div className="space-y-1">
-              <div className="text-sm text-gray-600">{urgentMaintenance} Maintenance requests</div>
-              <div className="text-sm text-gray-600">1 Open Project</div>
+              <div className="text-sm text-gray-600">{Array.isArray(maintenanceRequests) ? maintenanceRequests.length : 0} Maintenance requests</div>
+              <div className="text-sm text-gray-600">{Array.isArray(todos) ? todos.filter((t: any) => !t.completed).length : 0} Open Tasks</div>
             </div>
           </CardContent>
         </Card>
@@ -185,28 +224,34 @@ export default function ModernDashboard() {
         <div className="lg:col-span-1">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Your next steps</h2>
           <div className="space-y-4">
-            <Card className="bg-white border border-gray-200">
+            <Card 
+              className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => setActiveTab("rent-tracker")}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
                     <AlertTriangle className="h-4 w-4 text-red-600" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">Rent Due: <span className="text-red-600">3</span></h3>
+                    <h3 className="font-medium text-gray-900">Rent Due: <span className="text-red-600">{Array.isArray(guests) ? guests.filter((g: any) => g.paymentStatus === 'overdue').length : 0}</span></h3>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white border border-gray-200">
+            <Card 
+              className="bg-white border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => setActiveTab("maintenance")}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                     <Home className="h-4 w-4 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">Housekeeping: <span className="text-orange-600">2</span></h3>
-                    <p className="text-sm text-gray-500">Out of Order: <span className="text-red-600">1</span></p>
+                    <h3 className="font-medium text-gray-900">Housekeeping: <span className="text-orange-600">{Array.isArray(maintenanceRequests) ? maintenanceRequests.filter((m: any) => m.request?.category === 'housekeeping').length : 0}</span></h3>
+                    <p className="text-sm text-gray-500">Out of Order: <span className="text-red-600">{Array.isArray(rooms) ? rooms.filter((r: any) => r.status === 'maintenance').length : 0}</span></p>
                   </div>
                 </div>
               </CardContent>
@@ -249,94 +294,81 @@ export default function ModernDashboard() {
           </div>
           
           <div className="space-y-4">
-            {/* Activity Items */}
-            <Card className="bg-white border border-gray-200">
-              <CardContent className="p-4">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-blue-500 rounded text-white flex items-center justify-center text-sm font-semibold">
-                    9
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-gray-900">Pet Friendliness</h3>
-                      <Badge variant="outline" className="text-xs">Question</Badge>
-                      <span className="text-xs text-gray-500">3h ago</span>
+            {/* Real Activity Items from Inquiries */}
+            {Array.isArray(inquiries) && inquiries.slice(0, 4).map((inquiry: any, index: number) => (
+              <Card key={inquiry.id || index} className="bg-white border border-gray-200">
+                <CardContent className="p-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-8 h-8 bg-blue-500 rounded text-white flex items-center justify-center text-sm font-semibold">
+                      {inquiry.id || (index + 1)}
                     </div>
-                    <p className="text-sm text-gray-600">196 Kansas Avenue, Block A, 7th Floor, Number 14</p>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="font-medium text-gray-900">{inquiry.name || 'New Inquiry'}</h3>
+                        <Badge variant="outline" className={`text-xs ${
+                          inquiry.status === 'pending' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'
+                        }`}>
+                          {inquiry.status === 'pending' ? 'Pending' : 'Processed'}
+                        </Badge>
+                        <span className="text-xs text-gray-500">
+                          {new Date(inquiry.createdAt || Date.now()).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">{inquiry.email || 'No email provided'}</p>
+                      <p className="text-xs text-gray-500 mt-1 truncate">{inquiry.message || 'No message'}</p>
+                    </div>
+                    <div className="flex items-center space-x-1 text-gray-400">
+                      <MessageSquare className="h-4 w-4" />
+                      <span className="text-sm">1</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-1 text-gray-400">
-                    <MessageSquare className="h-4 w-4" />
-                    <span className="text-sm">2</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ))}
 
-            <Card className="bg-white border border-gray-200">
-              <CardContent className="p-4">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-blue-500 rounded text-white flex items-center justify-center text-sm font-semibold">
-                    9
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-gray-900">Water Issue</h3>
-                      <Badge variant="outline" className="text-xs bg-orange-100 text-orange-700">Damage Report</Badge>
-                      <span className="text-xs text-gray-500">10h ago</span>
+            {/* Real Activity Items from Maintenance Requests */}
+            {Array.isArray(maintenanceRequests) && maintenanceRequests.slice(0, 2).map((request: any, index: number) => (
+              <Card key={`maintenance-${request.id || index}`} className="bg-white border border-gray-200">
+                <CardContent className="p-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-8 h-8 bg-orange-500 rounded text-white flex items-center justify-center text-sm font-semibold">
+                      <Wrench className="h-4 w-4" />
                     </div>
-                    <p className="text-sm text-gray-600">817 Garden Street, Santa Monica, CA 987 360</p>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="font-medium text-gray-900">{request.request?.description || 'Maintenance Request'}</h3>
+                        <Badge variant="outline" className={`text-xs ${
+                          request.request?.priority === 'urgent' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                        }`}>
+                          {request.request?.priority || 'Normal'}
+                        </Badge>
+                        <span className="text-xs text-gray-500">
+                          {new Date(request.request?.createdAt || Date.now()).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">Room {request.room?.number || 'Unknown'} - {request.building?.name || 'Unknown Building'}</p>
+                      <p className="text-xs text-gray-500 mt-1">Status: {request.request?.status || 'Pending'}</p>
+                    </div>
+                    <div className="flex items-center space-x-1 text-gray-400">
+                      <Wrench className="h-4 w-4" />
+                      <span className="text-sm">1</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-1 text-gray-400">
-                    <MessageSquare className="h-4 w-4" />
-                    <span className="text-sm">2</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ))}
 
-            <Card className="bg-white border border-gray-200">
-              <CardContent className="p-4">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-blue-500 rounded text-white flex items-center justify-center text-sm font-semibold">
-                    7
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-gray-900">Invoice Inquiry</h3>
-                      <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700">Request</Badge>
-                      <span className="text-xs text-gray-500">2 days ago</span>
-                    </div>
-                    <p className="text-sm text-gray-600">568 Gotham Center, Santa Monica, CA 987 360</p>
-                  </div>
-                  <div className="flex items-center space-x-1 text-gray-400">
-                    <MessageSquare className="h-4 w-4" />
-                    <span className="text-sm">2</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white border border-gray-200">
-              <CardContent className="p-4">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-blue-500 rounded text-white flex items-center justify-center text-sm font-semibold">
-                    4
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-gray-900">Water Issue</h3>
-                      <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700">Request</Badge>
-                      <span className="text-xs text-gray-500">3 days ago</span>
-                    </div>
-                    <p className="text-sm text-gray-600">1470 Parrisent, Block A, 7th Floor, Number 14</p>
-                  </div>
-                  <div className="flex items-center space-x-1 text-gray-400">
-                    <MessageSquare className="h-4 w-4" />
-                    <span className="text-sm">2</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Show message if no activities */}
+            {(!Array.isArray(inquiries) || inquiries.length === 0) && 
+             (!Array.isArray(maintenanceRequests) || maintenanceRequests.length === 0) && (
+              <Card className="bg-white border border-gray-200">
+                <CardContent className="p-8 text-center">
+                  <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Recent Activity</h3>
+                  <p className="text-gray-600">New inquiries and maintenance requests will appear here.</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
@@ -371,18 +403,6 @@ export default function ModernDashboard() {
         <AdminTabs
           activeTab={adminTabName}
           setActiveTab={() => {}} // Read-only mode from modern dashboard
-          rooms={rooms}
-          guests={guests}
-          inquiries={inquiries}
-          maintenanceRequests={maintenanceRequests}
-          payments={payments}
-          announcements={announcements}
-          calendarEvents={calendarEvents}
-          contacts={contacts}
-          inventory={inventory}
-          receipts={receipts}
-          todos={todos}
-          buildings={buildings}
         />
       </div>
     );
@@ -438,11 +458,11 @@ export default function ModernDashboard() {
             </div>
           </div>
 
-          {/* Navigation Tabs */}
-          <div className="flex space-x-8 border-b border-gray-200">
+          {/* Navigation Tabs - Enhanced with All Functions */}
+          <div className="flex space-x-4 border-b border-gray-200 overflow-x-auto">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "dashboard"
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -453,7 +473,7 @@ export default function ModernDashboard() {
             
             <button
               onClick={() => setActiveTab("inbox")}
-              className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors relative ${
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors relative whitespace-nowrap ${
                 activeTab === "inbox"
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -469,7 +489,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("calendar")}
-              className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "calendar"
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -480,7 +500,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("934")}
-              className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "934"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -491,7 +511,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("949")}
-              className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "949"
                   ? "border-purple-500 text-purple-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -502,7 +522,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("rent-tracker")}
-              className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "rent-tracker"
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -511,67 +531,101 @@ export default function ModernDashboard() {
               Rent Tracker
             </button>
 
-            {/* More Menu for Additional Features */}
-            <div className="relative">
-              <button
-                onClick={() => setActiveTab("maintenance")}
-                className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
-                  ["maintenance", "announcements", "contacts", "inventory", "todos", "receipts"].includes(activeTab)
-                    ? "border-green-500 text-green-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                More
-              </button>
-              {["maintenance", "announcements", "contacts", "inventory", "todos", "receipts"].includes(activeTab) && (
-                <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-48">
-                  <div className="py-2">
-                    <button
-                      onClick={() => setActiveTab("maintenance")}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "maintenance" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
-                    >
-                      <Wrench className="inline h-4 w-4 mr-2" />
-                      Maintenance
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("announcements")}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "announcements" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
-                    >
-                      <Bell className="inline h-4 w-4 mr-2" />
-                      Announcements
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("contacts")}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "contacts" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
-                    >
-                      <Users className="inline h-4 w-4 mr-2" />
-                      Contacts
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("inventory")}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "inventory" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
-                    >
-                      <Package className="inline h-4 w-4 mr-2" />
-                      Inventory
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("todos")}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "todos" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
-                    >
-                      <CheckCircle className="inline h-4 w-4 mr-2" />
-                      Tasks
-                    </button>
-                    <button
-                      onClick={() => setActiveTab("receipts")}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${activeTab === "receipts" ? "bg-green-50 text-green-600" : "text-gray-700"}`}
-                    >
-                      <FileText className="inline h-4 w-4 mr-2" />
-                      Receipts
-                    </button>
-                  </div>
-                </div>
+            <button
+              onClick={() => setActiveTab("maintenance")}
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === "maintenance"
+                  ? "border-orange-500 text-orange-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Maintenance
+              {urgentMaintenance > 0 && (
+                <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-orange-500 rounded-full">
+                  {urgentMaintenance}
+                </span>
               )}
-            </div>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("announcements")}
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === "announcements"
+                  ? "border-pink-500 text-pink-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Announcements
+              {Array.isArray(announcements) && announcements.length > 0 && (
+                <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-pink-500 rounded-full">
+                  {announcements.length}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => setActiveTab("contacts")}
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === "contacts"
+                  ? "border-teal-500 text-teal-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Contacts
+              {Array.isArray(contacts) && contacts.length > 0 && (
+                <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-teal-500 rounded-full">
+                  {contacts.length}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => setActiveTab("inventory")}
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === "inventory"
+                  ? "border-amber-500 text-amber-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Inventory
+              {Array.isArray(inventory) && inventory.length > 0 && (
+                <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-amber-500 rounded-full">
+                  {inventory.length}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => setActiveTab("todos")}
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === "todos"
+                  ? "border-violet-500 text-violet-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Tasks
+              {Array.isArray(todos) && todos.filter((t: any) => !t.completed).length > 0 && (
+                <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-violet-500 rounded-full">
+                  {todos.filter((t: any) => !t.completed).length}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => setActiveTab("receipts")}
+              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === "receipts"
+                  ? "border-indigo-500 text-indigo-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Receipts
+              {Array.isArray(receipts) && receipts.length > 0 && (
+                <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-indigo-500 rounded-full">
+                  {receipts.length}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </div>
