@@ -355,8 +355,8 @@ export default function Property934() {
                         </Badge>
                       </div>
                       <div className="flex gap-2 mt-3">
-                        <Button size="sm" variant="outline">Update Status</Button>
-                        <Button size="sm" variant="outline">Send Reminder</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleUpdatePaymentStatus(payment.id)}>Update Status</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleSendReminder(payment.tenant)}>Send Reminder</Button>
                       </div>
                     </div>
                   ))}
@@ -370,7 +370,7 @@ export default function Property934() {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Guest Management</CardTitle>
-                  <Button className="bg-purple-600 hover:bg-purple-700">
+                  <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => setShowAddGuest(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Guest
                   </Button>
@@ -387,11 +387,11 @@ export default function Property934() {
                           <div className="text-xs text-gray-500">Rent Due: {room.dueDate}</div>
                         </div>
                         <div className="flex gap-2">
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" variant="outline" onClick={() => handleContactGuest(room.tenant)}>
                             <MessageCircle className="h-4 w-4 mr-1" />
                             Contact
                           </Button>
-                          <Button size="sm" variant="outline">Edit</Button>
+                          <Button size="sm" variant="outline" onClick={() => handleEditGuest(room.tenant)}>Edit</Button>
                         </div>
                       </div>
                     </div>

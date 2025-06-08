@@ -17,6 +17,9 @@ export default function Property949() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   const [showAddRoom, setShowAddRoom] = useState(false);
+  const [showAddMaintenance, setShowAddMaintenance] = useState(false);
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  const [showAddGuest, setShowAddGuest] = useState(false);
 
   // Sample data for Property 949
   const propertyData = {
@@ -73,6 +76,73 @@ export default function Property949() {
     }
   };
 
+  const handleAddSuite = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
+    toast({
+      title: "Suite Added",
+      description: `Suite ${formData.get("suiteNumber")} has been added successfully.`,
+    });
+    setShowAddRoom(false);
+  };
+
+  const handleEditSuite = (suiteId: number) => {
+    toast({
+      title: "Edit Suite",
+      description: "Suite editing functionality will be implemented here.",
+    });
+  };
+
+  const handleUpdateMaintenanceStatus = (requestId: number, newStatus: string) => {
+    toast({
+      title: "Status Updated",
+      description: `Maintenance request #${requestId} status updated to ${newStatus}.`,
+    });
+  };
+
+  const handleViewMaintenanceDetails = (requestId: number) => {
+    toast({
+      title: "View Details",
+      description: `Viewing details for maintenance request #${requestId}.`,
+    });
+  };
+
+  const handleRecordPayment = (paymentId: number) => {
+    toast({
+      title: "Payment Recorded",
+      description: `Payment #${paymentId} has been recorded.`,
+    });
+  };
+
+  const handleUpdatePaymentStatus = (paymentId: number) => {
+    toast({
+      title: "Payment Status Updated",
+      description: `Payment #${paymentId} status has been updated.`,
+    });
+  };
+
+  const handleSendReminder = (tenantName: string) => {
+    toast({
+      title: "Reminder Sent",
+      description: `Payment reminder sent to ${tenantName}.`,
+    });
+  };
+
+  const handleContactGuest = (tenantName: string) => {
+    toast({
+      title: "Contact Guest",
+      description: `Opening contact form for ${tenantName}.`,
+    });
+  };
+
+  const handleEditGuest = (tenantName: string) => {
+    toast({
+      title: "Edit Guest",
+      description: `Editing information for ${tenantName}.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-yellow-50">
       {/* Header */}
@@ -106,7 +176,7 @@ export default function Property949() {
                   <DialogHeader>
                     <DialogTitle>Add New Suite</DialogTitle>
                   </DialogHeader>
-                  <form className="space-y-4">
+                  <form onSubmit={handleAddSuite} className="space-y-4">
                     <div>
                       <Label htmlFor="suiteNumber">Suite Number</Label>
                       <Input id="suiteNumber" name="suiteNumber" required />
