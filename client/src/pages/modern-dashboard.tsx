@@ -391,7 +391,6 @@ export default function ModernDashboard() {
       "949": "949", 
       "rent-tracker": "payment-tracker",
       "maintenance": "maintenance",
-      "announcements": "announcements",
       "contacts": "contacts",
       "inventory": "inventory",
       "todos": "todos",
