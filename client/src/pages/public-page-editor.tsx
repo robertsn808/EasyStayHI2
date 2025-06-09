@@ -190,8 +190,8 @@ export default function PublicPageEditor() {
     });
   };
 
-  const activeAnnouncements = announcements.filter((a: any) => a.isActive);
-  const inactiveAnnouncements = announcements.filter((a: any) => !a.isActive);
+  const activeAnnouncements = Array.isArray(announcements) ? announcements.filter((a: any) => a.isActive) : [];
+  const inactiveAnnouncements = Array.isArray(announcements) ? announcements.filter((a: any) => !a.isActive) : [];
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -289,7 +289,7 @@ export default function PublicPageEditor() {
               </div>
             </CardHeader>
             <CardContent>
-              {announcements.length === 0 ? (
+              {!Array.isArray(announcements) || announcements.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   No announcements created. Create your first announcement above.
                 </div>
@@ -428,7 +428,7 @@ export default function PublicPageEditor() {
                   Contact Directory
                 </CardTitle>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary">{contacts.length} contacts</Badge>
+                  <Badge variant="secondary">{Array.isArray(contacts) ? contacts.length : 0} contacts</Badge>
                   <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
                     <DialogTrigger asChild>
                       <Button>
@@ -482,13 +482,13 @@ export default function PublicPageEditor() {
               </div>
             </CardHeader>
             <CardContent>
-              {contacts.length === 0 ? (
+              {!Array.isArray(contacts) || contacts.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   No contacts available. Add your first contact above.
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {contacts.map((contact: any) => (
+                  {Array.isArray(contacts) && contacts.map((contact: any) => (
                     <Card key={contact.id}>
                       <CardHeader>
                         <div className="flex justify-between items-start">

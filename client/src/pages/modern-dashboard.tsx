@@ -558,6 +558,13 @@ export default function ModernDashboard() {
             </button>
 
             <button
+              onClick={() => window.location.href = '/public-editor'}
+              className="pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            >
+              Public Editor
+            </button>
+
+            <button
               onClick={() => setActiveTab("announcements")}
               className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "announcements"
