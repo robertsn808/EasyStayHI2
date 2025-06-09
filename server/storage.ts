@@ -608,8 +608,8 @@ export class DatabaseStorage implements IStorage {
         and(
           eq(guestProfiles.isActive, true),
           eq(guestProfiles.hasMovedOut, false),
-          gt(guestProfiles.nextPaymentDue, startOfWeek.toISOString().split('T')[0]),
-          gt(endOfWeek.toISOString().split('T')[0], guestProfiles.nextPaymentDue)
+          gte(guestProfiles.nextPaymentDue, startOfWeek.toISOString().split('T')[0]),
+          lte(guestProfiles.nextPaymentDue, endOfWeek.toISOString().split('T')[0])
         )
       )
       .orderBy(asc(guestProfiles.nextPaymentDue));
@@ -621,18 +621,9 @@ export class DatabaseStorage implements IStorage {
     const month = String(today.getMonth() + 1).padStart(2, '0');
     
     // Get count of invoices this month
-    const startOfMonth = `${year}-${month}-01`;
-    const endOfMonth = `${year}-${month}-31`;
-    
     const count = await db
       .select()
-      .from(schema.invoices)
-      .where(
-        and(
-          gt(schema.invoices.createdAt, new Date(startOfMonth)),
-          gt(new Date(endOfMonth), schema.invoices.createdAt)
-        )
-      );
+      .from(schema.invoices);
 
     const invoiceNumber = `INV-${year}${month}-${String(count.length + 1).padStart(4, '0')}`;
     return invoiceNumber;

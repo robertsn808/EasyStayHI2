@@ -1230,6 +1230,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/guests/:id/payment", simpleAdminAuth, async (req, res) => {
+    try {
+      const guestId = parseInt(req.params.id);
+      const { paymentMethod } = req.body;
+      
+      if (!paymentMethod) {
+        return res.status(400).json({ message: "Payment method is required" });
+      }
+      
+      // Mark payment as received with payment method
+      const guest = await storage.markPaymentReceived(guestId, paymentMethod);
+      
+      // Generate invoice
+      const invoiceNumber = await storage.generateInvoiceNumber();
+      const invoice = await storage.createInvoice({
+        guestId,
+        roomId: guest.roomId,
+        invoiceNumber,
+        amount: guest.paymentAmount,
+        paymentMethod,
+        dueDate: guest.nextPaymentDue,
+        paidDate: new Date().toISOString().split('T')[0],
+        status: 'paid'
+      });
+      
+      res.json({ guest, invoice });
+    } catch (error) {
+      console.error("Payment processing error:", error);
+      res.status(500).json({ message: "Failed to process payment", error: error.message });
+    }
+  });
+
+  app.patch("/api/admin/guests/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const guestId = parseInt(req.params.id);
+      const updateData = req.body;
+      
+      if (updateData.hasMovedOut) {
+        const guest = await storage.markGuestMovedOut(guestId);
+        res.json(guest);
+      } else {
+        const guest = await storage.updateGuestProfile(guestId, updateData);
+        res.json(guest);
+      }
+    } catch (error) {
+      console.error("Update guest error:", error);
+      res.status(500).json({ message: "Failed to update guest", error: error.message });
+    }
+  });
+
   // Automated Check-in System
   app.post("/api/admin/guests/:id/checkin", simpleAdminAuth, async (req, res) => {
     try {
