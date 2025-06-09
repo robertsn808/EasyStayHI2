@@ -186,7 +186,7 @@ export async function getBiometricStatus(): Promise<{
   }>;
 }> {
   try {
-    const response = await apiRequest("GET", "/api/auth/biometric/status", {});
+    const response = await apiRequest("GET", "/api/auth/biometric/status");
     return await response.json();
   } catch (error) {
     console.error("Failed to get biometric status:", error);

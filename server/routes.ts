@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { randomBytes } from "crypto";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, validateAdminCredentials } from "./replitAuth";
 import { 
@@ -58,7 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/auth/biometric/register-challenge', simpleAdminAuth, async (req, res) => {
     try {
       // Generate a challenge for biometric registration
-      const challenge = crypto.randomUUID();
+      const challenge = randomBytes(32).toString('base64url');
       const userHandle = 'admin'; // Fixed for admin user
       
       const registrationOptions = {
@@ -118,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Get all registered credentials for challenge
       const credentials = await storage.getAllBiometricCredentials();
-      const challenge = crypto.randomUUID();
+      const challenge = randomBytes(32).toString('base64url');
       
       const authenticationOptions = {
         challenge: new TextEncoder().encode(challenge),
