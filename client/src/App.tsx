@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import Property949 from "@/pages/property-949";
 import Property934 from "@/pages/property-934";
+import Building934 from "@/pages/building-934";
+import Building949 from "@/pages/building-949";
 import AdminDashboard from "@/pages/admin-dashboard";
 import ModernDashboard from "@/pages/modern-dashboard";
 import TenantPortal from "@/pages/tenant-portal";
@@ -32,6 +34,8 @@ function Router() {
       <Route path="/public" component={Landing} />
       <Route path="/property-949" component={Property949} />
       <Route path="/property-934" component={Property934} />
+      <Route path="/building-934" component={Building934} />
+      <Route path="/building-949" component={Building949} />
       <Route path="/949" component={Property949} />
       <Route path="/admin-dashboard" component={ModernDashboard} />
       <Route path="/admin" component={ModernDashboard} />

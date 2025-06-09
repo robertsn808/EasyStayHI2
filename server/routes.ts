@@ -1223,7 +1223,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/guests/:id/payment-received", simpleAdminAuth, async (req, res) => {
     try {
       const guestId = parseInt(req.params.id);
-      const updatedGuest = await storage.markPaymentReceived(guestId);
+      const updatedGuest = await storage.markPaymentReceived(guestId, "cash");
       res.json(updatedGuest);
     } catch (error) {
       res.status(400).json({ message: "Failed to mark payment received" });
