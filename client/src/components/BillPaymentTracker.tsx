@@ -108,6 +108,24 @@ function MoveOutConfirmDialog({ isOpen, onClose, onConfirm, guestName, roomNumbe
 }
 
 export function BillPaymentTracker({ guests = [], rooms = [], buildings = [] }: BillPaymentTrackerProps) {
+  // Fetch latest guest data
+  const { data: fetchedGuests = [], isLoading: guestsLoading } = useQuery({
+    queryKey: ["/api/admin/guests"],
+    enabled: localStorage.getItem('admin-authenticated') === 'true',
+  });
+
+  const { data: fetchedRooms = [] } = useQuery({
+    queryKey: ["/api/rooms"],
+  });
+
+  const { data: fetchedBuildings = [] } = useQuery({
+    queryKey: ["/api/buildings"],
+  });
+
+  // Use fetched data if available, otherwise fall back to props
+  const activeGuests = (fetchedGuests as any[])?.length > 0 ? fetchedGuests as any[] : guests;
+  const activeRooms = (fetchedRooms as any[])?.length > 0 ? fetchedRooms as any[] : rooms;
+  const activeBuildings = (fetchedBuildings as any[])?.length > 0 ? fetchedBuildings as any[] : buildings;
   const [selectedBuilding, setSelectedBuilding] = useState<"934" | "949">("934");
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentDialog, setPaymentDialog] = useState<{
@@ -155,16 +173,16 @@ export function BillPaymentTracker({ guests = [], rooms = [], buildings = [] }: 
   };
 
   // Get building-specific data
-  const building934 = buildings.find(b => b.name === "934 Kapahulu Ave") || { id: 10 };
-  const building949 = buildings.find(b => b.name === "949 Kawaiahao St") || { id: 11 };
+  const building934 = activeBuildings.find(b => b.name === "934 Kapahulu Ave") || { id: 10 };
+  const building949 = activeBuildings.find(b => b.name === "949 Kawaiahao St") || { id: 11 };
 
-  const building934Rooms = rooms.filter(room => room.buildingId === building934.id);
-  const building949Rooms = rooms.filter(room => room.buildingId === building949.id);
+  const building934Rooms = activeRooms.filter(room => room.buildingId === building934.id);
+  const building949Rooms = activeRooms.filter(room => room.buildingId === building949.id);
   
-  const building934Guests = guests.filter(guest => 
+  const building934Guests = activeGuests.filter(guest => 
     building934Rooms.some(room => room.id === guest.roomId)
   );
-  const building949Guests = guests.filter(guest => 
+  const building949Guests = activeGuests.filter(guest => 
     building949Rooms.some(room => room.id === guest.roomId)
   );
 
@@ -231,6 +249,7 @@ export function BillPaymentTracker({ guests = [], rooms = [], buildings = [] }: 
   };
 
   const handlePaymentReceived = (guestId: number, guestName: string, amount: string) => {
+    console.log('Payment received clicked:', { guestId, guestName, amount });
     setPaymentDialog({
       isOpen: true,
       guestId,
