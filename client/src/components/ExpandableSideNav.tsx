@@ -270,6 +270,15 @@ export default function ExpandableSideNav({
           urgent: false
         },
         {
+          id: "receipt-editor",
+          label: "Receipt Editor",
+          icon: FileText,
+          badge: null,
+          color: "emerald",
+          description: "Advanced receipt editing and management",
+          urgent: false
+        },
+        {
           id: "expenses",
           label: "Expenses",
           icon: DollarSign,

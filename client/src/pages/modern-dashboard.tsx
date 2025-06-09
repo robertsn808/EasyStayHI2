@@ -29,6 +29,7 @@ type TabType =
   | "inventory"
   | "todos"
   | "receipts"
+  | "receipt-editor"
   | "expenses"
   | "payment-history"
   | "financial-reports"
@@ -105,6 +106,7 @@ export default function ModernDashboard() {
       "inventory": "inventory",
       "todos": "todos",
       "receipts": "receipts",
+      "receipt-editor": "receipt-editor",
       "expenses": "expenses",
       "payment-history": "payment-history",
       "financial-reports": "financial-reports",
