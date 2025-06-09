@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { User, Edit, Home } from "lucide-react";
@@ -350,192 +351,206 @@ export function BuildingTab({ buildingName, buildingId, rooms = [], guests = [],
 
       {/* Room Management Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[85vh]">
           <DialogHeader>
             <DialogTitle>
               Manage Room {selectedRoom?.number} - {buildingName}
             </DialogTitle>
+            <DialogDescription>
+              Update room status and tenant information
+            </DialogDescription>
           </DialogHeader>
           
           {selectedRoom && (
-            <div className="space-y-6">
-              {/* Current Status */}
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-medium mb-2">Current Status</h3>
-                <div className="flex items-center gap-4">
-                  <Badge variant={selectedRoom.status === 'available' ? 'default' : 'secondary'}>
-                    {selectedRoom.status}
-                  </Badge>
-                  {selectedRoom.tenantName && (
-                    <span className="text-sm text-gray-600">
-                      Tenant: {selectedRoom.tenantName}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Update Room Status */}
-              <form onSubmit={handleRoomUpdate} className="space-y-4">
-                <h3 className="font-medium">Update Room Status</h3>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="status">Room Status</Label>
-                    <Select name="status" defaultValue={selectedRoom.status}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="available">Available</SelectItem>
-                        <SelectItem value="occupied">Occupied</SelectItem>
-                        <SelectItem value="maintenance">Maintenance</SelectItem>
-                        <SelectItem value="cleaning">Cleaning</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="accessPin">Access PIN (optional)</Label>
-                    <Input
-                      id="accessPin"
-                      name="accessPin"
-                      placeholder="4-digit PIN"
-                      maxLength={4}
-                      defaultValue={selectedRoom.accessPin || ''}
-                    />
+            <ScrollArea className="max-h-[60vh] pr-4">
+              <div className="space-y-4">
+                {/* Current Status */}
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <h3 className="font-medium mb-2 text-sm">Current Status</h3>
+                  <div className="flex items-center gap-4">
+                    <Badge variant={selectedRoom.status === 'available' ? 'default' : 'secondary'} className="text-xs">
+                      {selectedRoom.status}
+                    </Badge>
+                    {selectedRoom.tenantName && (
+                      <span className="text-xs text-gray-600">
+                        Tenant: {selectedRoom.tenantName}
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="tenantName">Tenant Name (optional)</Label>
-                    <Input
-                      id="tenantName"
-                      name="tenantName"
-                      placeholder="Enter tenant name"
-                      defaultValue={selectedRoom.tenantName || ''}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="tenantPhone">Tenant Phone (optional)</Label>
-                    <Input
-                      id="tenantPhone"
-                      name="tenantPhone"
-                      placeholder="Enter phone number"
-                      defaultValue={selectedRoom.tenantPhone || ''}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="notes">Notes (required for maintenance)</Label>
-                  <textarea
-                    id="notes"
-                    name="notes"
-                    className="w-full p-2 border border-gray-300 rounded-md resize-none"
-                    rows={3}
-                    placeholder="Add notes for maintenance status or general comments..."
-                  />
-                </div>
-
-                <Button type="submit" disabled={updateRoomMutation.isPending}>
-                  Update Room
-                </Button>
-              </form>
-
-              {/* Assign New Guest */}
-              {selectedRoom.status === 'available' && (
-                <form onSubmit={handleGuestAssign} className="space-y-4 border-t pt-4">
-                  <h3 className="font-medium">Assign New Guest</h3>
+                {/* Update Room Status */}
+                <form onSubmit={handleRoomUpdate} className="space-y-3">
+                  <h3 className="font-medium text-sm">Update Room Status</h3>
                   
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label htmlFor="guestName">Guest Name *</Label>
-                      <Input
-                        id="guestName"
-                        name="guestName"
-                        placeholder="Enter guest name"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="email">Email (optional)</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="phone">Phone (optional)</Label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        placeholder="Enter phone number"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="bookingType">Booking Type *</Label>
-                      <Select name="bookingType" required>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
+                      <Label htmlFor="status" className="text-xs">Room Status</Label>
+                      <Select name="status" defaultValue={selectedRoom.status}>
+                        <SelectTrigger className="h-8">
+                          <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="daily">Daily</SelectItem>
-                          <SelectItem value="weekly">Weekly</SelectItem>
-                          <SelectItem value="monthly">Monthly</SelectItem>
+                          <SelectItem value="available">Available</SelectItem>
+                          <SelectItem value="occupied">Occupied</SelectItem>
+                          <SelectItem value="maintenance">Maintenance</SelectItem>
+                          <SelectItem value="cleaning">Cleaning</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
+
+                    <div>
+                      <Label htmlFor="accessPin" className="text-xs">Access PIN</Label>
+                      <Input
+                        id="accessPin"
+                        name="accessPin"
+                        placeholder="1122"
+                        maxLength={4}
+                        defaultValue={selectedRoom.accessPin || ''}
+                        className="h-8"
+                      />
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label htmlFor="checkInDate">Check-in Date *</Label>
+                      <Label htmlFor="tenantName" className="text-xs">Tenant Name</Label>
                       <Input
-                        id="checkInDate"
-                        name="checkInDate"
-                        type="date"
-                        required
+                        id="tenantName"
+                        name="tenantName"
+                        placeholder="Enter tenant name"
+                        defaultValue={selectedRoom.tenantName || ''}
+                        className="h-8"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="checkOutDate">Check-out Date (optional)</Label>
+                      <Label htmlFor="tenantPhone" className="text-xs">Tenant Phone</Label>
                       <Input
-                        id="checkOutDate"
-                        name="checkOutDate"
-                        type="date"
+                        id="tenantPhone"
+                        name="tenantPhone"
+                        placeholder="Enter phone number"
+                        defaultValue={selectedRoom.tenantPhone || ''}
+                        className="h-8"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="paymentAmount">Payment Amount *</Label>
-                    <Input
-                      id="paymentAmount"
-                      name="paymentAmount"
-                      type="number"
-                      step="0.01"
-                      placeholder="Enter amount"
-                      required
+                    <Label htmlFor="notes" className="text-xs">Notes (required for maintenance)</Label>
+                    <textarea
+                      id="notes"
+                      name="notes"
+                      className="w-full p-2 border border-gray-300 rounded-md resize-none text-sm"
+                      rows={2}
+                      placeholder="Add notes for maintenance status or general comments..."
                     />
                   </div>
 
-                  <Button type="submit" disabled={createGuestMutation.isPending} className="w-full">
-                    <User className="w-4 h-4 mr-2" />
-                    Assign Guest
+                  <Button type="submit" disabled={updateRoomMutation.isPending} className="h-8 text-sm">
+                    Update Room
                   </Button>
                 </form>
-              )}
-            </div>
+
+                {/* Assign New Guest */}
+                {selectedRoom.status === 'available' && (
+                  <form onSubmit={handleGuestAssign} className="space-y-3 border-t pt-3">
+                    <h3 className="font-medium text-sm">Assign New Guest</h3>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor="guestName" className="text-xs">Guest Name *</Label>
+                        <Input
+                          id="guestName"
+                          name="guestName"
+                          placeholder="Enter guest name"
+                          required
+                          className="h-8"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="email" className="text-xs">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="Enter email"
+                          className="h-8"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor="phone" className="text-xs">Phone</Label>
+                        <Input
+                          id="phone"
+                          name="phone"
+                          placeholder="Enter phone number"
+                          className="h-8"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="bookingType" className="text-xs">Booking Type *</Label>
+                        <Select name="bookingType" required>
+                          <SelectTrigger className="h-8">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="daily">Daily</SelectItem>
+                            <SelectItem value="weekly">Weekly</SelectItem>
+                            <SelectItem value="monthly">Monthly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor="checkInDate" className="text-xs">Check-in Date *</Label>
+                        <Input
+                          id="checkInDate"
+                          name="checkInDate"
+                          type="date"
+                          required
+                          className="h-8"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="checkOutDate" className="text-xs">Check-out Date</Label>
+                        <Input
+                          id="checkOutDate"
+                          name="checkOutDate"
+                          type="date"
+                          className="h-8"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="paymentAmount" className="text-xs">Payment Amount *</Label>
+                      <Input
+                        id="paymentAmount"
+                        name="paymentAmount"
+                        type="number"
+                        step="0.01"
+                        placeholder="Enter amount"
+                        required
+                        className="h-8"
+                      />
+                    </div>
+
+                    <Button type="submit" disabled={createGuestMutation.isPending} className="w-full h-8 text-sm">
+                      <User className="w-3 h-3 mr-1" />
+                      Assign Guest
+                    </Button>
+                  </form>
+                )}
+              </div>
+            </ScrollArea>
           )}
         </DialogContent>
       </Dialog>
