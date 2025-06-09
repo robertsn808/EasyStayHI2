@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, DollarSign, Receipt } from "lucide-react";
+import { Plus, DollarSign, Receipt, FileText, Download } from "lucide-react";
 
 interface PaymentsTabProps {
   payments?: any[];
@@ -21,6 +21,19 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
   const [activeSubTab, setActiveSubTab] = useState("payments");
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [showAddExpense, setShowAddExpense] = useState(false);
+  const [showAddReceipt, setShowAddReceipt] = useState(false);
+
+  // Fetch receipts data
+  const { data: receipts = [] } = useQuery({
+    queryKey: ["/api/admin/receipts"],
+    enabled: localStorage.getItem('admin-authenticated') === 'true',
+  });
+
+  // Fetch expenses data
+  const { data: expensesData = [] } = useQuery({
+    queryKey: ["/api/admin/expenses"],
+    enabled: localStorage.getItem('admin-authenticated') === 'true',
+  });
 
   const addPaymentMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -63,6 +76,40 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
       });
     },
   });
+
+  const addReceiptMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("POST", "/api/admin/receipts", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Receipt Generated",
+        description: "Receipt has been created successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/receipts"] });
+      setShowAddReceipt(false);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to generate receipt.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const generateReceiptForPayment = (payment: any) => {
+    const receiptData = {
+      title: `Payment Receipt - Room ${payment.roomId}`,
+      description: `Payment received for room ${payment.roomId}`,
+      amount: payment.amount,
+      category: "payment",
+      paymentId: payment.id,
+      roomId: payment.roomId,
+      date: new Date().toISOString().split('T')[0]
+    };
+    addReceiptMutation.mutate(receiptData);
+  };
 
   const updatePaymentStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
@@ -118,11 +165,7 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
     addExpenseMutation.mutate(expenseData);
   };
 
-  // Mock expenses data for demonstration
-  const expenses = [
-    { id: 1, category: "Maintenance", amount: 150, vendor: "ABC Repairs", property: "934", description: "Plumbing repair" },
-    { id: 2, category: "Utilities", amount: 320, vendor: "Electric Company", property: "949", description: "Monthly electric bill" },
-  ];
+
 
   return (
     <div className="space-y-4">
