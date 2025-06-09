@@ -47,11 +47,19 @@ export async function registerBiometric(): Promise<{ success: boolean; message: 
 
     const { challenge, options } = challengeData;
 
+    // Get current origin for proper RP ID validation
+    const currentOrigin = window.location.origin;
+    const rpId = new URL(currentOrigin).hostname;
+
     // Prepare credential creation options
     const credentialCreationOptions: CredentialCreationOptions = {
       publicKey: {
         ...options,
         challenge: new TextEncoder().encode(challenge),
+        rp: {
+          ...options.rp,
+          id: rpId
+        },
         user: {
           ...options.user,
           id: new TextEncoder().encode(options.user.name)

@@ -3,6 +3,28 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+
+// Azure deployment configuration
+const isProduction = process.env.NODE_ENV === 'production';
+const deploymentPort = process.env.PORT || 5000;
+
+// Trust proxy for Azure App Service
+if (isProduction) {
+  app.set('trust proxy', 1);
+}
+
+// Security headers for production
+if (isProduction) {
+  app.use((req, res, next) => {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+  });
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -56,14 +78,12 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
+  // Use deployment port for Azure, fallback to 5000 for local development
+  const port = isProduction ? deploymentPort : 5000;
   server.listen({
     port,
     host: "0.0.0.0",
-    reusePort: true,
+    reusePort: !isProduction, // Disable reusePort in production
   }, () => {
     log(`serving on port ${port}`);
   });

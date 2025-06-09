@@ -62,11 +62,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const challenge = randomBytes(32).toString('base64url');
       const userHandle = 'admin'; // Fixed for admin user
       
+      // Get the proper domain for Azure deployment
+      const host = req.get('host') || 'localhost';
+      const rpId = process.env.NODE_ENV === 'production' 
+        ? host.split(':')[0] 
+        : 'localhost';
+
       const registrationOptions = {
         challenge: new TextEncoder().encode(challenge),
         rp: {
           name: "EasyStay HI Admin",
-          id: req.get('host')?.split(':')[0] || 'localhost'
+          id: rpId
         },
         user: {
           id: new TextEncoder().encode(userHandle),
