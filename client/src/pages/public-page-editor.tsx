@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,13 +28,28 @@ export default function PublicPageEditor() {
     phone: "(808) 219-6562",
     address: "Honolulu, Hawaii",
     email: "contact@easystayhi.com",
-    cashapp: "$EasyStayHI"
+    cashapp: "$EasyStayHI",
+    businessName: "EasyStay HI",
+    tagline: "Your Home Away From Home",
+    showAvailability: true,
+    showPricing: true
   });
 
   // Fetch data
   const { data: announcements = [] } = useQuery({
     queryKey: ["/api/admin/announcements"],
   });
+
+  const { data: contactSettings } = useQuery({
+    queryKey: ["/api/public-contact-settings"],
+  });
+
+  // Update local state when settings are loaded
+  React.useEffect(() => {
+    if (contactSettings && typeof contactSettings === 'object') {
+      setPublicContactInfo(prevInfo => ({ ...prevInfo, ...contactSettings }));
+    }
+  }, [contactSettings]);
 
   // Mutations for announcements
   const createAnnouncementMutation = useMutation({
@@ -78,6 +93,20 @@ export default function PublicPageEditor() {
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to delete announcement", variant: "destructive" });
+    }
+  });
+
+  // Public contact settings mutation
+  const saveContactSettingsMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest('POST', '/api/admin/public-contact-settings', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/public-contact-settings'] });
+      toast({ title: "Success", description: "Public contact information saved successfully" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to save contact information", variant: "destructive" });
     }
   });
 

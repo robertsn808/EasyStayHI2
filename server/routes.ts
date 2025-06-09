@@ -1597,6 +1597,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public Contact Settings API
+  app.get("/api/public-contact-settings", async (req, res) => {
+    try {
+      const settings = await storage.getPublicContactSettings();
+      if (!settings) {
+        // Return default values if no settings exist
+        res.json({
+          phone: "(808) 219-6562",
+          address: "Honolulu, Hawaii",
+          email: "contact@easystayhi.com",
+          cashapp: "$EasyStayHI",
+          businessName: "EasyStay HI",
+          tagline: "Your Home Away From Home",
+          showAvailability: true,
+          showPricing: true
+        });
+      } else {
+        res.json(settings);
+      }
+    } catch (error) {
+      console.error("Public contact settings fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch public contact settings" });
+    }
+  });
+
+  app.post("/api/admin/public-contact-settings", simpleAdminAuth, async (req, res) => {
+    try {
+      const settings = await storage.updatePublicContactSettings(req.body);
+      res.json(settings);
+    } catch (error) {
+      console.error("Public contact settings update error:", error);
+      res.status(400).json({ message: "Failed to update public contact settings" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
