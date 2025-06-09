@@ -103,6 +103,7 @@ export default function ModernDashboard() {
       "inventory": "inventory",
       "todos": "todos",
       "receipts": "receipts",
+      "payment-history": "payment-history",
       "public-page-editor": "public-page-editor",
       "admin-dashboard": "admin-dashboard"
     };
