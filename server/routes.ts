@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
+import { type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, validateAdminCredentials } from "./replitAuth";
 import { 
@@ -20,9 +20,22 @@ import {
 } from "@shared/schema";
 import { generateTenantQRCode, generateTenantToken, verifyTenantToken } from "./qrGenerator";
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express, httpServer?: any): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
+
+  // WebSocket broadcast helper
+  const broadcast = (type: string, data: any) => {
+    const clients = app.get('wsClients');
+    if (clients) {
+      const message = JSON.stringify({ type, payload: data });
+      clients.forEach((client: any) => {
+        if (client.readyState === 1) {
+          client.send(message);
+        }
+      });
+    }
+  };
 
   // Simple admin auth middleware for demo
   const simpleAdminAuth = (req: any, res: any, next: any) => {
@@ -1819,6 +1832,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
   return httpServer;
 }

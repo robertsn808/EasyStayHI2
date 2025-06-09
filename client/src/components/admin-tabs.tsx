@@ -94,6 +94,34 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
     enabled: isAdminAuthenticated,
   });
 
+  const { data: notifications = [] } = useQuery({
+    queryKey: ["/api/admin/notifications"],
+    enabled: isAdminAuthenticated,
+  });
+
+  const { data: expenses = [] } = useQuery({
+    queryKey: ["/api/admin/expenses"],
+    enabled: isAdminAuthenticated,
+  });
+
+  // Create shared data context for cross-tab communication
+  const sharedData = {
+    inquiries,
+    maintenanceRequests,
+    payments,
+    announcements,
+    calendarEvents,
+    contacts,
+    inventory,
+    receipts,
+    todos,
+    buildings,
+    rooms,
+    guests,
+    notifications,
+    expenses,
+  };
+
   const handleTabChange = (tab: string) => {
     setSelectedTab(tab);
     if (setActiveTab) {
@@ -160,38 +188,86 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
         )}
 
         {selectedTab === "payment-tracker" && (
-          <PaymentTrackerTab />
+          <PaymentTrackerTab 
+            sharedData={sharedData}
+            onDataUpdate={() => {
+              // Trigger data refresh across all tabs
+              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
+            }}
+          />
         )}
 
         {selectedTab === "maintenance" && (
-          <MaintenanceTab requests={Array.isArray(maintenanceRequests) ? maintenanceRequests : []} />
+          <MaintenanceTab 
+            requests={Array.isArray(maintenanceRequests) ? maintenanceRequests : []} 
+            sharedData={sharedData}
+            onDataUpdate={() => {
+              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
+            }}
+          />
         )}
         
         {selectedTab === "inquiries" && (
-          <InquiriesTab inquiries={Array.isArray(inquiries) ? inquiries : []} />
+          <InquiriesTab 
+            inquiries={Array.isArray(inquiries) ? inquiries : []} 
+            sharedData={sharedData}
+            onDataUpdate={() => {
+              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
+            }}
+          />
         )}
         
         {selectedTab === "payments" && (
-          <PaymentsTab payments={Array.isArray(payments) ? payments : []} />
+          <PaymentsTab 
+            payments={Array.isArray(payments) ? payments : []} 
+            sharedData={sharedData}
+            onDataUpdate={() => {
+              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
+            }}
+          />
         )}
 
         {selectedTab === "expenses" && (
-          <ExpensesTab receipts={Array.isArray(receipts) ? receipts : []} />
+          <ExpensesTab 
+            receipts={Array.isArray(receipts) ? receipts : []} 
+            expenses={Array.isArray(expenses) ? expenses : []}
+            sharedData={sharedData}
+            onDataUpdate={() => {
+              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
+            }}
+          />
         )}
 
         {selectedTab === "payment-history" && (
-          <PaymentHistoryTab payments={Array.isArray(payments) ? payments : []} />
+          <PaymentHistoryTab 
+            payments={Array.isArray(payments) ? payments : []} 
+            sharedData={sharedData}
+            onDataUpdate={() => {
+              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
+            }}
+          />
         )}
 
         {selectedTab === "receipt-editor" && (
-          <ReceiptEditorTab receipts={Array.isArray(receipts) ? receipts : []} />
+          <ReceiptEditorTab 
+            receipts={Array.isArray(receipts) ? receipts : []} 
+            sharedData={sharedData}
+            onDataUpdate={() => {
+              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
+            }}
+          />
         )}
 
         {selectedTab === "financial-reports" && (
           <FinancialReportsTab 
             payments={Array.isArray(payments) ? payments : []}
             receipts={Array.isArray(receipts) ? receipts : []}
+            expenses={Array.isArray(expenses) ? expenses : []}
             buildings={Array.isArray(buildings) ? buildings : []}
+            sharedData={sharedData}
+            onDataUpdate={() => {
+              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
+            }}
           />
         )}
         
