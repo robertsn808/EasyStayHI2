@@ -25,6 +25,8 @@ export function PaymentsTab({ payments = [], showHistoryView = false }: Payments
   const [showAddReceipt, setShowAddReceipt] = useState(false);
   const [editingExpense, setEditingExpense] = useState<any>(null);
   const [showEditExpense, setShowEditExpense] = useState(false);
+  const [editingPayment, setEditingPayment] = useState<any>(null);
+  const [showEditPayment, setShowEditPayment] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
 
