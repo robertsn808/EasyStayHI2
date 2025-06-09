@@ -135,6 +135,9 @@ export const guestProfiles = pgTable("guest_profiles", {
   nextPaymentDue: date("next_payment_due").notNull(),
   paymentStatus: varchar("payment_status", { length: 20 }).default("pending"), // pending, paid, overdue
   isActive: boolean("is_active").default(true),
+  hasMovedOut: boolean("has_moved_out").default(false),
+  moveOutDate: date("move_out_date"),
+  lastPaymentMethod: varchar("last_payment_method", { length: 50 }), // cashapp, venmo, cash, card
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -289,6 +292,22 @@ export const maintenancePredictions = pgTable("maintenance_predictions", {
   status: varchar("status", { length: 20 }).default("pending"), // pending, scheduled, completed, ignored
   lastInspectionDate: date("last_inspection_date"),
   usageHours: integer("usage_hours").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const invoices = pgTable("invoices", {
+  id: serial("id").primaryKey(),
+  guestId: integer("guest_id").references(() => guestProfiles.id).notNull(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  invoiceNumber: varchar("invoice_number", { length: 50 }).notNull().unique(),
+  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+  paymentMethod: varchar("payment_method", { length: 50 }).notNull(), // cashapp, venmo, cash, card
+  dueDate: date("due_date").notNull(),
+  paidDate: date("paid_date"),
+  status: varchar("status", { length: 20 }).default("sent"), // sent, viewed, paid
+  invoiceUrl: varchar("invoice_url", { length: 500 }),
+  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
