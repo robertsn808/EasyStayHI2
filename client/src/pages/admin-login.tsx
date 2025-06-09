@@ -68,7 +68,7 @@ export default function AdminLogin() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
+                placeholder="Username"
                 required
                 disabled={isLoading}
               />
@@ -81,7 +81,7 @@ export default function AdminLogin() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder="Password"
                 required
                 disabled={isLoading}
               />

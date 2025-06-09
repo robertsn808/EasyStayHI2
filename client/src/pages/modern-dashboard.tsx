@@ -207,6 +207,17 @@ export default function ModernDashboard() {
                   </Button>
                 </div>
 
+                {/* Logout Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 h-7 px-3"
+                >
+                  <LogOut className="h-3 w-3" />
+                  Logout
+                </Button>
+
                 {/* User Profile */}
                 <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
                   <User className="h-3 w-3 text-gray-600" />
