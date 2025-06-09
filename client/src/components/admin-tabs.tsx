@@ -188,86 +188,38 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
         )}
 
         {selectedTab === "payment-tracker" && (
-          <PaymentTrackerTab 
-            sharedData={sharedData}
-            onDataUpdate={() => {
-              // Trigger data refresh across all tabs
-              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
-            }}
-          />
+          <PaymentTrackerTab />
         )}
 
         {selectedTab === "maintenance" && (
-          <MaintenanceTab 
-            requests={Array.isArray(maintenanceRequests) ? maintenanceRequests : []} 
-            sharedData={sharedData}
-            onDataUpdate={() => {
-              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
-            }}
-          />
+          <MaintenanceTab requests={Array.isArray(maintenanceRequests) ? maintenanceRequests : []} />
         )}
         
         {selectedTab === "inquiries" && (
-          <InquiriesTab 
-            inquiries={Array.isArray(inquiries) ? inquiries : []} 
-            sharedData={sharedData}
-            onDataUpdate={() => {
-              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
-            }}
-          />
+          <InquiriesTab inquiries={Array.isArray(inquiries) ? inquiries : []} />
         )}
         
         {selectedTab === "payments" && (
-          <PaymentsTab 
-            payments={Array.isArray(payments) ? payments : []} 
-            sharedData={sharedData}
-            onDataUpdate={() => {
-              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
-            }}
-          />
+          <PaymentsTab payments={Array.isArray(payments) ? payments : []} />
         )}
 
         {selectedTab === "expenses" && (
-          <ExpensesTab 
-            receipts={Array.isArray(receipts) ? receipts : []} 
-            expenses={Array.isArray(expenses) ? expenses : []}
-            sharedData={sharedData}
-            onDataUpdate={() => {
-              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
-            }}
-          />
+          <ExpensesTab receipts={Array.isArray(receipts) ? receipts : []} />
         )}
 
         {selectedTab === "payment-history" && (
-          <PaymentHistoryTab 
-            payments={Array.isArray(payments) ? payments : []} 
-            sharedData={sharedData}
-            onDataUpdate={() => {
-              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
-            }}
-          />
+          <PaymentHistoryTab payments={Array.isArray(payments) ? payments : []} />
         )}
 
         {selectedTab === "receipt-editor" && (
-          <ReceiptEditorTab 
-            receipts={Array.isArray(receipts) ? receipts : []} 
-            sharedData={sharedData}
-            onDataUpdate={() => {
-              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
-            }}
-          />
+          <ReceiptEditorTab receipts={Array.isArray(receipts) ? receipts : []} />
         )}
 
         {selectedTab === "financial-reports" && (
           <FinancialReportsTab 
             payments={Array.isArray(payments) ? payments : []}
             receipts={Array.isArray(receipts) ? receipts : []}
-            expenses={Array.isArray(expenses) ? expenses : []}
             buildings={Array.isArray(buildings) ? buildings : []}
-            sharedData={sharedData}
-            onDataUpdate={() => {
-              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: sharedData }));
-            }}
           />
         )}
         
