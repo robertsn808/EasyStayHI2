@@ -56,8 +56,8 @@ export function FinancialReportsTab({ payments = [], receipts = [], buildings = 
       });
     };
 
-    const filteredPayments = filterByPeriod(paymentsData, 'payment_date');
-    const filteredExpenses = filterByPeriod(expenseData, 'receipt_date');
+    const filteredPayments = filterByPeriod(Array.isArray(paymentsData) ? paymentsData : [], 'payment_date');
+    const filteredExpenses = filterByPeriod(Array.isArray(expenseData) ? expenseData : [], 'receipt_date');
 
     // Calculate totals
     const totalRevenue = filteredPayments.reduce((sum, payment) => {
