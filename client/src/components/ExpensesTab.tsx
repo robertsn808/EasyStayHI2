@@ -174,7 +174,7 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
     ]);
 
     const csvContent = [headers, ...csvData]
-      .map(row => row.map(field => `"${field}"`).join(","))
+      .map(row => row.map((field: any) => `"${field}"`).join(","))
       .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -189,15 +189,15 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
   };
 
   // Pagination logic
-  const totalPages = Math.ceil(expensesData.length / itemsPerPage);
+  const totalPages = Math.ceil((expensesData as any[]).length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentExpenses = expensesData.slice(startIndex, endIndex);
+  const currentExpenses = (expensesData as any[]).slice(startIndex, endIndex);
 
   const getPaginationInfo = () => {
     const start = startIndex + 1;
-    const end = Math.min(endIndex, expensesData.length);
-    const total = expensesData.length;
+    const end = Math.min(endIndex, (expensesData as any[]).length);
+    const total = (expensesData as any[]).length;
     return `${start}-${end} of ${total}`;
   };
 
@@ -251,17 +251,11 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
                   Add Expense
                 </Button>
               </DialogTrigger>
-            </Dialog>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Dialog open={showAddExpense} onOpenChange={setShowAddExpense}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Expense</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleAddExpense} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Expense</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleAddExpense} className="space-y-4">
                   <div>
                     <Label htmlFor="title">Title</Label>
                     <Input id="title" name="title" required />
@@ -270,8 +264,6 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
                     <Label htmlFor="amount">Amount</Label>
                     <Input id="amount" name="amount" type="number" step="0.01" required />
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="category">Category</Label>
                     <Select name="category" required>
@@ -291,21 +283,21 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
                     <Label htmlFor="vendor">Vendor</Label>
                     <Input id="vendor" name="vendor" />
                   </div>
-                </div>
-                <div>
-                  <Label htmlFor="receipt_date">Date</Label>
-                  <Input id="receipt_date" name="receipt_date" type="date" required />
-                </div>
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Input id="description" name="description" />
-                </div>
-                <Button type="submit" disabled={addExpenseMutation.isPending}>
-                  {addExpenseMutation.isPending ? "Adding..." : "Add Expense"}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+                  <div>
+                    <Label htmlFor="receipt_date">Date</Label>
+                    <Input id="receipt_date" name="receipt_date" type="date" required />
+                  </div>
+                  <div>
+                    <Label htmlFor="description">Description</Label>
+                    <Input id="description" name="description" />
+                  </div>
+                  <Button type="submit" disabled={addExpenseMutation.isPending}>
+                    {addExpenseMutation.isPending ? "Adding..." : "Add Expense"}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -319,17 +311,15 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="font-medium">{expense.title}</h3>
-                          <Badge variant="outline" className="text-xs">
-                            {expense.category || "Uncategorized"}
-                          </Badge>
+                          <Badge variant="outline">{expense.category}</Badge>
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          <div>Amount: <span className="font-medium">${expense.amount}</span></div>
-                          {expense.vendor && <div>Vendor: {expense.vendor}</div>}
+                          <p>Amount: ${expense.amount}</p>
+                          {expense.vendor && <p>Vendor: {expense.vendor}</p>}
                           {expense.receipt_date && (
-                            <div>Date: {new Date(expense.receipt_date).toLocaleDateString()}</div>
+                            <p>Date: {new Date(expense.receipt_date).toLocaleDateString()}</p>
                           )}
-                          {expense.description && <div>Description: {expense.description}</div>}
+                          {expense.description && <p>Description: {expense.description}</p>}
                         </div>
                       </div>
                       <div className="flex gap-2">
@@ -340,41 +330,61 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteExpense(expense.id)}
-                          disabled={deleteExpenseMutation.isPending}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Expense</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this expense? This action cannot be undone.
+                                <br /><br />
+                                <strong>Expense:</strong> {expense.title}
+                                <br />
+                                <strong>Amount:</strong> ${expense.amount}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteExpense(expense.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                   ))}
                 </div>
-                
+
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between pt-4">
-                    <div className="text-sm text-muted-foreground">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
                       Showing {getPaginationInfo()} expenses
-                    </div>
+                    </p>
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
                       >
                         Previous
                       </Button>
-                      <span className="px-3 py-1 text-sm">
+                      <span className="flex items-center px-3 text-sm">
                         Page {currentPage} of {totalPages}
                       </span>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
                       >
                         Next
@@ -396,52 +406,48 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
           </DialogHeader>
           {editingExpense && (
             <form onSubmit={handleEditExpense} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-title">Title</Label>
-                  <Input 
-                    id="edit-title" 
-                    name="title" 
-                    defaultValue={editingExpense.title} 
-                    required 
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-amount">Amount</Label>
-                  <Input 
-                    id="edit-amount" 
-                    name="amount" 
-                    type="number" 
-                    step="0.01" 
-                    defaultValue={editingExpense.amount} 
-                    required 
-                  />
-                </div>
+              <div>
+                <Label htmlFor="edit-title">Title</Label>
+                <Input 
+                  id="edit-title" 
+                  name="title" 
+                  defaultValue={editingExpense.title} 
+                  required 
+                />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-category">Category</Label>
-                  <Select name="category" defaultValue={editingExpense.category}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categoryOptions.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="edit-vendor">Vendor</Label>
-                  <Input 
-                    id="edit-vendor" 
-                    name="vendor" 
-                    defaultValue={editingExpense.vendor || ""} 
-                  />
-                </div>
+              <div>
+                <Label htmlFor="edit-amount">Amount</Label>
+                <Input 
+                  id="edit-amount" 
+                  name="amount" 
+                  type="number" 
+                  step="0.01" 
+                  defaultValue={editingExpense.amount} 
+                  required 
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-category">Category</Label>
+                <Select name="category" defaultValue={editingExpense.category} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoryOptions.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="edit-vendor">Vendor</Label>
+                <Input 
+                  id="edit-vendor" 
+                  name="vendor" 
+                  defaultValue={editingExpense.vendor} 
+                />
               </div>
               <div>
                 <Label htmlFor="edit-receipt_date">Date</Label>
@@ -449,8 +455,7 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
                   id="edit-receipt_date" 
                   name="receipt_date" 
                   type="date" 
-                  defaultValue={editingExpense.receipt_date ? 
-                    new Date(editingExpense.receipt_date).toISOString().split('T')[0] : ""} 
+                  defaultValue={editingExpense.receipt_date ? editingExpense.receipt_date.split('T')[0] : ''} 
                   required 
                 />
               </div>
@@ -459,21 +464,12 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
                 <Input 
                   id="edit-description" 
                   name="description" 
-                  defaultValue={editingExpense.description || ""} 
+                  defaultValue={editingExpense.description} 
                 />
               </div>
-              <div className="flex gap-2">
-                <Button type="submit" disabled={updateExpenseMutation.isPending}>
-                  {updateExpenseMutation.isPending ? "Updating..." : "Update Expense"}
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setShowEditExpense(false)}
-                >
-                  Cancel
-                </Button>
-              </div>
+              <Button type="submit" disabled={updateExpenseMutation.isPending}>
+                {updateExpenseMutation.isPending ? "Updating..." : "Update Expense"}
+              </Button>
             </form>
           )}
         </DialogContent>

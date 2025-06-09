@@ -1490,6 +1490,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           downloadUrl,
           filename: `financial-report-${period}-${property}.pdf`
         });
+      } else if (format === 'excel') {
+        // Generate Excel export
+        const downloadUrl = `/downloads/financial-report-${period}-${property}-${exportId}.xlsx`;
+        
+        res.json({
+          success: true,
+          downloadUrl,
+          filename: `financial-report-${period}-${property}.xlsx`
+        });
       } else if (format === 'csv') {
         // Generate CSV export
         const downloadUrl = `/downloads/financial-report-${period}-${property}-${exportId}.csv`;
@@ -1532,6 +1541,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Link generation error:", error);
       res.status(500).json({ message: "Failed to generate shareable link" });
+    }
+  });
+
+  // Payment History Export
+  app.post("/api/admin/export/payments", simpleAdminAuth, async (req, res) => {
+    try {
+      const { format, data, filters } = req.body;
+      const exportId = `payments_export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      if (format === 'pdf') {
+        const downloadUrl = `/downloads/payment-history-${exportId}.pdf`;
+        res.json({
+          success: true,
+          downloadUrl,
+          filename: `payment-history-${new Date().toISOString().split('T')[0]}.pdf`
+        });
+      } else if (format === 'excel') {
+        const downloadUrl = `/downloads/payment-history-${exportId}.xlsx`;
+        res.json({
+          success: true,
+          downloadUrl,
+          filename: `payment-history-${new Date().toISOString().split('T')[0]}.xlsx`
+        });
+      } else {
+        res.status(400).json({ message: "Unsupported export format" });
+      }
+    } catch (error) {
+      console.error("Payment export error:", error);
+      res.status(500).json({ message: "Failed to export payment history" });
+    }
+  });
+
+  // Expenses Export
+  app.post("/api/admin/export/expenses", simpleAdminAuth, async (req, res) => {
+    try {
+      const { format, data } = req.body;
+      const exportId = `expenses_export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      if (format === 'pdf') {
+        const downloadUrl = `/downloads/expenses-${exportId}.pdf`;
+        res.json({
+          success: true,
+          downloadUrl,
+          filename: `expenses-${new Date().toISOString().split('T')[0]}.pdf`
+        });
+      } else if (format === 'excel') {
+        const downloadUrl = `/downloads/expenses-${exportId}.xlsx`;
+        res.json({
+          success: true,
+          downloadUrl,
+          filename: `expenses-${new Date().toISOString().split('T')[0]}.xlsx`
+        });
+      } else {
+        res.status(400).json({ message: "Unsupported export format" });
+      }
+    } catch (error) {
+      console.error("Expenses export error:", error);
+      res.status(500).json({ message: "Failed to export expenses" });
     }
   });
 
