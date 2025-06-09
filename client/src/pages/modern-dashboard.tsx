@@ -22,7 +22,7 @@ type TabType =
   | "949" 
   | "rent-tracker"
   | "maintenance"
-  | "announcements"
+
   | "contacts"
   | "inventory"
   | "todos"
