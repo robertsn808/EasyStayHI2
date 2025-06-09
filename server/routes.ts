@@ -289,19 +289,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   };
 
-  // PIN authentication endpoint for tenant access
+  // Enhanced PIN authentication with logging and temporary codes
   app.post("/api/tenant/auth/pin", async (req, res) => {
     try {
       const { roomNumber, pin } = req.body;
+      const ipAddress = req.ip || req.connection.remoteAddress;
+      const userAgent = req.get('User-Agent');
       
       // Strict input validation
       if (!roomNumber || !pin) {
         return res.status(400).json({ error: "Room number and PIN are required" });
       }
 
-      // Validate PIN format (must be exactly 4 digits)
-      if (!/^\d{4}$/.test(pin)) {
-        return res.status(400).json({ error: "PIN must be exactly 4 digits" });
+      // Validate PIN format (4 digits for permanent, 6 for temporary)
+      const isPermanentPin = /^\d{4}$/.test(pin);
+      const isTemporaryCode = /^\d{6}$/.test(pin);
+      
+      if (!isPermanentPin && !isTemporaryCode) {
+        return res.status(400).json({ error: "PIN must be 4 digits or temporary code must be 6 digits" });
       }
 
       // Sanitize room number input
@@ -310,31 +315,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid room number format" });
       }
 
-      // Find room by number and validate PIN with exact match
+      // Find room by number
       const rooms = await storage.getRooms();
-      const room = rooms.find((r: any) => 
-        r.number === sanitizedRoomNumber && 
-        r.accessPin === pin && 
-        r.accessPin !== null && 
-        r.accessPin !== ""
-      );
+      const room = rooms.find((r: any) => r.number === sanitizedRoomNumber);
       
       if (!room) {
-        // Add slight delay to prevent timing attacks
+        await storage.logAccess({
+          roomId: null,
+          accessType: isPermanentPin ? 'pin' : 'temp_code',
+          accessCode: pin,
+          success: false,
+          failureReason: 'room_not_found',
+          ipAddress,
+          userAgent,
+          location: `Room ${sanitizedRoomNumber}`
+        });
         await new Promise(resolve => setTimeout(resolve, 1000));
-        return res.status(401).json({ error: "Invalid room number or PIN" });
+        return res.status(401).json({ error: "Invalid room number or access code" });
       }
 
-      // Additional security: check room status (allow occupied rooms for current tenants)
+      let accessGranted = false;
+      let accessType = '';
+      let guestId = null;
+
+      // Check temporary access code first
+      if (isTemporaryCode) {
+        const tempCode = await storage.validateAccessCode(room.id, pin);
+        if (tempCode) {
+          accessGranted = true;
+          accessType = 'temp_code';
+          guestId = tempCode.guestId;
+        }
+      }
+
+      // Check permanent PIN if temporary code failed
+      if (!accessGranted && isPermanentPin) {
+        if (room.accessPin === pin && room.accessPin !== null && room.accessPin !== "") {
+          accessGranted = true;
+          accessType = 'pin';
+        }
+      }
+
+      // Log access attempt
+      await storage.logAccess({
+        roomId: room.id,
+        guestId,
+        accessType,
+        accessCode: pin,
+        success: accessGranted,
+        failureReason: accessGranted ? null : 'invalid_code',
+        ipAddress,
+        userAgent,
+        location: `${room.number}`
+      });
+
+      if (!accessGranted) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return res.status(401).json({ error: "Invalid access code" });
+      }
+
+      // Additional security: check room status
       if (room.status === 'maintenance' || room.status === 'cleaning') {
         return res.status(403).json({ error: "Room is currently under maintenance or cleaning" });
       }
 
-      // Generate secure tenant session token with room data
+      // Generate secure tenant session token
       const sessionToken = generateTenantToken(room.id, { 
-        name: room.tenantName || "Tenant", 
+        name: room.tenantName || "Guest", 
         email: room.tenantEmail || "", 
         phone: room.tenantPhone || "" 
+      });
+
+      // Create system notification for access
+      await storage.createSystemNotification({
+        type: 'room_access',
+        title: `Room Access: ${room.number}`,
+        message: `${accessType === 'temp_code' ? 'Temporary code' : 'PIN'} access granted to room ${room.number}`,
+        roomId: room.id,
+        priority: 'normal',
+        color: 'green'
       });
       
       res.json({
@@ -342,10 +401,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         roomId: room.id,
         roomNumber: room.number,
         sessionToken,
-        message: "PIN authentication successful"
+        accessType,
+        message: "Access granted successfully"
       });
     } catch (error) {
-      console.error("PIN authentication error:", error);
+      console.error("Authentication error:", error);
       res.status(500).json({ error: "Authentication failed" });
     }
   });
@@ -1170,6 +1230,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Automated Check-in System
+  app.post("/api/admin/guests/:id/checkin", simpleAdminAuth, async (req, res) => {
+    try {
+      const guestId = parseInt(req.params.id);
+      const guest = await storage.getGuestProfileById(guestId);
+      
+      if (!guest) {
+        return res.status(404).json({ message: "Guest not found" });
+      }
+
+      // Generate temporary access code for 7 days
+      const accessCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+      await storage.createTemporaryAccessCode({
+        roomId: guest.roomId,
+        guestId: guest.id,
+        accessCode,
+        purpose: 'checkin',
+        expiresAt,
+        maxUsage: -1, // Unlimited during stay
+        createdBy: 'admin'
+      });
+
+      // Update room status
+      await storage.updateRoomStatus(guest.roomId, "occupied", {
+        tenantName: guest.guestName,
+        tenantPhone: guest.phone
+      });
+
+      // Create check-in notification
+      await storage.createSystemNotification({
+        type: 'guest_checkin',
+        title: `Guest Check-in: ${guest.guestName}`,
+        message: `${guest.guestName} checked into room ${guest.roomId}. Access code: ${accessCode}`,
+        roomId: guest.roomId,
+        priority: 'normal',
+        color: 'green'
+      });
+
+      res.json({
+        success: true,
+        accessCode,
+        message: "Check-in completed successfully",
+        expiresAt
+      });
+    } catch (error) {
+      console.error("Check-in error:", error);
+      res.status(500).json({ message: "Failed to process check-in" });
+    }
+  });
+
+  // Automated Check-out System
+  app.post("/api/admin/guests/:id/checkout", simpleAdminAuth, async (req, res) => {
+    try {
+      const guestId = parseInt(req.params.id);
+      const guest = await storage.getGuestProfileById(guestId);
+      
+      if (!guest) {
+        return res.status(404).json({ message: "Guest not found" });
+      }
+
+      // Deactivate all guest access codes
+      const accessCodes = await storage.getActiveAccessCodes(guest.roomId);
+      for (const code of accessCodes) {
+        if (code.guestId === guestId) {
+          await storage.deactivateAccessCode(code.id);
+        }
+      }
+
+      // Update room status to needs cleaning
+      await storage.updateRoomStatus(guest.roomId, "needs cleaning", {
+        tenantName: null,
+        tenantPhone: null,
+        lastCleaned: null
+      });
+
+      // Mark guest as inactive
+      await storage.updateGuestProfile(guestId, { 
+        isActive: false,
+        checkOutDate: new Date().toISOString().split('T')[0]
+      });
+
+      // Create automatic cleaning request
+      await storage.createMaintenanceRequest({
+        roomId: guest.roomId,
+        title: "Post-Checkout Cleaning",
+        description: `Automated cleaning request for room after ${guest.guestName} checkout`,
+        priority: "normal",
+        status: "pending",
+        assignedTo: "Housekeeping"
+      });
+
+      // Create check-out notification
+      await storage.createSystemNotification({
+        type: 'guest_checkout',
+        title: `Guest Check-out: ${guest.guestName}`,
+        message: `${guest.guestName} checked out of room ${guest.roomId}. Cleaning scheduled.`,
+        roomId: guest.roomId,
+        priority: 'normal',
+        color: 'yellow'
+      });
+
+      res.json({
+        success: true,
+        message: "Check-out completed successfully"
+      });
+    } catch (error) {
+      console.error("Check-out error:", error);
+      res.status(500).json({ message: "Failed to process check-out" });
+    }
+  });
+
   app.put("/api/admin/guests/:id", simpleAdminAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -1241,6 +1414,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(400).json({ message: "Failed to clear notifications" });
+    }
+  });
+
+  // Temporary Access Code Management
+  app.post("/api/admin/access-codes", simpleAdminAuth, async (req, res) => {
+    try {
+      const { roomId, purpose, expiresIn, maxUsage, guestId } = req.body;
+      
+      // Generate 6-digit temporary code
+      const accessCode = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Calculate expiration time (default 24 hours)
+      const expiresAt = new Date(Date.now() + (expiresIn || 24) * 60 * 60 * 1000);
+      
+      const tempCode = await storage.createTemporaryAccessCode({
+        roomId,
+        guestId: guestId || null,
+        accessCode,
+        purpose: purpose || 'guest_access',
+        expiresAt,
+        maxUsage: maxUsage || 1,
+        createdBy: 'admin'
+      });
+
+      // Create notification
+      await storage.createSystemNotification({
+        type: 'temp_code_created',
+        title: 'Temporary Access Code Created',
+        message: `Code ${accessCode} created for room ${roomId} (expires ${expiresAt.toLocaleString()})`,
+        roomId,
+        priority: 'normal',
+        color: 'blue'
+      });
+
+      res.json(tempCode);
+    } catch (error) {
+      console.error("Error creating access code:", error);
+      res.status(400).json({ message: "Failed to create temporary access code" });
+    }
+  });
+
+  app.get("/api/admin/access-codes", simpleAdminAuth, async (req, res) => {
+    try {
+      const roomId = req.query.roomId ? parseInt(req.query.roomId as string) : undefined;
+      const codes = await storage.getActiveAccessCodes(roomId);
+      res.json(codes);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch access codes" });
+    }
+  });
+
+  app.delete("/api/admin/access-codes/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deactivateAccessCode(id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(400).json({ message: "Failed to deactivate access code" });
+    }
+  });
+
+  // Access Logs and Security Monitoring
+  app.get("/api/admin/access-logs", simpleAdminAuth, async (req, res) => {
+    try {
+      const roomId = req.query.roomId ? parseInt(req.query.roomId as string) : undefined;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+      const logs = await storage.getAccessLogs(roomId, limit);
+      res.json(logs);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch access logs" });
+    }
+  });
+
+  app.get("/api/admin/security-alerts", simpleAdminAuth, async (req, res) => {
+    try {
+      const hours = req.query.hours ? parseInt(req.query.hours as string) : 24;
+      const alerts = await storage.getSecurityAlerts(hours);
+      res.json(alerts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch security alerts" });
+    }
+  });
+
+  // Maintenance Predictions and AI
+  app.get("/api/admin/maintenance-predictions", simpleAdminAuth, async (req, res) => {
+    try {
+      const roomId = req.query.roomId ? parseInt(req.query.roomId as string) : undefined;
+      const predictions = await storage.getMaintenancePredictions(roomId);
+      res.json(predictions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch maintenance predictions" });
+    }
+  });
+
+  app.post("/api/admin/maintenance-predictions", simpleAdminAuth, async (req, res) => {
+    try {
+      const prediction = await storage.createMaintenancePrediction(req.body);
+      res.json(prediction);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create maintenance prediction" });
+    }
+  });
+
+  app.get("/api/admin/maintenance-cost-analysis", simpleAdminAuth, async (req, res) => {
+    try {
+      const analysis = await storage.getMaintenanceCostAnalysis();
+      res.json(analysis);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch cost analysis" });
     }
   });
 

@@ -144,6 +144,23 @@ export interface IStorage {
   markSystemNotificationRead(id: number): Promise<SystemNotification>;
   deleteNotification(id: number): Promise<void>;
   clearAllNotifications(buildingId?: number): Promise<void>;
+
+  // Temporary Access Codes
+  createTemporaryAccessCode(data: any): Promise<any>;
+  getActiveAccessCodes(roomId?: number): Promise<any>;
+  validateAccessCode(roomId: number, code: string): Promise<any>;
+  deactivateAccessCode(codeId: number): Promise<void>;
+
+  // Access Logs
+  logAccess(data: any): Promise<any>;
+  getAccessLogs(roomId?: number, limit?: number): Promise<any>;
+  getSecurityAlerts(hours?: number): Promise<any>;
+
+  // Maintenance Predictions
+  createMaintenancePrediction(data: any): Promise<any>;
+  getMaintenancePredictions(roomId?: number): Promise<any>;
+  updateMaintenancePrediction(id: number, data: any): Promise<any>;
+  getMaintenanceCostAnalysis(): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -345,11 +362,11 @@ export class DatabaseStorage implements IStorage {
       .from(schema.rooms)
       .leftJoin(schema.buildings, eq(schema.rooms.buildingId, schema.buildings.id))
       .where(eq(schema.rooms.id, roomId));
-    
+
     if (!result || !result.building) {
       throw new Error('Room or building not found');
     }
-    
+
     return {
       room: result.room,
       building: result.building
@@ -437,11 +454,11 @@ export class DatabaseStorage implements IStorage {
     }
 
     const query = db.select().from(schema.notifications);
-    
+
     if (conditions.length > 0) {
       return await query.where(and(...conditions)).orderBy(desc(schema.notifications.createdAt));
     }
-    
+
     return await query.orderBy(desc(schema.notifications.createdAt));
   }
 
@@ -457,13 +474,13 @@ export class DatabaseStorage implements IStorage {
   // Room Management Updates
   async updateRoomStatus(id: number, status: string, additionalData?: Partial<schema.InsertRoom>) {
     const updateData = { status, ...additionalData };
-    
+
     // Generate 4-digit PIN when room becomes available
     if (status === 'available') {
       const accessPin = Math.floor(1000 + Math.random() * 9000).toString();
       updateData.accessPin = accessPin;
     }
-    
+
     const [room] = await db
       .update(schema.rooms)
       .set(updateData)
@@ -507,7 +524,7 @@ export class DatabaseStorage implements IStorage {
 
   async markPaymentReceived(guestId: number): Promise<GuestProfile> {
     const today = new Date().toISOString().split('T')[0];
-    
+
     // Get the guest profile to calculate next payment date
     const [guest] = await db
       .select()
@@ -549,7 +566,7 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(guestProfiles.id, guestId))
       .returning();
-    
+
     return result;
   }
 
@@ -630,7 +647,7 @@ export class DatabaseStorage implements IStorage {
   async recordFailedAttempt(roomId: number, roomNumber: string): Promise<schema.PortalSecurity> {
     const existing = await this.getPortalSecurity(roomId);
     const now = new Date();
-    
+
     if (!existing) {
       // Create new record
       return await this.createPortalSecurity({
@@ -685,11 +702,11 @@ export class DatabaseStorage implements IStorage {
 
   async getSystemNotifications(buildingId?: number): Promise<schema.SystemNotification[]> {
     let query = db.select().from(schema.systemNotifications);
-    
+
     if (buildingId) {
       query = query.where(eq(schema.systemNotifications.buildingId, buildingId));
     }
-    
+
     return await query.orderBy(desc(schema.systemNotifications.createdAt));
   }
 
@@ -710,12 +727,169 @@ export class DatabaseStorage implements IStorage {
 
   async clearAllNotifications(buildingId?: number): Promise<void> {
     let deleteQuery = db.delete(schema.systemNotifications);
-    
+
     if (buildingId) {
       deleteQuery = deleteQuery.where(eq(schema.systemNotifications.buildingId, buildingId));
     }
-    
+
     await deleteQuery;
+  }
+
+  // Temporary Access Codes
+  async createTemporaryAccessCode(data: any) {
+    const [code] = await db.insert(schema.temporaryAccessCodes)
+      .values(data)
+      .returning();
+    return code;
+  }
+
+  async getActiveAccessCodes(roomId?: number) {
+    const query = db.select().from(schema.temporaryAccessCodes)
+      .where(and(
+        eq(schema.temporaryAccessCodes.isActive, true),
+        gt(schema.temporaryAccessCodes.expiresAt, new Date())
+      ));
+
+    if (roomId) {
+      return query.where(eq(schema.temporaryAccessCodes.roomId, roomId));
+    }
+    return query;
+  }
+
+  async validateAccessCode(roomId: number, code: string) {
+    const [accessCode] = await db.select()
+      .from(schema.temporaryAccessCodes)
+      .where(and(
+        eq(schema.temporaryAccessCodes.roomId, roomId),
+        eq(schema.temporaryAccessCodes.accessCode, code),
+        eq(schema.temporaryAccessCodes.isActive, true),
+        gt(schema.temporaryAccessCodes.expiresAt, new Date())
+      ));
+
+    if (!accessCode) return null;
+
+    // Check usage limits
+    if (accessCode.maxUsage > 0 && accessCode.usageCount >= accessCode.maxUsage) {
+      return null;
+    }
+
+    // Increment usage count
+    await db.update(schema.temporaryAccessCodes)
+      .set({ usageCount: accessCode.usageCount + 1 })
+      .where(eq(schema.temporaryAccessCodes.id, accessCode.id))
+      .returning();
+
+    return accessCode;
+  }
+
+  async deactivateAccessCode(codeId: number) {
+    await db.update(schema.temporaryAccessCodes)
+      .set({ isActive: false })
+      .where(eq(schema.temporaryAccessCodes.id, codeId));
+  }
+
+  // Access Logs
+  async logAccess(data: any) {
+    const [log] = await db.insert(schema.accessLogs)
+      .values(data)
+      .returning();
+    return log;
+  }
+
+  async getAccessLogs(roomId?: number, limit = 50) {
+    let query = db.select()
+      .from(schema.accessLogs)
+      .orderBy(desc(schema.accessLogs.timestamp))
+      .limit(limit);
+
+    if (roomId) {
+      query = query.where(eq(schema.accessLogs.roomId, roomId));
+    }
+
+    return query;
+  }
+
+  async getSecurityAlerts(hours = 24) {
+    const since = new Date(Date.now() - hours * 60 * 60 * 1000);
+    return db.select()
+      .from(schema.accessLogs)
+      .where(and(
+        eq(schema.accessLogs.success, false),
+        gt(schema.accessLogs.timestamp, since)
+      ))
+      .orderBy(desc(schema.accessLogs.timestamp));
+  }
+
+  // Maintenance Predictions
+  async createMaintenancePrediction(data: any) {
+    const [prediction] = await db.insert(schema.maintenancePredictions)
+      .values(data)
+      .returning();
+    return prediction;
+  }
+
+  async getMaintenancePredictions(roomId?: number) {
+    let query = db.select().from(schema.maintenancePredictions)
+      .where(eq(schema.maintenancePredictions.status, 'pending'))
+      .orderBy(desc(schema.maintenancePredictions.priority), schema.maintenancePredictions.predictedFailureDate);
+
+    if (roomId) {
+      query = query.where(eq(schema.maintenancePredictions.roomId, roomId));
+    }
+
+    return query;
+  }
+
+  async updateMaintenancePrediction(id: number, data: any) {
+    const [prediction] = await db.update(schema.maintenancePredictions)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.maintenancePredictions.id, id))
+      .returning();
+    return prediction;
+  }
+
+  async getMaintenanceCostAnalysis() {
+    // Returns cost analysis and optimization suggestions
+    const predictions = await db.select().from(schema.maintenancePredictions);
+
+    const totalEstimatedCost = predictions.reduce((sum, p) => 
+      sum + (parseFloat(p.estimatedCost || '0')), 0);
+
+    const urgentItems = predictions.filter(p => p.priority === 'urgent').length;
+    const preventiveItems = predictions.filter(p => p.maintenanceType === 'preventive').length;
+
+    return {
+      totalEstimatedCost,
+      urgentItems,
+      preventiveItems,
+      suggestions: this.generateCostOptimizationSuggestions(predictions)
+    };
+  }
+
+  private generateCostOptimizationSuggestions(predictions: any[]) {
+    const suggestions = [];
+
+    // Group by maintenance type
+    const preventive = predictions.filter(p => p.maintenanceType === 'preventive');
+    if (preventive.length > 0) {
+      suggestions.push({
+        type: 'bulk_scheduling',
+        message: `Schedule ${preventive.length} preventive maintenance items together to reduce service call costs`,
+        savings: Math.round(preventive.length * 75) // Estimated $75 savings per combined service
+      });
+    }
+
+    // High confidence predictions
+    const highConfidence = predictions.filter(p => parseFloat(p.confidenceScore || '0') > 0.8);
+    if (highConfidence.length > 0) {
+      suggestions.push({
+        type: 'proactive_replacement',
+        message: `${highConfidence.length} items have high failure probability - consider proactive replacement`,
+        savings: Math.round(highConfidence.length * 200) // Emergency vs planned cost difference
+      });
+    }
+
+    return suggestions;
   }
 }
 

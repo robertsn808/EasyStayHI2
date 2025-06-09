@@ -4,15 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
-  Home, Users, QrCode, Wrench, MessageSquare, Calendar, 
-  DollarSign, Megaphone, Contact, Package, Receipt, Bell,
-  CheckCircle, AlertTriangle, Clock, User, Settings, Building, LogOut
+  Building, Users, Wrench, DollarSign, Calendar, MessageCircle, 
+  Inventory, Receipt, CheckSquare, Bell, Settings, Home, 
+  Package, Inbox, BarChart3, Newspaper, UserCog, QrCode,
+  Shield, Brain
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import backgroundImage from "@assets/image_1749351216300.png";
 import AdminTabs from "@/components/admin-tabs";
 import ExpandableSideNav from "@/components/ExpandableSideNav";
+import SettingsTab from "@/components/SettingsTab";
+import SecurityTab from "@/components/SecurityTab";
+import MaintenancePredictionTab from "@/components/MaintenancePredictionTab";
 
 type TabType = 
   | "quick-access"
@@ -27,7 +31,9 @@ type TabType =
   | "contacts" 
   | "inventory" 
   | "todos"
-  | "settings";
+  | "settings"
+  | "security"
+  | "ai-maintenance";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>("quick-access");
@@ -255,7 +261,7 @@ export default function AdminDashboard() {
                 <p className="text-sm text-slate-500 font-medium">Property Management</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <div className="hidden md:flex items-center space-x-4 mr-4">
                 <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-3 py-1.5 rounded-full shadow-sm">
@@ -268,12 +274,12 @@ export default function AdminDashboard() {
                   </p>
                 </div>
               </div>
-              
+
               <Button variant="ghost" size="icon" className="relative h-9 w-9 hover:bg-slate-100">
                 <Bell className="h-4 w-4 text-slate-600" />
                 <div className="absolute -top-1 -right-1 bg-red-500 rounded-full w-2 h-2"></div>
               </Button>
-              
+
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -282,7 +288,7 @@ export default function AdminDashboard() {
               >
                 <Settings className="h-4 w-4 text-slate-600" />
               </Button>
-              
+
               <div className="flex items-center space-x-3 pl-3 border-l border-slate-200">
                 <div className="relative">
                   <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-md">
@@ -295,7 +301,7 @@ export default function AdminDashboard() {
                   <p className="text-xs text-slate-500">Online</p>
                 </div>
               </div>
-              
+
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -327,7 +333,7 @@ export default function AdminDashboard() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className={`${activeTab === "934" ? "bg-gradient-to-br from-blue-100 to-blue-50 border-blue-300 shadow-md" : "bg-white/80 backdrop-blur-sm border-slate-200 hover:shadow-md"} cursor-pointer transition-all duration-200`}
             onClick={() => setActiveTab("934")}
           >
@@ -392,7 +398,7 @@ export default function AdminDashboard() {
               <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
               <h2 className="text-lg font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Property Overview</h2>
             </div>
-            
+
             {/* Quick Access */}
             <div className="mb-6">
               <Card className={`${activeTab === "quick-access" ? "bg-gradient-to-br from-slate-100 to-slate-50 border-slate-300 shadow-lg" : "bg-white/90 backdrop-blur-sm border-slate-200/60 hover:shadow-lg"} cursor-pointer transition-all duration-300 group`}
@@ -539,7 +545,7 @@ export default function AdminDashboard() {
                   <DollarSign className="h-3 w-3 mr-2" />
                   Payments ({Array.isArray(payments) ? payments.length : 0})
                 </Button>
-                
+
                 <Button 
                   size="sm" 
                   variant="outline" 
@@ -549,7 +555,7 @@ export default function AdminDashboard() {
                   <Megaphone className="h-3 w-3 mr-2" />
                   Announcements ({Array.isArray(announcements) ? announcements.length : 0})
                 </Button>
-                
+
                 <Button 
                   size="sm" 
                   variant="outline" 
@@ -559,7 +565,7 @@ export default function AdminDashboard() {
                   <Contact className="h-3 w-3 mr-2" />
                   Contacts ({Array.isArray(contacts) ? contacts.length : 0})
                 </Button>
-                
+
                 <Button 
                   size="sm" 
                   variant="outline" 
@@ -569,7 +575,7 @@ export default function AdminDashboard() {
                   <Package className="h-3 w-3 mr-2" />
                   Inventory ({Array.isArray(inventory) ? inventory.length : 0})
                 </Button>
-                
+
 
               </div>
             </div>

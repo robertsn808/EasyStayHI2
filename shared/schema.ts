@@ -247,6 +247,52 @@ export const systemNotifications = pgTable("system_notifications", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const temporaryAccessCodes = pgTable("temporary_access_codes", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  guestId: integer("guest_id").references(() => guestProfiles.id),
+  accessCode: varchar("access_code", { length: 6 }).notNull(), // 6-digit temporary code
+  purpose: varchar("purpose", { length: 50 }).notNull(), // checkin, maintenance, cleaning, guest_access
+  isActive: boolean("is_active").default(true),
+  expiresAt: timestamp("expires_at").notNull(),
+  usageCount: integer("usage_count").default(0),
+  maxUsage: integer("max_usage").default(1), // -1 for unlimited
+  createdBy: varchar("created_by", { length: 255 }).notNull(), // admin username
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const accessLogs = pgTable("access_logs", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  guestId: integer("guest_id").references(() => guestProfiles.id),
+  accessType: varchar("access_type", { length: 20 }).notNull(), // pin, temp_code, qr_scan, admin_override
+  accessCode: varchar("access_code", { length: 10 }), // the code used
+  success: boolean("success").notNull(),
+  failureReason: varchar("failure_reason", { length: 100 }), // expired, invalid, locked, etc.
+  ipAddress: varchar("ip_address", { length: 45 }), // IPv4/IPv6
+  userAgent: text("user_agent"),
+  location: varchar("location", { length: 100 }), // building/room info
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+export const maintenancePredictions = pgTable("maintenance_predictions", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  itemType: varchar("item_type", { length: 50 }).notNull(), // ac_unit, plumbing, electrical, appliance
+  itemName: varchar("item_name", { length: 100 }).notNull(),
+  currentCondition: integer("current_condition").notNull(), // 1-10 scale
+  predictedFailureDate: date("predicted_failure_date"),
+  confidenceScore: numeric("confidence_score", { precision: 3, scale: 2 }), // 0.00-1.00
+  maintenanceType: varchar("maintenance_type", { length: 20 }).notNull(), // preventive, corrective, emergency
+  estimatedCost: numeric("estimated_cost", { precision: 10, scale: 2 }),
+  priority: varchar("priority", { length: 20 }).default("normal"), // urgent, high, normal, low
+  status: varchar("status", { length: 20 }).default("pending"), // pending, scheduled, completed, ignored
+  lastInspectionDate: date("last_inspection_date"),
+  usageHours: integer("usage_hours").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Type definitions for inserts
 export type InsertUser = typeof users.$inferSelect;
 export type InsertBuilding = typeof buildings.$inferInsert;
@@ -265,6 +311,9 @@ export type InsertTodo = typeof todos.$inferInsert;
 export type InsertGuestProfile = typeof guestProfiles.$inferInsert;
 export type InsertPortalSecurity = typeof portalSecurity.$inferInsert;
 export type InsertSystemNotification = typeof systemNotifications.$inferInsert;
+export type InsertTemporaryAccessCode = typeof temporaryAccessCodes.$inferInsert;
+export type InsertAccessLog = typeof accessLogs.$inferInsert;
+export type InsertMaintenancePrediction = typeof maintenancePredictions.$inferInsert;
 
 // Type definitions for selects
 export type SelectUser = typeof users.$inferSelect;
@@ -284,6 +333,9 @@ export type SelectTodo = typeof todos.$inferSelect;
 export type SelectGuestProfile = typeof guestProfiles.$inferSelect;
 export type SelectPortalSecurity = typeof portalSecurity.$inferSelect;
 export type SelectSystemNotification = typeof systemNotifications.$inferSelect;
+export type SelectTemporaryAccessCode = typeof temporaryAccessCodes.$inferSelect;
+export type SelectAccessLog = typeof accessLogs.$inferSelect;
+export type SelectMaintenancePrediction = typeof maintenancePredictions.$inferSelect;
 
 // Type aliases for compatibility
 export type User = SelectUser;
@@ -304,6 +356,9 @@ export type Todo = SelectTodo;
 export type GuestProfile = SelectGuestProfile;
 export type PortalSecurity = SelectPortalSecurity;
 export type SystemNotification = SelectSystemNotification;
+export type TemporaryAccessCode = SelectTemporaryAccessCode;
+export type AccessLog = SelectAccessLog;
+export type MaintenancePrediction = SelectMaintenancePrediction;
 
 // Validation schemas (simplified - using the insert types as schemas)
 export const insertInquirySchema = {
