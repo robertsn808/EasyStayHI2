@@ -9,6 +9,7 @@ import Property949 from "@/pages/property-949";
 import Property934 from "@/pages/property-934";
 import Building934 from "@/pages/building-934";
 import Building949 from "@/pages/building-949";
+import PublicPageEditor from "@/pages/public-page-editor";
 import AdminDashboard from "@/pages/admin-dashboard";
 import ModernDashboard from "@/pages/modern-dashboard";
 import TenantPortal from "@/pages/tenant-portal";
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/property-934" component={Property934} />
       <Route path="/building-934" component={Building934} />
       <Route path="/building-949" component={Building949} />
+      <Route path="/public-editor" component={PublicPageEditor} />
       <Route path="/949" component={Property949} />
       <Route path="/admin-dashboard" component={ModernDashboard} />
       <Route path="/admin" component={ModernDashboard} />
