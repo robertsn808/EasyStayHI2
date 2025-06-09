@@ -210,10 +210,10 @@ export default function PublicPageEditor() {
           </div>
 
           <Tabs defaultValue="announcements" className="w-full">
-            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto sm:h-10">
-              <TabsTrigger value="announcements" className="text-xs sm:text-sm">Announcements</TabsTrigger>
-              <TabsTrigger value="contacts" className="text-xs sm:text-sm">Contact Info</TabsTrigger>
-              <TabsTrigger value="public-info" className="text-xs sm:text-sm">Display Settings</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto sm:h-10 transform sm:transform-none -rotate-1 sm:rotate-0 shadow-lg sm:shadow-sm">
+              <TabsTrigger value="announcements" className="text-xs sm:text-sm transform rotate-1 sm:rotate-0 mb-1 sm:mb-0">Announcements</TabsTrigger>
+              <TabsTrigger value="contacts" className="text-xs sm:text-sm transform rotate-1 sm:rotate-0 mb-1 sm:mb-0">Contact Info</TabsTrigger>
+              <TabsTrigger value="public-info" className="text-xs sm:text-sm transform rotate-1 sm:rotate-0">Display Settings</TabsTrigger>
             </TabsList>
 
             {/* Announcements Tab */}
