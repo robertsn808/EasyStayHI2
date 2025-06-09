@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, DollarSign, Edit, Trash2, FileText } from "lucide-react";
+import { Plus, DollarSign, Edit, Trash2, FileText, Download, FileSpreadsheet, File } from "lucide-react";
 
 interface ExpensesTabProps {
   receipts?: any[];
@@ -28,6 +28,33 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
   const { data: expensesData = [] } = useQuery({
     queryKey: ["/api/admin/expenses"],
     enabled: localStorage.getItem('admin-authenticated') === 'true',
+  });
+
+  // Export mutations
+  const exportExpensesMutation = useMutation({
+    mutationFn: async (format: 'pdf' | 'excel') => {
+      const response = await apiRequest("POST", "/api/admin/export/expenses", {
+        format,
+        data: currentExpenses,
+      });
+      return response;
+    },
+    onSuccess: (data: any, format) => {
+      if (data.downloadUrl) {
+        window.open(data.downloadUrl, '_blank');
+        toast({
+          title: "Export Successful",
+          description: `Expenses ${format.toUpperCase()} has been generated and downloaded.`,
+        });
+      }
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Export Failed",
+        description: error.message || "Failed to export expenses",
+        variant: "destructive",
+      });
+    },
   });
 
   const addExpenseMutation = useMutation({
@@ -135,6 +162,32 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
     setShowEditExpense(true);
   };
 
+  const exportToCSV = () => {
+    const headers = ["Date", "Title", "Amount", "Category", "Vendor", "Description"];
+    const csvData = currentExpenses.map((expense: any) => [
+      expense.receipt_date ? new Date(expense.receipt_date).toLocaleDateString() : "",
+      expense.title || "",
+      expense.amount || "",
+      expense.category || "",
+      expense.vendor || "",
+      expense.description || ""
+    ]);
+
+    const csvContent = [headers, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `expenses-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Pagination logic
   const totalPages = Math.ceil(expensesData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -170,13 +223,39 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
             <DollarSign className="h-5 w-5" />
             Expense Management
           </CardTitle>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => exportExpensesMutation.mutate('pdf')} 
+              variant="outline"
+              disabled={exportExpensesMutation.isPending}
+            >
+              <File className="h-4 w-4 mr-2" />
+              Export PDF
+            </Button>
+            <Button 
+              onClick={() => exportExpensesMutation.mutate('excel')} 
+              variant="outline"
+              disabled={exportExpensesMutation.isPending}
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Export Excel
+            </Button>
+            <Button onClick={exportToCSV} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
+            <Dialog open={showAddExpense} onOpenChange={setShowAddExpense}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Expense
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent>
           <Dialog open={showAddExpense} onOpenChange={setShowAddExpense}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Expense
-              </Button>
-            </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Add New Expense</DialogTitle>

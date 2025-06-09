@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Search, Filter, Download } from "lucide-react";
+import { FileText, Search, Filter, Download, FileSpreadsheet, File } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface PaymentHistoryTabProps {
   payments?: any[];
@@ -17,11 +19,41 @@ export function PaymentHistoryTab({ payments = [] }: PaymentHistoryTabProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
+  
+  const { toast } = useToast();
 
   // Fetch payment data
   const { data: paymentsData = [] } = useQuery({
     queryKey: ["/api/admin/payments"],
     enabled: localStorage.getItem('admin-authenticated') === 'true',
+  });
+
+  // Export mutations
+  const exportPDFMutation = useMutation({
+    mutationFn: async (format: 'pdf' | 'excel') => {
+      const response = await apiRequest("POST", "/api/admin/export/payments", {
+        format,
+        data: filteredPayments,
+        filters: { searchTerm, statusFilter, dateFilter }
+      });
+      return response;
+    },
+    onSuccess: (data: any, format) => {
+      if (data.downloadUrl) {
+        window.open(data.downloadUrl, '_blank');
+        toast({
+          title: "Export Successful",
+          description: `Payment history ${format.toUpperCase()} has been generated and downloaded.`,
+        });
+      }
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Export Failed",
+        description: error.message || "Failed to export payment history",
+        variant: "destructive",
+      });
+    },
   });
 
   // Filter payments based on search and filters
@@ -122,10 +154,28 @@ export function PaymentHistoryTab({ payments = [] }: PaymentHistoryTabProps) {
             <FileText className="h-5 w-5" />
             Payment History
           </CardTitle>
-          <Button onClick={exportToCSV} variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => exportPDFMutation.mutate('pdf')} 
+              variant="outline"
+              disabled={exportPDFMutation.isPending}
+            >
+              <File className="h-4 w-4 mr-2" />
+              Export PDF
+            </Button>
+            <Button 
+              onClick={() => exportPDFMutation.mutate('excel')} 
+              variant="outline"
+              disabled={exportPDFMutation.isPending}
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Export Excel
+            </Button>
+            <Button onClick={exportToCSV} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {/* Filters */}
