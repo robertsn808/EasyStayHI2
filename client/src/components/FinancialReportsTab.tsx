@@ -1,12 +1,18 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { TrendingUp, TrendingDown, DollarSign, Building, FileText, Calendar } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Building, FileText, Calendar, Share2, Download, Mail, Link2, Copy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface FinancialReportsTabProps {
   payments?: any[];
@@ -17,6 +23,12 @@ interface FinancialReportsTabProps {
 export function FinancialReportsTab({ payments = [], receipts = [], buildings = [] }: FinancialReportsTabProps) {
   const [selectedPeriod, setSelectedPeriod] = useState("current-month");
   const [selectedProperty, setSelectedProperty] = useState("all");
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [shareEmail, setShareEmail] = useState("");
+  const [shareMessage, setShareMessage] = useState("");
+  const [shareMethod, setShareMethod] = useState("email");
+  
+  const { toast } = useToast();
 
   // Fetch financial data
   const { data: expenseData = [] } = useQuery({
@@ -28,6 +40,129 @@ export function FinancialReportsTab({ payments = [], receipts = [], buildings = 
     queryKey: ["/api/admin/payments"],
     enabled: localStorage.getItem('admin-authenticated') === 'true',
   });
+
+  // Sharing mutations
+  const shareReportMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("POST", "/api/admin/reports/share", data);
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Report Shared Successfully",
+        description: shareMethod === "email" ? "Report sent to email" : "Share link generated",
+      });
+      if (shareMethod === "link" && data.shareUrl) {
+        navigator.clipboard.writeText(data.shareUrl);
+        toast({
+          title: "Link Copied",
+          description: "Share link copied to clipboard",
+        });
+      }
+      setShowShareDialog(false);
+      setShareEmail("");
+      setShareMessage("");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Share Failed",
+        description: error.message || "Failed to share report",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const exportReportMutation = useMutation({
+    mutationFn: async (format: string) => {
+      const reportData = generateReportData();
+      return await apiRequest("POST", "/api/admin/reports/export", {
+        format,
+        data: reportData,
+        period: selectedPeriod,
+        property: selectedProperty,
+      });
+    },
+    onSuccess: (data) => {
+      if (data.downloadUrl) {
+        window.open(data.downloadUrl, '_blank');
+      }
+      toast({
+        title: "Report Exported",
+        description: "Report downloaded successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Export Failed",
+        description: error.message || "Failed to export report",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Generate comprehensive report data for sharing/export
+  const generateReportData = () => {
+    const financials = calculateFinancials();
+    return {
+      period: selectedPeriod,
+      property: selectedProperty,
+      generatedAt: new Date().toISOString(),
+      summary: {
+        totalRevenue: financials.totalRevenue,
+        totalExpenses: financials.totalExpenses,
+        netProfit: financials.netProfit,
+        occupancyRate: financials.occupancyRate,
+      },
+      details: {
+        revenue: financials.revenueByCategory,
+        expenses: financials.expensesByCategory,
+        monthlyTrends: financials.monthlyData,
+        propertyComparison: financials.propertyComparison,
+      },
+      rawData: {
+        payments: paymentsData,
+        expenses: expenseData,
+      }
+    };
+  };
+
+  // Handle sharing functionality
+  const handleShare = () => {
+    const reportData = generateReportData();
+    shareReportMutation.mutate({
+      method: shareMethod,
+      email: shareEmail,
+      message: shareMessage,
+      reportData,
+    });
+  };
+
+  const handleQuickExport = (format: string) => {
+    exportReportMutation.mutate(format);
+  };
+
+  const handleCopyReportLink = async () => {
+    try {
+      const reportData = generateReportData();
+      const response = await apiRequest("POST", "/api/admin/reports/generate-link", {
+        reportData,
+        expiresIn: "7d", // Link expires in 7 days
+      });
+      
+      if (response.shareUrl) {
+        await navigator.clipboard.writeText(response.shareUrl);
+        toast({
+          title: "Link Copied",
+          description: "Shareable report link copied to clipboard",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate shareable link",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Calculate financial metrics
   const calculateFinancials = () => {

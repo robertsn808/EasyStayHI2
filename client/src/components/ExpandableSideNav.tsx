@@ -49,6 +49,7 @@ export default function ExpandableSideNav({
   const [operationsExpanded, setOperationsExpanded] = useState(false);
   const [managementExpanded, setManagementExpanded] = useState(false);
   const [reportsExpanded, setReportsExpanded] = useState(false);
+  const [financeExpanded, setFinanceExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -203,8 +204,8 @@ export default function ExpandableSideNav({
     },
     {
       title: "Management",
-      expanded: reportsExpanded,
-      setExpanded: setReportsExpanded,
+      expanded: managementExpanded,
+      setExpanded: setManagementExpanded,
       icon: ClipboardList,
       items: [
         {
@@ -256,8 +257,8 @@ export default function ExpandableSideNav({
     },
     {
       title: "Reports & Finance",
-      expanded: reportsExpanded,
-      setExpanded: setReportsExpanded,
+      expanded: financeExpanded,
+      setExpanded: setFinanceExpanded,
       icon: BarChart3,
       items: [
         {
