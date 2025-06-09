@@ -12,7 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Plus, Edit2, Trash2, Eye, Megaphone, Phone, MapPin, Mail, Settings } from "lucide-react";
+import { Plus, Edit2, Trash2, Eye, Megaphone, Phone, MapPin, Mail, Settings, Home, ArrowLeft, User, Bell } from "lucide-react";
+import backgroundImage from "@assets/image_1749351216300.png";
 
 export default function PublicPageEditor() {
   const { toast } = useToast();
@@ -194,15 +195,65 @@ export default function PublicPageEditor() {
   const inactiveAnnouncements = Array.isArray(announcements) ? announcements.filter((a: any) => !a.isActive) : [];
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Public Page Editor</h1>
-          <p className="text-gray-600 mt-2">Manage announcements and contact information displayed to the public</p>
+    <div 
+      className="min-h-screen bg-gray-50"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Background overlay for better readability */}
+      <div className="fixed inset-0 bg-white/80 backdrop-blur-sm"></div>
+      
+      {/* Navigation Header */}
+      <div className="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-3">
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/dashboard'}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Back to Dashboard</span>
+              </Button>
+              <div className="h-6 w-px bg-gray-300"></div>
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                  <Settings className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <span className="text-base font-semibold text-gray-900">Public Page Editor</span>
+                  <p className="text-xs text-gray-500">Manage public content & settings</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                <User className="h-3 w-3 text-gray-600" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <Tabs defaultValue="announcements" className="w-full">
+      {/* Main Content */}
+      <div className="relative z-10">
+        <div className="container mx-auto p-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Public Content Management</h1>
+              <p className="text-gray-600 mt-2">Manage announcements and contact information displayed to the public</p>
+            </div>
+          </div>
+
+          <Tabs defaultValue="announcements" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="announcements">Announcements</TabsTrigger>
           <TabsTrigger value="contacts">Contact Directory</TabsTrigger>
@@ -796,6 +847,8 @@ export default function PublicPageEditor() {
           </DialogContent>
         </Dialog>
       )}
+        </div>
+      </div>
     </div>
   );
 }
