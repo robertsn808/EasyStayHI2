@@ -164,7 +164,7 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
 // Simple admin authentication for demo purposes
 export function validateAdminCredentials(username: string, password: string): boolean {
-  return username === "admin" && password === "Bo$$l@dy";
+  return username === "admin" && password === "admin123";
 }
 
 export const isAdminAuthenticated: RequestHandler = async (req, res, next) => {
