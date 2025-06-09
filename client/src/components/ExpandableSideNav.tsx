@@ -43,12 +43,21 @@ export default function ExpandableSideNav({
   todos = []
 }: ExpandableSideNavProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [propertiesExpanded, setPropertiesExpanded] = useState(true);
   const [operationsExpanded, setOperationsExpanded] = useState(false);
   const [managementExpanded, setManagementExpanded] = useState(false);
   const [reportsExpanded, setReportsExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Handle smooth collapse/expand transitions
+  const handleCollapseToggle = () => {
+    setIsTransitioning(true);
+    setIsCollapsed(!isCollapsed);
+    setTimeout(() => setIsTransitioning(false), 300);
+  };
 
   // Auto-close on desktop when clicking outside
   useEffect(() => {
@@ -383,24 +392,34 @@ export default function ExpandableSideNav({
       {/* Expandable Side Navigation */}
       <div className={`
         fixed top-0 left-0 h-full bg-white/95 backdrop-blur-lg border-r border-gray-200 shadow-xl z-50 
-        transition-all duration-300 ease-in-out
+        transition-all duration-300 ease-in-out transform
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        ${isExpanded ? 'w-80' : 'w-64'}
+        ${isCollapsed ? 'w-16' : isExpanded ? 'w-80' : 'w-64'}
         lg:hidden
+        ${isTransitioning ? 'overflow-hidden' : ''}
       `}>
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+            <div className={`flex items-center gap-3 transition-all duration-300 ${isCollapsed ? 'justify-center' : ''}`}>
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <Building className="h-4 w-4 text-white" />
               </div>
-              <div>
-                <h2 className="text-sm font-bold text-gray-800">EasyStay HI</h2>
-                <p className="text-xs text-gray-600">Property Management</p>
+              <div className={`transition-all duration-300 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
+                <h2 className="text-sm font-bold text-gray-800 whitespace-nowrap">EasyStay HI</h2>
+                <p className="text-xs text-gray-600 whitespace-nowrap">Property Management</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-2 transition-all duration-300 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCollapseToggle}
+                className="h-8 w-8 p-0"
+                title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -418,20 +437,45 @@ export default function ExpandableSideNav({
                 <X className="h-4 w-4" />
               </Button>
             </div>
+            {/* Collapse Toggle for Collapsed State */}
+            {isCollapsed && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCollapseToggle}
+                className="absolute top-4 right-2 h-8 w-8 p-0 opacity-70 hover:opacity-100 transition-opacity"
+                title="Expand sidebar"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            )}
           </div>
 
           {/* Search Bar */}
-          <div className="p-4 border-b border-gray-200">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search navigation..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+          <div className={`transition-all duration-300 border-b border-gray-200 ${isCollapsed ? 'p-2' : 'p-4'}`}>
+            {!isCollapsed ? (
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search navigation..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            ) : (
+              <div className="flex justify-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  title="Search"
+                >
+                  <Search className="h-4 w-4 text-gray-400" />
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Quick Stats */}
