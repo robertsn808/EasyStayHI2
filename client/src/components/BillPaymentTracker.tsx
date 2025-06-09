@@ -26,6 +26,14 @@ interface PaymentMethodDialogProps {
   amount: string;
 }
 
+interface MoveOutConfirmDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  guestName: string;
+  roomNumber: string;
+}
+
 function PaymentMethodDialog({ isOpen, onClose, onConfirm, guestName, amount }: PaymentMethodDialogProps) {
   const [paymentMethod, setPaymentMethod] = useState("");
 
@@ -73,6 +81,32 @@ function PaymentMethodDialog({ isOpen, onClose, onConfirm, guestName, amount }: 
   );
 }
 
+function MoveOutConfirmDialog({ isOpen, onClose, onConfirm, guestName, roomNumber }: MoveOutConfirmDialogProps) {
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Confirm Guest Move-Out</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            Are you sure you want to mark <span className="font-medium">{guestName}</span> from Room <span className="font-medium">{roomNumber}</span> as moved out?
+          </p>
+          <p className="text-sm text-yellow-600 bg-yellow-50 p-3 rounded">
+            This action will remove the guest from the payment tracker and automatically set the room status to "needs cleaning".
+          </p>
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button onClick={onConfirm} variant="destructive">
+              Confirm Move-Out
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function BillPaymentTracker({ guests = [], rooms = [], buildings = [] }: BillPaymentTrackerProps) {
   const [selectedBuilding, setSelectedBuilding] = useState<"934" | "949">("934");
   const [searchTerm, setSearchTerm] = useState("");
@@ -86,6 +120,20 @@ export function BillPaymentTracker({ guests = [], rooms = [], buildings = [] }: 
     guestId: 0,
     guestName: "",
     amount: "",
+  });
+
+  const [moveOutDialog, setMoveOutDialog] = useState<{
+    isOpen: boolean;
+    guestId: number;
+    guestName: string;
+    roomNumber: string;
+    roomId: number;
+  }>({
+    isOpen: false,
+    guestId: 0,
+    guestName: "",
+    roomNumber: "",
+    roomId: 0,
   });
 
   const { toast } = useToast();
@@ -122,18 +170,29 @@ export function BillPaymentTracker({ guests = [], rooms = [], buildings = [] }: 
 
   // Mutations for guest actions
   const markMovedOutMutation = useMutation({
-    mutationFn: async ({ guestId }: { guestId: number }) => {
-      return await apiRequest("PATCH", `/api/admin/guests/${guestId}`, {
+    mutationFn: async ({ guestId, roomId }: { guestId: number; roomId: number }) => {
+      // First mark guest as moved out
+      const guestResponse = await apiRequest("PATCH", `/api/admin/guests/${guestId}`, {
         hasMovedOut: true,
         moveOutDate: new Date().toISOString().split('T')[0],
         isActive: false
       });
+      
+      // Then update room status to needs_cleaning
+      const roomResponse = await apiRequest("PATCH", `/api/admin/rooms/${roomId}`, {
+        status: "needs_cleaning",
+        tenantName: null,
+        tenantPhone: null
+      });
+      
+      return { guest: guestResponse, room: roomResponse };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/guests"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/rooms"] });
       toast({
         title: "Guest Moved Out",
-        description: "Guest has been marked as moved out.",
+        description: "Guest has been marked as moved out and room status updated to needs cleaning.",
       });
     },
   });
@@ -153,8 +212,22 @@ export function BillPaymentTracker({ guests = [], rooms = [], buildings = [] }: 
     },
   });
 
-  const handleMoveOut = (guestId: number) => {
-    markMovedOutMutation.mutate({ guestId });
+  const handleMoveOut = (guestId: number, guestName: string, roomId: number, roomNumber: string) => {
+    setMoveOutDialog({
+      isOpen: true,
+      guestId,
+      guestName,
+      roomNumber,
+      roomId,
+    });
+  };
+
+  const confirmMoveOut = () => {
+    markMovedOutMutation.mutate({ 
+      guestId: moveOutDialog.guestId, 
+      roomId: moveOutDialog.roomId 
+    });
+    setMoveOutDialog({ ...moveOutDialog, isOpen: false });
   };
 
   const handlePaymentReceived = (guestId: number, guestName: string, amount: string) => {
@@ -307,7 +380,11 @@ export function BillPaymentTracker({ guests = [], rooms = [], buildings = [] }: 
                       <div>
                         <Checkbox
                           checked={guest.hasMovedOut}
-                          onCheckedChange={() => handleMoveOut(guest.id)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              handleMoveOut(guest.id, guest.guestName, guest.roomId, roomNumber);
+                            }
+                          }}
                           disabled={markMovedOutMutation.isPending}
                         />
                         <div className="text-xs text-gray-500 mt-1">
@@ -388,6 +465,15 @@ export function BillPaymentTracker({ guests = [], rooms = [], buildings = [] }: 
           onConfirm={handlePaymentMethodConfirm}
           guestName={paymentDialog.guestName}
           amount={paymentDialog.amount}
+        />
+
+        {/* Move Out Confirmation Dialog */}
+        <MoveOutConfirmDialog
+          isOpen={moveOutDialog.isOpen}
+          onClose={() => setMoveOutDialog({ ...moveOutDialog, isOpen: false })}
+          onConfirm={confirmMoveOut}
+          guestName={moveOutDialog.guestName}
+          roomNumber={moveOutDialog.roomNumber}
         />
       </div>
     );
