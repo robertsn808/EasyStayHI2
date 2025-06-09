@@ -12,6 +12,7 @@ import {
   guestProfiles,
   portalSecurity,
   systemNotifications,
+  invoices,
   type User,
   type UpsertUser,
   type Building,
@@ -40,7 +41,7 @@ import {
   type InsertSystemNotification,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, gt, desc, asc } from "drizzle-orm";
+import { eq, and, gt, desc, asc, gte, lte } from "drizzle-orm";
 import * as schema from "@shared/schema";
 
 // Interface for storage operations
@@ -127,9 +128,16 @@ export interface IStorage {
   getGuestProfiles(): Promise<GuestProfile[]>;
   getGuestProfilesByRoom(roomId: number): Promise<GuestProfile[]>;
   updateGuestProfile(id: number, data: Partial<InsertGuestProfile>): Promise<GuestProfile>;
-  markPaymentReceived(guestId: number): Promise<GuestProfile>;
+  markPaymentReceived(guestId: number, paymentMethod: string): Promise<GuestProfile>;
+  markGuestMovedOut(guestId: number): Promise<GuestProfile>;
   getPaymentDueGuests(): Promise<GuestProfile[]>;
   getTodaysPaymentDueGuests(): Promise<GuestProfile[]>;
+  getPaymentsDueThisWeek(): Promise<GuestProfile[]>;
+
+  // Invoice Operations
+  createInvoice(data: any): Promise<any>;
+  getInvoices(guestId?: number): Promise<any[]>;
+  generateInvoiceNumber(): Promise<string>;
 
   // Portal Security Operations
   createPortalSecurity(data: InsertPortalSecurity): Promise<PortalSecurity>;
@@ -522,7 +530,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async markPaymentReceived(guestId: number): Promise<GuestProfile> {
+  async markPaymentReceived(guestId: number, paymentMethod: string): Promise<GuestProfile> {
     const today = new Date().toISOString().split('T')[0];
 
     // Get the guest profile to calculate next payment date
@@ -562,12 +570,96 @@ export class DatabaseStorage implements IStorage {
         lastPaymentDate: today,
         nextPaymentDue,
         paymentStatus: 'paid',
+        lastPaymentMethod: paymentMethod,
         updatedAt: new Date(),
       })
       .where(eq(guestProfiles.id, guestId))
       .returning();
 
     return result;
+  }
+
+  async markGuestMovedOut(guestId: number): Promise<GuestProfile> {
+    const today = new Date().toISOString().split('T')[0];
+
+    const [result] = await db
+      .update(guestProfiles)
+      .set({
+        hasMovedOut: true,
+        moveOutDate: today,
+        isActive: false,
+        updatedAt: new Date(),
+      })
+      .where(eq(guestProfiles.id, guestId))
+      .returning();
+
+    return result;
+  }
+
+  async getPaymentsDueThisWeek(): Promise<GuestProfile[]> {
+    const today = new Date();
+    const startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+    const endOfWeek = new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000);
+
+    return await db
+      .select()
+      .from(guestProfiles)
+      .where(
+        and(
+          eq(guestProfiles.isActive, true),
+          eq(guestProfiles.hasMovedOut, false),
+          gt(guestProfiles.nextPaymentDue, startOfWeek.toISOString().split('T')[0]),
+          gt(endOfWeek.toISOString().split('T')[0], guestProfiles.nextPaymentDue)
+        )
+      )
+      .orderBy(asc(guestProfiles.nextPaymentDue));
+  }
+
+  async generateInvoiceNumber(): Promise<string> {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    
+    // Get count of invoices this month
+    const startOfMonth = `${year}-${month}-01`;
+    const endOfMonth = `${year}-${month}-31`;
+    
+    const count = await db
+      .select()
+      .from(schema.invoices)
+      .where(
+        and(
+          gt(schema.invoices.createdAt, new Date(startOfMonth)),
+          gt(new Date(endOfMonth), schema.invoices.createdAt)
+        )
+      );
+
+    const invoiceNumber = `INV-${year}${month}-${String(count.length + 1).padStart(4, '0')}`;
+    return invoiceNumber;
+  }
+
+  async createInvoice(data: any): Promise<any> {
+    const [result] = await db
+      .insert(schema.invoices)
+      .values(data)
+      .returning();
+
+    return result;
+  }
+
+  async getInvoices(guestId?: number): Promise<any[]> {
+    if (guestId) {
+      return await db
+        .select()
+        .from(schema.invoices)
+        .where(eq(schema.invoices.guestId, guestId))
+        .orderBy(desc(schema.invoices.createdAt));
+    }
+
+    return await db
+      .select()
+      .from(schema.invoices)
+      .orderBy(desc(schema.invoices.createdAt));
   }
 
   async getPaymentDueGuests(): Promise<GuestProfile[]> {
