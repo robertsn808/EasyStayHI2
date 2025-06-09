@@ -45,7 +45,7 @@ export default function PublicPageEditor() {
   });
 
   // Update local state when settings are loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (contactSettings && typeof contactSettings === 'object') {
       setPublicContactInfo(prevInfo => ({ ...prevInfo, ...contactSettings }));
     }
@@ -461,7 +461,7 @@ export default function PublicPageEditor() {
                           type="email"
                           value={publicContactInfo.email}
                           onChange={(e) => setPublicContactInfo(prev => ({...prev, email: e.target.value}))}
-                          placeholder="contact@eaststayhi.com"
+                          placeholder="contact@easystayhi.com"
                         />
                         <p className="text-xs text-gray-500 mt-1">For general inquiries</p>
                       </div>
@@ -504,8 +504,12 @@ export default function PublicPageEditor() {
                     </div>
                   </div>
                   
-                  <Button className="w-full">
-                    Save Public Contact Information
+                  <Button 
+                    className="w-full"
+                    onClick={() => saveContactSettingsMutation.mutate(publicContactInfo)}
+                    disabled={saveContactSettingsMutation.isPending}
+                  >
+                    {saveContactSettingsMutation.isPending ? "Saving..." : "Save Public Contact Information"}
                   </Button>
                 </CardContent>
               </Card>
