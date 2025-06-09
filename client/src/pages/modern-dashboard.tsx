@@ -30,6 +30,7 @@ type TabType =
   | "todos"
   | "receipts"
   | "payment-history"
+  | "financial-reports"
   | "public-page-editor"
   | "admin-dashboard";
 
@@ -104,6 +105,7 @@ export default function ModernDashboard() {
       "todos": "todos",
       "receipts": "receipts",
       "payment-history": "payment-history",
+      "financial-reports": "financial-reports",
       "public-page-editor": "public-page-editor",
       "admin-dashboard": "admin-dashboard"
     };

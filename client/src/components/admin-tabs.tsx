@@ -14,6 +14,7 @@ import { SettingsTab } from "@/components/SettingsTab";
 import { BuildingTab } from "@/components/BuildingTab";
 import { PaymentTrackerTab } from "@/components/PaymentTrackerTab";
 import { QuickAccessTab } from "@/components/QuickAccessTab";
+import { FinancialReportsTab } from "@/components/FinancialReportsTab";
 
 interface AdminTabsProps {
   activeTab?: string;
@@ -182,6 +183,14 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
               </CardContent>
             </Card>
           </div>
+        )}
+
+        {selectedTab === "financial-reports" && (
+          <FinancialReportsTab 
+            payments={Array.isArray(payments) ? payments : []}
+            receipts={Array.isArray(receipts) ? receipts : []}
+            buildings={Array.isArray(buildings) ? buildings : []}
+          />
         )}
         
         {selectedTab === "calendar" && (

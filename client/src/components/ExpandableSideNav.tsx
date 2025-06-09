@@ -277,6 +277,15 @@ export default function ExpandableSideNav({
           color: "slate",
           description: "Complete payment transaction history",
           urgent: false
+        },
+        {
+          id: "financial-reports",
+          label: "Financial Reports",
+          icon: TrendingUp,
+          badge: null,
+          color: "blue",
+          description: "P&L statements and revenue analysis",
+          urgent: false
         }
       ] as NavigationItem[]
     }
