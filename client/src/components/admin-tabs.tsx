@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { crossTabSync } from "@/lib/crossTabSync";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { InquiriesTab } from "@/components/InquiriesTab";
 import { MaintenanceTab } from "@/components/MaintenanceTab";
@@ -30,6 +31,37 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
   useEffect(() => {
     setSelectedTab(activeTab);
   }, [activeTab]);
+
+  // Setup cross-tab communication on mount
+  useEffect(() => {
+    const unsubscribers = [
+      crossTabSync.subscribe('payment-updated', () => {
+        // Data will be automatically invalidated by crossTabSync
+      }),
+      crossTabSync.subscribe('expense-updated', () => {
+        // Data will be automatically invalidated by crossTabSync
+      }),
+      crossTabSync.subscribe('receipt-updated', () => {
+        // Data will be automatically invalidated by crossTabSync
+      }),
+      crossTabSync.subscribe('maintenance-updated', () => {
+        // Data will be automatically invalidated by crossTabSync
+      }),
+      crossTabSync.subscribe('inquiry-updated', () => {
+        // Data will be automatically invalidated by crossTabSync
+      }),
+      crossTabSync.subscribe('guest-updated', () => {
+        // Data will be automatically invalidated by crossTabSync
+      }),
+      crossTabSync.subscribe('room-updated', () => {
+        // Data will be automatically invalidated by crossTabSync
+      })
+    ];
+
+    return () => {
+      unsubscribers.forEach(unsub => unsub());
+    };
+  }, []);
 
   const isAdminAuthenticated = localStorage.getItem('admin-authenticated') === 'true';
 

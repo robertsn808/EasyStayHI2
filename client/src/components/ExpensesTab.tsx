@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { crossTabSync } from "@/lib/crossTabSync";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -68,6 +69,8 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/receipts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/expenses"] });
+      crossTabSync.notifyExpenseUpdate();
+      crossTabSync.notifyReceiptUpdate();
       setShowAddExpense(false);
     },
     onError: (error: any) => {
