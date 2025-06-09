@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Plus, DollarSign, Edit, Trash2, FileText } from "lucide-react";
@@ -126,9 +127,7 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
   };
 
   const handleDeleteExpense = (id: number) => {
-    if (confirm("Are you sure you want to delete this expense?")) {
-      deleteExpenseMutation.mutate(id);
-    }
+    deleteExpenseMutation.mutate(id);
   };
 
   const handleEditClick = (expense: any) => {
