@@ -471,7 +471,7 @@ export default function ModernDashboard() {
           <div className="flex space-x-3 border-b border-gray-200 overflow-x-auto pb-2">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "dashboard"
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -482,7 +482,7 @@ export default function ModernDashboard() {
             
             <button
               onClick={() => setActiveTab("inbox")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors relative whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors relative whitespace-nowrap ${
                 activeTab === "inbox"
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -498,7 +498,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("calendar")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "calendar"
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -509,7 +509,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("934")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "934"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -520,7 +520,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("949")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "949"
                   ? "border-purple-500 text-purple-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -531,7 +531,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("rent-tracker")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "rent-tracker"
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -542,7 +542,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("maintenance")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "maintenance"
                   ? "border-orange-500 text-orange-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -558,14 +558,14 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => window.location.href = '/public-editor'}
-              className="pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              className="pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             >
               Public Editor
             </button>
 
             <button
               onClick={() => setActiveTab("contacts")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "contacts"
                   ? "border-teal-500 text-teal-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -581,7 +581,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("inventory")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "inventory"
                   ? "border-amber-500 text-amber-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -597,7 +597,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("todos")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "todos"
                   ? "border-violet-500 text-violet-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -613,7 +613,7 @@ export default function ModernDashboard() {
 
             <button
               onClick={() => setActiveTab("receipts")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              className={`pb-3 px-2 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "receipts"
                   ? "border-indigo-500 text-indigo-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
