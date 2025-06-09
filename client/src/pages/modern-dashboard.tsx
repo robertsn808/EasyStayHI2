@@ -565,22 +565,6 @@ export default function ModernDashboard() {
             </button>
 
             <button
-              onClick={() => setActiveTab("announcements")}
-              className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === "announcements"
-                  ? "border-pink-500 text-pink-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              Announcements
-              {Array.isArray(announcements) && announcements.length > 0 && (
-                <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-pink-500 rounded-full">
-                  {announcements.length}
-                </span>
-              )}
-            </button>
-
-            <button
               onClick={() => setActiveTab("contacts")}
               className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === "contacts"

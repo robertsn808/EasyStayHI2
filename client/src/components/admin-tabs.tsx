@@ -9,7 +9,7 @@ import { CalendarTab } from "@/components/CalendarTab";
 import { InventoryTab } from "@/components/InventoryTab";
 import { ReceiptsTab } from "@/components/ReceiptsTab";
 import { TodosTab } from "@/components/TodosTab";
-import { AnnouncementsTab } from "@/components/AnnouncementsTab";
+
 import { SettingsTab } from "@/components/SettingsTab";
 import { BuildingTab } from "@/components/BuildingTab";
 import { PaymentTrackerTab } from "@/components/PaymentTrackerTab";
@@ -156,11 +156,7 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
         )}
 
         {selectedTab === "payment-tracker" && (
-          <PaymentTrackerTab
-            payments={Array.isArray(payments) ? payments : []}
-            rooms={Array.isArray(rooms) ? rooms : []}
-            guests={Array.isArray(guests) ? guests : []}
-          />
+          <PaymentTrackerTab />
         )}
 
         {selectedTab === "maintenance" && (
@@ -173,10 +169,6 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
         
         {selectedTab === "payments" && (
           <PaymentsTab payments={Array.isArray(payments) ? payments : []} />
-        )}
-        
-        {selectedTab === "announcements" && (
-          <AnnouncementsTab announcements={Array.isArray(announcements) ? announcements : []} />
         )}
         
         {selectedTab === "calendar" && (
