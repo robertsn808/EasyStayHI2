@@ -75,7 +75,7 @@ export async function registerBiometric(): Promise<{ success: boolean; message: 
       response: {
         clientDataJSON: arrayBufferToBase64(response.clientDataJSON),
         attestationObject: arrayBufferToBase64(response.attestationObject),
-        publicKey: arrayBufferToBase64(response.getPublicKey()?.buffer || new ArrayBuffer(0)),
+        publicKey: arrayBufferToBase64(response.getPublicKey() || new ArrayBuffer(0)),
         deviceType: 'platform'
       },
       type: credential.type
