@@ -175,6 +175,13 @@ export interface IStorage {
   // Public Contact Settings
   getPublicContactSettings(): Promise<schema.PublicContactSettings | undefined>;
   updatePublicContactSettings(data: Partial<schema.InsertPublicContactSettings>): Promise<schema.PublicContactSettings>;
+
+  // Biometric Authentication
+  createBiometricCredential(data: schema.InsertBiometricCredential): Promise<schema.BiometricCredential>;
+  getBiometricCredential(credentialId: string): Promise<schema.BiometricCredential | undefined>;
+  updateBiometricCredentialCounter(credentialId: string, counter: number): Promise<schema.BiometricCredential>;
+  deleteBiometricCredential(credentialId: string): Promise<void>;
+  getAllBiometricCredentials(): Promise<schema.BiometricCredential[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1024,6 +1031,45 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return result[0];
     }
+  }
+
+  // Biometric Authentication Methods
+  async createBiometricCredential(data: schema.InsertBiometricCredential): Promise<schema.BiometricCredential> {
+    const [credential] = await db
+      .insert(schema.biometricCredentials)
+      .values(data)
+      .returning();
+    return credential;
+  }
+
+  async getBiometricCredential(credentialId: string): Promise<schema.BiometricCredential | undefined> {
+    const [credential] = await db
+      .select()
+      .from(schema.biometricCredentials)
+      .where(eq(schema.biometricCredentials.credentialId, credentialId));
+    return credential;
+  }
+
+  async updateBiometricCredentialCounter(credentialId: string, counter: number): Promise<schema.BiometricCredential> {
+    const [credential] = await db
+      .update(schema.biometricCredentials)
+      .set({ 
+        counter,
+        lastUsed: new Date()
+      })
+      .where(eq(schema.biometricCredentials.credentialId, credentialId))
+      .returning();
+    return credential;
+  }
+
+  async deleteBiometricCredential(credentialId: string): Promise<void> {
+    await db
+      .delete(schema.biometricCredentials)
+      .where(eq(schema.biometricCredentials.credentialId, credentialId));
+  }
+
+  async getAllBiometricCredentials(): Promise<schema.BiometricCredential[]> {
+    return await db.select().from(schema.biometricCredentials);
   }
 }
 

@@ -439,3 +439,22 @@ export const insertNotificationSchema = {
 export const insertGuestProfileSchema = {
   parse: (data: any) => data as InsertGuestProfile
 };
+
+// Biometric authentication credentials table
+export const biometricCredentials = pgTable("biometric_credentials", {
+  id: serial("id").primaryKey(),
+  credentialId: text("credential_id").notNull().unique(),
+  publicKey: text("public_key").notNull(),
+  counter: integer("counter").notNull().default(0),
+  deviceType: varchar("device_type", { length: 100 }),
+  userHandle: text("user_handle").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastUsed: timestamp("last_used"),
+});
+
+export type BiometricCredential = typeof biometricCredentials.$inferSelect;
+export type InsertBiometricCredential = typeof biometricCredentials.$inferInsert;
+
+export const insertBiometricCredentialSchema = {
+  parse: (data: any) => data as InsertBiometricCredential
+};

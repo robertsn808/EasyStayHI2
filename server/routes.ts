@@ -54,6 +54,146 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Biometric authentication endpoints
+  app.post('/api/auth/biometric/register-challenge', simpleAdminAuth, async (req, res) => {
+    try {
+      // Generate a challenge for biometric registration
+      const challenge = crypto.randomUUID();
+      const userHandle = 'admin'; // Fixed for admin user
+      
+      const registrationOptions = {
+        challenge: new TextEncoder().encode(challenge),
+        rp: {
+          name: "EasyStay HI Admin",
+          id: req.get('host')?.split(':')[0] || 'localhost'
+        },
+        user: {
+          id: new TextEncoder().encode(userHandle),
+          name: "admin",
+          displayName: "Admin User"
+        },
+        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+        authenticatorSelection: {
+          authenticatorAttachment: "platform",
+          userVerification: "required"
+        },
+        timeout: 60000,
+        attestation: "direct"
+      };
+
+      res.json({
+        challenge: challenge,
+        options: registrationOptions
+      });
+    } catch (error) {
+      console.error("Biometric registration challenge error:", error);
+      res.status(500).json({ message: "Failed to generate registration challenge" });
+    }
+  });
+
+  app.post('/api/auth/biometric/register', simpleAdminAuth, async (req, res) => {
+    try {
+      const { credential, challenge } = req.body;
+      
+      // Store the biometric credential
+      await storage.createBiometricCredential({
+        credentialId: credential.id,
+        publicKey: credential.response.publicKey,
+        counter: 0,
+        deviceType: credential.response.deviceType || 'unknown',
+        userHandle: 'admin'
+      });
+
+      res.json({ 
+        success: true,
+        message: "Biometric authentication registered successfully"
+      });
+    } catch (error) {
+      console.error("Biometric registration error:", error);
+      res.status(500).json({ message: "Failed to register biometric authentication" });
+    }
+  });
+
+  app.post('/api/auth/biometric/login-challenge', async (req, res) => {
+    try {
+      // Get all registered credentials for challenge
+      const credentials = await storage.getAllBiometricCredentials();
+      const challenge = crypto.randomUUID();
+      
+      const authenticationOptions = {
+        challenge: new TextEncoder().encode(challenge),
+        allowCredentials: credentials.map(cred => ({
+          id: cred.credentialId,
+          type: "public-key"
+        })),
+        userVerification: "required",
+        timeout: 60000
+      };
+
+      res.json({
+        challenge: challenge,
+        options: authenticationOptions
+      });
+    } catch (error) {
+      console.error("Biometric login challenge error:", error);
+      res.status(500).json({ message: "Failed to generate login challenge" });
+    }
+  });
+
+  app.post('/api/auth/biometric/login', async (req, res) => {
+    try {
+      const { credential, challenge } = req.body;
+      
+      // Verify the credential exists
+      const storedCredential = await storage.getBiometricCredential(credential.id);
+      if (!storedCredential) {
+        return res.status(401).json({ message: "Invalid biometric credential" });
+      }
+
+      // Update counter and last used
+      await storage.updateBiometricCredentialCounter(credential.id, storedCredential.counter + 1);
+
+      res.json({ 
+        success: true,
+        message: "Biometric login successful",
+        token: "admin-authenticated",
+        user: { username: "admin", role: "admin" }
+      });
+    } catch (error) {
+      console.error("Biometric login error:", error);
+      res.status(500).json({ message: "Failed to authenticate with biometric" });
+    }
+  });
+
+  app.get('/api/auth/biometric/status', simpleAdminAuth, async (req, res) => {
+    try {
+      const credentials = await storage.getAllBiometricCredentials();
+      res.json({ 
+        hasRegisteredDevice: credentials.length > 0,
+        deviceCount: credentials.length,
+        devices: credentials.map(cred => ({
+          id: cred.id,
+          deviceType: cred.deviceType,
+          createdAt: cred.createdAt,
+          lastUsed: cred.lastUsed
+        }))
+      });
+    } catch (error) {
+      console.error("Biometric status error:", error);
+      res.status(500).json({ message: "Failed to get biometric status" });
+    }
+  });
+
+  app.delete('/api/auth/biometric/:credentialId', simpleAdminAuth, async (req, res) => {
+    try {
+      await storage.deleteBiometricCredential(req.params.credentialId);
+      res.json({ success: true, message: "Biometric device removed" });
+    } catch (error) {
+      console.error("Biometric deletion error:", error);
+      res.status(500).json({ message: "Failed to remove biometric device" });
+    }
+  });
+
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
