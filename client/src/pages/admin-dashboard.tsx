@@ -143,7 +143,9 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     try {
       localStorage.removeItem('admin-authenticated');
+      localStorage.removeItem('admin-token');
       setIsAdminAuthenticated(false);
+      setAdminCredentials({ username: '', password: '' });
       setLocation("/");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -568,15 +570,7 @@ export default function AdminDashboard() {
                   Inventory ({Array.isArray(inventory) ? inventory.length : 0})
                 </Button>
                 
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="text-xs h-8 justify-start"
-                  onClick={() => setActiveTab("receipts")}
-                >
-                  <Receipt className="h-3 w-3 mr-2" />
-                  Receipts ({Array.isArray(receipts) ? receipts.length : 0})
-                </Button>
+
               </div>
             </div>
 
