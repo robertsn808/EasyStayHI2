@@ -97,20 +97,46 @@ export default function ExpandableSideNav({
 
   const navigationSections = [
     {
-      title: "Properties",
+      title: "Dashboard",
       expanded: propertiesExpanded,
       setExpanded: setPropertiesExpanded,
-      icon: Building,
+      icon: Home,
       items: [
         {
-          id: "quick-access",
-          label: "Dashboard Overview",
+          id: "dashboard",
+          label: "Dashboard",
           icon: Home,
           badge: null,
-          color: "slate",
-          description: "Main dashboard with system overview",
+          color: "green",
+          description: "Main dashboard overview",
           urgent: false
         },
+        {
+          id: "inbox",
+          label: "Inbox",
+          icon: MessageSquare,
+          badge: Array.isArray(inquiries) ? inquiries.filter((i: any) => i.status === 'pending').length : 0,
+          color: "green",
+          description: "Customer inquiries and communications",
+          urgent: false
+        },
+        {
+          id: "calendar",
+          label: "Calendar",
+          icon: Calendar,
+          badge: Array.isArray(calendarEvents) ? calendarEvents.length : 0,
+          color: "green",
+          description: "Schedule and events management",
+          urgent: false
+        }
+      ] as NavigationItem[]
+    },
+    {
+      title: "Properties",
+      expanded: operationsExpanded,
+      setExpanded: setOperationsExpanded,
+      icon: Building,
+      items: [
         {
           id: "934",
           label: "934 Kapahulu Ave",
@@ -133,8 +159,8 @@ export default function ExpandableSideNav({
     },
     {
       title: "Operations",
-      expanded: operationsExpanded,
-      setExpanded: setOperationsExpanded,
+      expanded: managementExpanded,
+      setExpanded: setManagementExpanded,
       icon: Activity,
       items: [
         {
@@ -156,33 +182,7 @@ export default function ExpandableSideNav({
           urgent: urgentItems.urgentMaintenance > 0
         },
         {
-          id: "inquiries",
-          label: "Inquiries",
-          icon: MessageSquare,
-          badge: Array.isArray(inquiries) ? inquiries.length : 0,
-          color: "cyan",
-          description: "Customer inquiries and communications",
-          urgent: false
-        },
-        {
-          id: "calendar",
-          label: "Calendar",
-          icon: Calendar,
-          badge: Array.isArray(calendarEvents) ? calendarEvents.length : 0,
-          color: "indigo",
-          description: "Schedule and events management",
-          urgent: false
-        }
-      ] as NavigationItem[]
-    },
-    {
-      title: "Management",
-      expanded: managementExpanded,
-      setExpanded: setManagementExpanded,
-      icon: ClipboardList,
-      items: [
-        {
-          id: "announcements",
+          id: "announcement",
           label: "Announcements",
           icon: Megaphone,
           badge: Array.isArray(announcements) ? announcements.length : 0,
@@ -191,12 +191,29 @@ export default function ExpandableSideNav({
           urgent: false
         },
         {
+          id: "inquiries",
+          label: "Inquiries",
+          icon: MessageSquare,
+          badge: Array.isArray(inquiries) ? inquiries.length : 0,
+          color: "cyan",
+          description: "Customer inquiries and communications",
+          urgent: false
+        }
+      ] as NavigationItem[]
+    },
+    {
+      title: "Management",
+      expanded: reportsExpanded,
+      setExpanded: setReportsExpanded,
+      icon: ClipboardList,
+      items: [
+        {
           id: "contacts",
-          label: "Contacts",
+          label: "Contact Directory",
           icon: Contact,
           badge: Array.isArray(contacts) ? contacts.length : 0,
           color: "teal",
-          description: "Guest and vendor contact management",
+          description: "Manage public contact information",
           urgent: false
         },
         {
@@ -216,6 +233,24 @@ export default function ExpandableSideNav({
           color: "violet",
           description: "Task management and workflow",
           urgent: urgentItems.incompleteTodos > 0
+        },
+        {
+          id: "public-page-editor",
+          label: "Public Page Editor",
+          icon: Settings,
+          badge: null,
+          color: "slate",
+          description: "Edit public website content",
+          urgent: false
+        },
+        {
+          id: "admin-dashboard",
+          label: "Admin Dashboard",
+          icon: Settings,
+          badge: null,
+          color: "slate",
+          description: "Administrative controls",
+          urgent: false
         }
       ] as NavigationItem[]
     },
@@ -393,9 +428,8 @@ export default function ExpandableSideNav({
       <div className={`
         fixed top-0 left-0 h-full bg-white/95 backdrop-blur-lg border-r border-gray-200 shadow-xl z-50 
         transition-all duration-300 ease-in-out transform
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         ${isCollapsed ? 'w-16' : isExpanded ? 'w-80' : 'w-64'}
-        lg:hidden
         ${isTransitioning ? 'overflow-hidden' : ''}
       `}>
         <div className="flex flex-col h-full">
@@ -498,27 +532,41 @@ export default function ExpandableSideNav({
 
           {/* Navigation Content */}
           <ScrollArea className="flex-1">
-            <div className="p-4 space-y-3">
+            <div className={`transition-all duration-300 space-y-3 ${isCollapsed ? 'p-1' : 'p-4'}`}>
               {filteredSections.map((section) => (
                 <div key={section.title} className="space-y-2">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between text-sm font-semibold text-gray-700 hover:bg-gray-100 h-8"
-                    onClick={() => section.setExpanded(!section.expanded)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <section.icon className="h-4 w-4" />
-                      {section.title}
+                  {!isCollapsed ? (
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-between text-sm font-semibold text-gray-700 hover:bg-gray-100 h-8"
+                      onClick={() => section.setExpanded(!section.expanded)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <section.icon className="h-4 w-4" />
+                        {section.title}
+                      </div>
+                      {section.expanded ? (
+                        <ChevronDown className="h-3 w-3" />
+                      ) : (
+                        <ChevronRight className="h-3 w-3" />
+                      )}
+                    </Button>
+                  ) : (
+                    <div className="flex justify-center py-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        onClick={() => section.setExpanded(!section.expanded)}
+                        title={section.title}
+                      >
+                        <section.icon className="h-4 w-4 text-gray-600" />
+                      </Button>
                     </div>
-                    {section.expanded ? (
-                      <ChevronDown className="h-3 w-3" />
-                    ) : (
-                      <ChevronRight className="h-3 w-3" />
-                    )}
-                  </Button>
+                  )}
                   
-                  {section.expanded && (
-                    <div className="space-y-1 pl-2">
+                  {(section.expanded || isCollapsed) && (
+                    <div className={`space-y-1 transition-all duration-300 ${isCollapsed ? 'pl-0' : 'pl-2'}`}>
                       {section.items.map((item) => {
                         const isActive = activeTab === item.id;
                         const colors = getColorClasses(item.color, isActive);
@@ -527,9 +575,10 @@ export default function ExpandableSideNav({
                           <div
                             key={item.id}
                             className={`
-                              group cursor-pointer p-3 rounded-lg border transition-all duration-200
+                              group cursor-pointer rounded-lg border transition-all duration-200 relative
+                              ${isCollapsed ? 'p-2 mx-1' : 'p-3'}
                               ${isActive 
-                                ? `${colors.bg} ${colors.border} border-l-4 shadow-sm` 
+                                ? `${colors.bg} ${colors.border} ${!isCollapsed ? 'border-l-4' : ''} shadow-sm` 
                                 : "bg-white hover:bg-gray-50 border-gray-200 hover:border-gray-300"
                               }
                             `}
@@ -537,44 +586,68 @@ export default function ExpandableSideNav({
                               setActiveTab(item.id);
                               setIsOpen(false);
                             }}
+                            title={isCollapsed ? item.label : undefined}
                           >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3 flex-1">
+                            {isCollapsed ? (
+                              // Collapsed view - icon only with badge
+                              <div className="flex justify-center relative">
                                 <div className={`
-                                  p-1.5 rounded-md
+                                  p-1.5 rounded-md transition-all duration-200
                                   ${isActive ? colors.bg : 'bg-gray-100 group-hover:bg-gray-200'}
                                 `}>
                                   <item.icon className={`h-4 w-4 ${isActive ? colors.icon : 'text-gray-500'}`} />
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <p className={`text-sm font-medium truncate ${isActive ? colors.text : 'text-gray-700'}`}>
-                                      {item.label}
-                                    </p>
-                                    {item.urgent && (
-                                      <AlertCircle className="h-3 w-3 text-red-500 flex-shrink-0" />
+                                {item.badge !== null && item.badge > 0 && (
+                                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                                    <span className="text-xs text-white font-bold">
+                                      {item.badge > 9 ? '9+' : item.badge}
+                                    </span>
+                                  </div>
+                                )}
+                                {item.urgent && (
+                                  <AlertCircle className="absolute -bottom-1 -left-1 h-3 w-3 text-red-500" />
+                                )}
+                              </div>
+                            ) : (
+                              // Expanded view - full layout
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3 flex-1">
+                                  <div className={`
+                                    p-1.5 rounded-md
+                                    ${isActive ? colors.bg : 'bg-gray-100 group-hover:bg-gray-200'}
+                                  `}>
+                                    <item.icon className={`h-4 w-4 ${isActive ? colors.icon : 'text-gray-500'}`} />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <p className={`text-sm font-medium truncate ${isActive ? colors.text : 'text-gray-700'}`}>
+                                        {item.label}
+                                      </p>
+                                      {item.urgent && (
+                                        <AlertCircle className="h-3 w-3 text-red-500 flex-shrink-0" />
+                                      )}
+                                    </div>
+                                    {isExpanded && (
+                                      <p className="text-xs text-gray-500 truncate mt-0.5">
+                                        {item.description}
+                                      </p>
                                     )}
                                   </div>
-                                  {isExpanded && (
-                                    <p className="text-xs text-gray-500 truncate mt-0.5">
-                                      {item.description}
-                                    </p>
-                                  )}
                                 </div>
+                                {item.badge !== null && item.badge > 0 && (
+                                  <Badge 
+                                    variant="secondary" 
+                                    className={`text-xs h-5 px-1.5 ${
+                                      item.urgent 
+                                        ? 'bg-red-100 text-red-700 border-red-200' 
+                                        : 'bg-gray-200 text-gray-700'
+                                    }`}
+                                  >
+                                    {item.badge}
+                                  </Badge>
+                                )}
                               </div>
-                              {item.badge !== null && item.badge > 0 && (
-                                <Badge 
-                                  variant="secondary" 
-                                  className={`text-xs h-5 px-1.5 ${
-                                    item.urgent 
-                                      ? 'bg-red-100 text-red-700 border-red-200' 
-                                      : 'bg-gray-200 text-gray-700'
-                                  }`}
-                                >
-                                  {item.badge}
-                                </Badge>
-                              )}
-                            </div>
+                            )}
                           </div>
                         );
                       })}
