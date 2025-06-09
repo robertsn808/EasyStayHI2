@@ -225,7 +225,6 @@ export default function TenantPortal() {
                     {filteredRooms.map((room) => (
                       <SelectItem key={room.id} value={room.number}>
                         Room {room.number}
-                        {room.tenantName && ` (${room.tenantName})`}
                       </SelectItem>
                     ))}
                   </SelectContent>
