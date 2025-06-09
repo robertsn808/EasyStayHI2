@@ -270,7 +270,7 @@ export default function ExpandableSideNav({
           urgent: false
         },
         {
-          id: "payments",
+          id: "payment-history",
           label: "Payment History",
           icon: FileText,
           badge: null,

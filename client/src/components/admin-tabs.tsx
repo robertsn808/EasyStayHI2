@@ -170,6 +170,19 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
         {selectedTab === "payments" && (
           <PaymentsTab payments={Array.isArray(payments) ? payments : []} />
         )}
+
+        {selectedTab === "payment-history" && (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Payment History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PaymentsTab payments={Array.isArray(payments) ? payments : []} showHistoryView={true} />
+              </CardContent>
+            </Card>
+          </div>
+        )}
         
         {selectedTab === "calendar" && (
           <CalendarTab events={Array.isArray(calendarEvents) ? calendarEvents : []} />
@@ -189,6 +202,38 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
         
         {selectedTab === "todos" && (
           <TodosTab todos={Array.isArray(todos) ? todos : []} />
+        )}
+
+        {selectedTab === "public-page-editor" && (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Public Page Editor</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Manage your public website content, contact information, and display settings.
+                </p>
+                <ContactsTab contacts={Array.isArray(contacts) ? contacts : []} />
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {selectedTab === "admin-dashboard" && (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Administrative Dashboard</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Access administrative controls and system settings.
+                </p>
+                <SettingsTab />
+              </CardContent>
+            </Card>
+          </div>
         )}
         
         {selectedTab === "settings" && <SettingsTab />}

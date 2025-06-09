@@ -29,6 +29,7 @@ type TabType =
   | "inventory"
   | "todos"
   | "receipts"
+  | "payment-history"
   | "public-page-editor"
   | "admin-dashboard";
 
@@ -135,18 +136,18 @@ export default function ModernDashboard() {
       {/* Expandable Sidebar Navigation */}
       <ExpandableSideNav
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        rooms={rooms}
-        guests={guests}
-        inquiries={inquiries}
-        maintenanceRequests={maintenanceRequests}
-        payments={payments}
-        announcements={announcements}
-        calendarEvents={calendarEvents}
-        contacts={contacts}
-        inventory={inventory}
-        receipts={receipts}
-        todos={todos}
+        setActiveTab={(tab: string) => setActiveTab(tab as TabType)}
+        rooms={Array.isArray(rooms) ? rooms : []}
+        guests={Array.isArray(guests) ? guests : []}
+        inquiries={Array.isArray(inquiries) ? inquiries : []}
+        maintenanceRequests={Array.isArray(maintenanceRequests) ? maintenanceRequests : []}
+        payments={Array.isArray(payments) ? payments : []}
+        announcements={Array.isArray(announcements) ? announcements : []}
+        calendarEvents={Array.isArray(calendarEvents) ? calendarEvents : []}
+        contacts={Array.isArray(contacts) ? contacts : []}
+        inventory={Array.isArray(inventory) ? inventory : []}
+        receipts={Array.isArray(receipts) ? receipts : []}
+        todos={Array.isArray(todos) ? todos : []}
       />
       
       {/* Main Content with Sidebar Space */}

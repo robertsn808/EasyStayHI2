@@ -14,9 +14,10 @@ import { Plus, DollarSign, Receipt, FileText, Download } from "lucide-react";
 
 interface PaymentsTabProps {
   payments?: any[];
+  showHistoryView?: boolean;
 }
 
-export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
+export function PaymentsTab({ payments = [], showHistoryView = false }: PaymentsTabProps) {
   const { toast } = useToast();
   const [activeSubTab, setActiveSubTab] = useState("payments");
   const [showAddPayment, setShowAddPayment] = useState(false);
