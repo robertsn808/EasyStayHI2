@@ -25,9 +25,11 @@ export default function AdminLogin() {
       const response = await apiRequest("POST", "/api/auth/admin-login", {
         username,
         password,
-      }) as any;
+      });
 
-      if (response?.success) {
+      const data = await response.json();
+
+      if (data?.success) {
         localStorage.setItem('admin-authenticated', 'true');
         toast({
           title: "Login Successful",
@@ -35,9 +37,10 @@ export default function AdminLogin() {
         });
         setLocation("/admin");
       } else {
-        setError("Invalid username or password");
+        setError(data?.message || "Invalid username or password");
       }
     } catch (err) {
+      console.error("Login error:", err);
       setError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
