@@ -19,6 +19,7 @@ import { FinancialReportsTab } from "@/components/FinancialReportsTab";
 import { ExpensesTab } from "@/components/ExpensesTab";
 import { PaymentHistoryTab } from "@/components/PaymentHistoryTab";
 import { ReceiptEditorTab } from "@/components/ReceiptEditorTab";
+import BiometricAuthSettings from "@/components/BiometricAuthSettings";
 
 interface AdminTabsProps {
   activeTab?: string;
@@ -307,7 +308,28 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
           </div>
         )}
         
-        {selectedTab === "settings" && <SettingsTab />}
+        {selectedTab === "settings" && (
+          <div className="space-y-6">
+            <SettingsTab />
+            <BiometricAuthSettings />
+          </div>
+        )}
+
+        {selectedTab === "security" && (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Security Settings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-6">
+                  Manage your account security and authentication methods.
+                </p>
+                <BiometricAuthSettings />
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

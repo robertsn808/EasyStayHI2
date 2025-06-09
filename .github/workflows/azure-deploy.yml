@@ -1,0 +1,87 @@
+name: Deploy to Azure App Service
+
+on:
+  push:
+    branches: [main, production]
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: easystay-hi
+  NODE_VERSION: '18.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run type checking
+      run: npm run check
+
+    - name: Build application
+      run: npm run build
+      env:
+        NODE_ENV: production
+
+    - name: Create deployment package
+      run: |
+        mkdir deployment
+        cp -r dist deployment/
+        cp -r public deployment/ || true
+        cp package.json deployment/
+        cp package-lock.json deployment/
+        cp web.config deployment/
+        cp .env.production deployment/.env || true
+        
+        # Create minimal package.json for production
+        cat > deployment/package.json << EOF
+        {
+          "name": "easystay-hi",
+          "version": "1.0.0",
+          "type": "module",
+          "scripts": {
+            "start": "node dist/index.js"
+          },
+          "dependencies": {
+            "express": "^4.21.2",
+            "@neondatabase/serverless": "^0.10.4",
+            "drizzle-orm": "^0.39.1",
+            "express-session": "^1.18.1",
+            "connect-pg-simple": "^10.0.0",
+            "passport": "^0.7.0",
+            "passport-local": "^1.0.0",
+            "jsonwebtoken": "^9.0.2",
+            "openid-client": "^6.5.1",
+            "nanoid": "^5.1.5",
+            "memoizee": "^0.4.17",
+            "memorystore": "^1.6.7",
+            "qrcode": "^1.5.4",
+            "ws": "^8.18.0",
+            "zod": "^3.24.2",
+            "zod-validation-error": "^3.4.0"
+          }
+        }
+        EOF
+
+    - name: 'Deploy to Azure WebApp'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: ./deployment
+
+    - name: 'Run post-deployment health check'
+      run: |
+        sleep 30
+        curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/api/health || exit 1

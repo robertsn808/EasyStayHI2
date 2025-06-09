@@ -212,6 +212,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Health check endpoint for Azure deployment
+  app.get("/api/health", async (req, res) => {
+    try {
+      // Basic health check - verify database connection
+      const rooms = await storage.getRooms();
+      res.json({ 
+        status: "healthy", 
+        timestamp: new Date().toISOString(),
+        database: "connected",
+        environment: process.env.NODE_ENV || "development"
+      });
+    } catch (error) {
+      res.status(503).json({ 
+        status: "unhealthy", 
+        timestamp: new Date().toISOString(),
+        error: "Database connection failed"
+      });
+    }
+  });
+
   // Public routes
   app.get("/api/rooms/available-count", async (req, res) => {
     try {
