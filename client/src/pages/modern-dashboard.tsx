@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,7 +7,7 @@ import {
   Bell, User, Search, CheckCircle, Home, DollarSign, 
   Wrench, AlertTriangle, Calendar, Users, MessageSquare,
   TrendingUp, Activity, Clock, MapPin, Building, Mail, 
-  Phone, Edit, Trash2, Plus, FileText, Package
+  Phone, Edit, Trash2, Plus, FileText, Package, LogOut
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -40,6 +41,16 @@ export default function ModernDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin-authenticated');
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out",
+    });
+    setLocation("/admin-login");
+  };
 
   const { data: rooms = [] } = useQuery({
     queryKey: ["/api/rooms"],

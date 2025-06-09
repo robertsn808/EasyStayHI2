@@ -35,7 +35,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Admin authentication endpoints
-  app.post('/api/admin/auth/login', async (req, res) => {
+  app.post('/api/auth/admin-login', async (req, res) => {
     try {
       const { username, password } = req.body;
       

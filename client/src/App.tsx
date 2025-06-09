@@ -14,7 +14,19 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import ModernDashboard from "@/pages/modern-dashboard";
 import TenantPortal from "@/pages/tenant-portal";
 import InquiryPage from "@/pages/inquiry";
+import AdminLogin from "@/pages/admin-login";
 import NotFound from "@/pages/not-found";
+
+// Protected route component for admin pages
+function ProtectedAdminRoute({ component: Component }: { component: any }) {
+  const isAdminAuthenticated = localStorage.getItem('admin-authenticated') === 'true';
+  
+  if (!isAdminAuthenticated) {
+    return <AdminLogin />;
+  }
+  
+  return <Component />;
+}
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -39,9 +51,16 @@ function Router() {
       <Route path="/building-949" component={Building949} />
       <Route path="/public-editor" component={PublicPageEditor} />
       <Route path="/949" component={Property949} />
-      <Route path="/admin-dashboard" component={ModernDashboard} />
-      <Route path="/admin" component={ModernDashboard} />
-      <Route path="/legacy-admin" component={AdminDashboard} />
+      <Route path="/admin-login" component={AdminLogin} />
+      <Route path="/admin-dashboard">
+        {() => <ProtectedAdminRoute component={ModernDashboard} />}
+      </Route>
+      <Route path="/admin">
+        {() => <ProtectedAdminRoute component={ModernDashboard} />}
+      </Route>
+      <Route path="/legacy-admin">
+        {() => <ProtectedAdminRoute component={AdminDashboard} />}
+      </Route>
       {isAuthenticated ? (
         <Route path="/" component={ModernDashboard} />
       ) : (
