@@ -26,7 +26,6 @@ type TabType =
   | "calendar" 
   | "contacts" 
   | "inventory" 
-  | "receipts" 
   | "todos"
   | "settings";
 
@@ -111,14 +110,33 @@ export default function AdminDashboard() {
   const incompleteTodos = todos ? todos.filter((todo: any) => !todo.isCompleted).length : 0;
 
   // Admin login handlers
-  const handleAdminLogin = (e: React.FormEvent) => {
+  const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple admin check - matches server credentials
-    if (adminCredentials.username === 'admin' && adminCredentials.password === 'admin123') {
-      localStorage.setItem('admin-authenticated', 'true');
-      setIsAdminAuthenticated(true);
-    } else {
-      alert('Invalid credentials. Use username: admin, password: admin123');
+    try {
+      const response = await fetch('/api/admin/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: adminCredentials.username,
+          password: adminCredentials.password,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('admin-authenticated', 'true');
+        localStorage.setItem('admin-token', data.token || 'authenticated');
+        setIsAdminAuthenticated(true);
+        setAdminCredentials({ username: '', password: '' });
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || 'Invalid credentials. Please try again.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed. Please check your connection and try again.');
     }
   };
 

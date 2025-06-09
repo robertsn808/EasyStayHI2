@@ -293,14 +293,18 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
       </div>
 
       <Tabs value={activeSubTab} onValueChange={setActiveSubTab}>
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="payments" className="flex items-center gap-2">
             <DollarSign className="h-4 w-4" />
             Payments ({payments.length})
           </TabsTrigger>
           <TabsTrigger value="expenses" className="flex items-center gap-2">
             <Receipt className="h-4 w-4" />
-            Expenses ({expenses.length})
+            Expenses ({Array.isArray(expensesData) ? expensesData.length : 0})
+          </TabsTrigger>
+          <TabsTrigger value="receipts" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Receipts ({Array.isArray(receipts) ? receipts.length : 0})
           </TabsTrigger>
         </TabsList>
 
@@ -372,7 +376,7 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
         </TabsContent>
 
         <TabsContent value="expenses" className="space-y-4">
-          {expenses.length === 0 ? (
+          {!Array.isArray(expensesData) || expensesData.length === 0 ? (
             <Card>
               <CardContent className="p-6 text-center text-gray-500">
                 No expense records available. Click "Add Expense" to create your first expense record.
@@ -380,7 +384,7 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
             </Card>
           ) : (
             <div className="space-y-4">
-              {expenses.map((expense: any, index: number) => (
+              {expensesData.map((expense: any, index: number) => (
                 <Card key={expense.id || index}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -414,6 +418,119 @@ export function PaymentsTab({ payments = [] }: PaymentsTabProps) {
                     <div className="flex gap-2 mt-3">
                       <Button size="sm" variant="outline">View Receipt</Button>
                       <Button size="sm" variant="outline">Edit</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="receipts" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h4 className="text-lg font-semibold">Generated Receipts</h4>
+            <Dialog open={showAddReceipt} onOpenChange={setShowAddReceipt}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Generate Receipt
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Generate New Receipt</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const receiptData = {
+                    title: formData.get("title") as string,
+                    description: formData.get("description") as string,
+                    amount: formData.get("amount") as string,
+                    category: formData.get("category") as string,
+                    date: formData.get("date") as string,
+                  };
+                  addReceiptMutation.mutate(receiptData);
+                }} className="space-y-4">
+                  <div>
+                    <Label htmlFor="title">Receipt Title</Label>
+                    <Input id="title" name="title" placeholder="Payment Receipt - Room 01" required />
+                  </div>
+                  <div>
+                    <Label htmlFor="description">Description</Label>
+                    <Input id="description" name="description" placeholder="Monthly rent payment" required />
+                  </div>
+                  <div>
+                    <Label htmlFor="amount">Amount</Label>
+                    <Input id="amount" name="amount" type="number" step="0.01" placeholder="500.00" required />
+                  </div>
+                  <div>
+                    <Label htmlFor="category">Category</Label>
+                    <Select name="category" required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="payment">Payment</SelectItem>
+                        <SelectItem value="refund">Refund</SelectItem>
+                        <SelectItem value="deposit">Deposit</SelectItem>
+                        <SelectItem value="fee">Fee</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="date">Date</Label>
+                    <Input id="date" name="date" type="date" required />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={addReceiptMutation.isPending}>
+                    {addReceiptMutation.isPending ? "Generating..." : "Generate Receipt"}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {!Array.isArray(receipts) || receipts.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-center text-gray-500">
+                No receipts generated yet. Click "Generate Receipt" to create your first receipt.
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {receipts.map((receipt: any, index: number) => (
+                <Card key={receipt.id || index}>
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-base">{receipt.title || `Receipt #${receipt.id || index + 1}`}</CardTitle>
+                      <Badge variant="outline" className="text-green-600 border-green-600">
+                        {receipt.category || 'payment'}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Amount:</span>
+                        <span className="font-medium">${receipt.amount || '0.00'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Date:</span>
+                        <span>{receipt.date || new Date().toLocaleDateString()}</span>
+                      </div>
+                      {receipt.description && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Description:</span>
+                          <span>{receipt.description}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <Button size="sm" variant="outline">
+                        <Download className="h-4 w-4 mr-1" />
+                        Download PDF
+                      </Button>
+                      <Button size="sm" variant="outline">View Details</Button>
                     </div>
                   </CardContent>
                 </Card>

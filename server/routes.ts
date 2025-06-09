@@ -34,20 +34,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   };
 
-  // Auth routes
-  app.post('/api/auth/admin-login', async (req, res) => {
+  // Admin authentication endpoints
+  app.post('/api/admin/auth/login', async (req, res) => {
     try {
       const { username, password } = req.body;
       
       if (validateAdminCredentials(username, password)) {
-        // Create a session or token for admin
         res.json({ 
           success: true, 
           message: "Admin login successful",
-          user: { username: "Bo$$l@dy", role: "admin" }
+          token: "admin-authenticated",
+          user: { username: "admin", role: "admin" }
         });
       } else {
-        res.status(401).json({ message: "Invalid credentials" });
+        res.status(401).json({ message: "Invalid admin credentials. Please check your username and password." });
       }
     } catch (error) {
       res.status(500).json({ message: "Login failed" });
