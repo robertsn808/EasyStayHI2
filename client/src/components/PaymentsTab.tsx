@@ -23,6 +23,8 @@ export function PaymentsTab({ payments = [], showHistoryView = false }: Payments
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [showAddReceipt, setShowAddReceipt] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<any>(null);
+  const [showEditExpense, setShowEditExpense] = useState(false);
 
   // Fetch receipts data
   const { data: receipts = [] } = useQuery({
@@ -127,6 +129,50 @@ export function PaymentsTab({ payments = [], showHistoryView = false }: Payments
       toast({
         title: "Error",
         description: "Failed to update payment status.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateExpenseMutation = useMutation({
+    mutationFn: async (expenseData: any) => {
+      return await apiRequest("PUT", `/api/admin/receipts/${expenseData.id}`, expenseData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Expense updated successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/receipts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/expenses"] });
+      setShowEditExpense(false);
+      setEditingExpense(null);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update expense.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteExpenseMutation = useMutation({
+    mutationFn: async (expenseId: number) => {
+      return await apiRequest("DELETE", `/api/admin/receipts/${expenseId}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Expense deleted successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/receipts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/expenses"] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete expense.",
         variant: "destructive",
       });
     },
@@ -418,7 +464,28 @@ export function PaymentsTab({ payments = [], showHistoryView = false }: Payments
                     </div>
                     <div className="flex gap-2 mt-3">
                       <Button size="sm" variant="outline">View Receipt</Button>
-                      <Button size="sm" variant="outline">Edit</Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          setEditingExpense(expense);
+                          setShowEditExpense(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="destructive"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this expense?')) {
+                            deleteExpenseMutation.mutate(expense.id);
+                          }
+                        }}
+                        disabled={deleteExpenseMutation.isPending}
+                      >
+                        Delete
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
