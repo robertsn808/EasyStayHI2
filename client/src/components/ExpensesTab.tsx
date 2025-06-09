@@ -94,6 +94,8 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/receipts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/expenses"] });
+      crossTabSync.notifyExpenseUpdate();
+      crossTabSync.notifyReceiptUpdate();
       setShowEditExpense(false);
       setEditingExpense(null);
     },
@@ -117,6 +119,8 @@ export function ExpensesTab({ receipts = [] }: ExpensesTabProps) {
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/receipts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/expenses"] });
+      crossTabSync.notifyExpenseUpdate();
+      crossTabSync.notifyReceiptUpdate();
     },
     onError: (error: any) => {
       toast({
