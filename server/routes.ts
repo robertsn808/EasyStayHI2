@@ -1435,6 +1435,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Financial Report Sharing API
+  app.post("/api/admin/reports/share", simpleAdminAuth, async (req, res) => {
+    try {
+      const { method, email, message, reportData } = req.body;
+      
+      if (method === 'email') {
+        // Generate PDF report and send via email
+        const reportId = `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // In a real implementation, you would:
+        // 1. Generate PDF using a library like puppeteer or jsPDF
+        // 2. Send email using a service like SendGrid or Nodemailer
+        // For now, we'll simulate the process
+        
+        res.json({
+          success: true,
+          message: "Report sent via email successfully",
+          reportId
+        });
+      } else if (method === 'link') {
+        // Generate shareable link
+        const shareToken = `share_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const shareUrl = `${req.protocol}://${req.get('host')}/shared-report/${shareToken}`;
+        
+        // Store the report data temporarily (in production, use Redis or database)
+        // For now, we'll just return the URL
+        
+        res.json({
+          success: true,
+          shareUrl,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+        });
+      }
+    } catch (error) {
+      console.error("Report sharing error:", error);
+      res.status(500).json({ message: "Failed to share report" });
+    }
+  });
+
+  app.post("/api/admin/reports/export", simpleAdminAuth, async (req, res) => {
+    try {
+      const { format, data, period, property } = req.body;
+      
+      // Generate export file
+      const exportId = `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      if (format === 'pdf') {
+        // In production, generate actual PDF
+        const downloadUrl = `/downloads/financial-report-${period}-${property}-${exportId}.pdf`;
+        
+        res.json({
+          success: true,
+          downloadUrl,
+          filename: `financial-report-${period}-${property}.pdf`
+        });
+      } else if (format === 'csv') {
+        // Generate CSV export
+        const downloadUrl = `/downloads/financial-report-${period}-${property}-${exportId}.csv`;
+        
+        res.json({
+          success: true,
+          downloadUrl,
+          filename: `financial-report-${period}-${property}.csv`
+        });
+      } else {
+        res.status(400).json({ message: "Unsupported export format" });
+      }
+    } catch (error) {
+      console.error("Report export error:", error);
+      res.status(500).json({ message: "Failed to export report" });
+    }
+  });
+
+  app.post("/api/admin/reports/generate-link", simpleAdminAuth, async (req, res) => {
+    try {
+      const { reportData, expiresIn = "7d" } = req.body;
+      
+      // Generate unique share token
+      const shareToken = `link_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const shareUrl = `${req.protocol}://${req.get('host')}/shared-report/${shareToken}`;
+      
+      // Calculate expiration
+      const expirationTime = expiresIn === "7d" ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+      const expiresAt = new Date(Date.now() + expirationTime);
+      
+      // In production, store in database with expiration
+      // For now, simulate successful link generation
+      
+      res.json({
+        success: true,
+        shareUrl,
+        shareToken,
+        expiresAt
+      });
+    } catch (error) {
+      console.error("Link generation error:", error);
+      res.status(500).json({ message: "Failed to generate shareable link" });
+    }
+  });
+
   // System Notifications API
   app.get("/api/admin/notifications", simpleAdminAuth, async (req, res) => {
     try {

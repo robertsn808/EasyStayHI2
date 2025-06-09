@@ -308,7 +308,7 @@ export function FinancialReportsTab({ payments = [], receipts = [], buildings = 
       {/* Header Controls */}
       <div className="flex justify-between items-center">
         <h3 className="text-2xl font-bold">Financial Reports</h3>
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
             <SelectTrigger className="w-48">
               <SelectValue />
@@ -320,10 +320,103 @@ export function FinancialReportsTab({ payments = [], receipts = [], buildings = 
               <SelectItem value="last-year">Last Year</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <FileText className="h-4 w-4 mr-2" />
-            Export Report
+          
+          {/* One-Click Sharing Actions */}
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleCopyReportLink}
+            className="flex items-center gap-2"
+          >
+            <Link2 className="h-4 w-4" />
+            Copy Link
           </Button>
+          
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => handleQuickExport('pdf')}
+            disabled={exportReportMutation.isPending}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            {exportReportMutation.isPending ? 'Exporting...' : 'PDF'}
+          </Button>
+          
+          <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <Share2 className="h-4 w-4" />
+                Share Report
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Share Financial Report</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="shareMethod">Share Method</Label>
+                  <Select value={shareMethod} onValueChange={setShareMethod}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="email">Email</SelectItem>
+                      <SelectItem value="link">Generate Link</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {shareMethod === 'email' && (
+                  <>
+                    <div>
+                      <Label htmlFor="shareEmail">Email Address</Label>
+                      <Input
+                        id="shareEmail"
+                        type="email"
+                        value={shareEmail}
+                        onChange={(e) => setShareEmail(e.target.value)}
+                        placeholder="recipient@example.com"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="shareMessage">Message (Optional)</Label>
+                      <Textarea
+                        id="shareMessage"
+                        value={shareMessage}
+                        onChange={(e) => setShareMessage(e.target.value)}
+                        placeholder="Add a personal message..."
+                        rows={3}
+                      />
+                    </div>
+                  </>
+                )}
+                
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setShowShareDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleShare}
+                    disabled={shareReportMutation.isPending || (shareMethod === 'email' && !shareEmail)}
+                  >
+                    {shareReportMutation.isPending ? (
+                      <>
+                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                        Sharing...
+                      </>
+                    ) : (
+                      <>
+                        {shareMethod === 'email' ? <Mail className="h-4 w-4 mr-2" /> : <Link2 className="h-4 w-4 mr-2" />}
+                        {shareMethod === 'email' ? 'Send Email' : 'Generate Link'}
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 

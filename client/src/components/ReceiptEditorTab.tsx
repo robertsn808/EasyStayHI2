@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Plus, Edit, Trash2, Receipt, Upload, Download, Eye } from "lucide-react";
@@ -137,9 +138,7 @@ export function ReceiptEditorTab({ receipts = [] }: ReceiptEditorTabProps) {
   };
 
   const handleDeleteReceipt = (id: number) => {
-    if (confirm("Are you sure you want to delete this receipt? This action cannot be undone.")) {
-      deleteReceiptMutation.mutate(id);
-    }
+    deleteReceiptMutation.mutate(id);
   };
 
   const handleEditClick = (receipt: any) => {
@@ -393,14 +392,34 @@ export function ReceiptEditorTab({ receipts = [] }: ReceiptEditorTabProps) {
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteReceipt(receipt.id)}
-                          disabled={deleteReceiptMutation.isPending}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={deleteReceiptMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Receipt</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "{receipt.title}"? This action cannot be undone and will permanently remove this receipt from your records.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteReceipt(receipt.id)}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                {deleteReceiptMutation.isPending ? "Deleting..." : "Delete Receipt"}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                   ))}
