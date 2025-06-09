@@ -413,7 +413,7 @@ export function BillPaymentTracker({ guests = [], rooms = [], buildings = [] }: 
 
                       {/* Renter */}
                       <div>
-                        <div className="font-medium">Guest {roomNumber}</div>
+                        <div className="font-medium">{guest.guestName}</div>
                       </div>
 
                       {/* Billing Date */}

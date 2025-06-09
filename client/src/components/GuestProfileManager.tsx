@@ -254,7 +254,7 @@ export default function GuestProfileManager() {
                       <div key={guest.id} className="p-2 rounded border-l-2 border-l-blue-400 bg-blue-50/50">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <p className="font-medium text-sm text-blue-800">Guest {room?.number}</p>
+                            <p className="font-medium text-sm text-blue-800">{guest.guestName}</p>
                             <p className="text-xs text-blue-600">Room {room?.number}</p>
                           </div>
                           <Badge variant={guest.paymentStatus === 'paid' ? 'default' : 'secondary'} className="text-xs">
@@ -329,7 +329,7 @@ export default function GuestProfileManager() {
                       <div key={guest.id} className="p-2 rounded border-l-2 border-l-purple-400 bg-purple-50/50">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <p className="font-medium text-sm text-purple-800">Guest {room?.number}</p>
+                            <p className="font-medium text-sm text-purple-800">{guest.guestName}</p>
                             <p className="text-xs text-purple-600">Room {room?.number}</p>
                           </div>
                           <Badge variant={guest.paymentStatus === 'paid' ? 'default' : 'secondary'} className="text-xs">
