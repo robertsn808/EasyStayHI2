@@ -900,6 +900,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/admin/receipts/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const receipt = await storage.updateReceipt(id, req.body);
+      res.json(receipt);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update receipt" });
+    }
+  });
+
+  app.delete("/api/admin/receipts/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteReceipt(id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(400).json({ message: "Failed to delete receipt" });
+    }
+  });
+
   app.get("/api/admin/todos", simpleAdminAuth, async (req, res) => {
     try {
       const todos = await storage.getTodos();

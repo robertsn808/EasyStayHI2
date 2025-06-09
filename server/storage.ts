@@ -92,6 +92,8 @@ export interface IStorage {
   // Receipt operations
   createReceipt(receipt: InsertReceipt): Promise<Receipt>;
   getReceipts(): Promise<Receipt[]>;
+  updateReceipt(id: number, receipt: Partial<InsertReceipt>): Promise<Receipt>;
+  deleteReceipt(id: number): Promise<void>;
 
   // Todo operations
   createTodo(todo: InsertTodo): Promise<Todo>;
@@ -326,6 +328,15 @@ export class DatabaseStorage implements IStorage {
 
   async getReceipts(): Promise<Receipt[]> {
     return await db.select().from(receipts);
+  }
+
+  async updateReceipt(id: number, receipt: Partial<InsertReceipt>): Promise<Receipt> {
+    const [result] = await db.update(receipts).set(receipt).where(eq(receipts.id, id)).returning();
+    return result;
+  }
+
+  async deleteReceipt(id: number): Promise<void> {
+    await db.delete(receipts).where(eq(receipts.id, id));
   }
 
   // Todo operations

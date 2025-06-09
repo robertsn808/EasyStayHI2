@@ -558,6 +558,115 @@ export function PaymentsTab({ payments = [], showHistoryView = false }: Payments
             </Dialog>
           </div>
 
+          {/* Edit Expense Dialog */}
+          <Dialog open={showEditExpense} onOpenChange={setShowEditExpense}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Edit Expense</DialogTitle>
+              </DialogHeader>
+              {editingExpense && (
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const updatedExpense = {
+                    id: editingExpense.id,
+                    title: formData.get("title") as string,
+                    description: formData.get("description") as string,
+                    amount: parseFloat(formData.get("amount") as string),
+                    category: formData.get("category") as string,
+                    vendor: formData.get("vendor") as string,
+                    receipt_date: formData.get("receipt_date") as string,
+                  };
+                  updateExpenseMutation.mutate(updatedExpense);
+                }} className="space-y-4">
+                  <div>
+                    <Label htmlFor="edit-title">Expense Title</Label>
+                    <Input 
+                      id="edit-title" 
+                      name="title" 
+                      defaultValue={editingExpense.title || ''} 
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-description">Description</Label>
+                    <Input 
+                      id="edit-description" 
+                      name="description" 
+                      defaultValue={editingExpense.description || ''} 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-amount">Amount</Label>
+                    <Input 
+                      id="edit-amount" 
+                      name="amount" 
+                      type="number" 
+                      step="0.01" 
+                      defaultValue={editingExpense.amount || ''} 
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-vendor">Vendor</Label>
+                    <Input 
+                      id="edit-vendor" 
+                      name="vendor" 
+                      defaultValue={editingExpense.vendor || ''} 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-category">Category</Label>
+                    <Select name="category" defaultValue={editingExpense.category || ''}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="maintenance">Maintenance</SelectItem>
+                        <SelectItem value="utilities">Utilities</SelectItem>
+                        <SelectItem value="supplies">Supplies</SelectItem>
+                        <SelectItem value="cleaning">Cleaning</SelectItem>
+                        <SelectItem value="repairs">Repairs</SelectItem>
+                        <SelectItem value="insurance">Insurance</SelectItem>
+                        <SelectItem value="management">Management</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-receipt-date">Date</Label>
+                    <Input 
+                      id="edit-receipt-date" 
+                      name="receipt_date" 
+                      type="date" 
+                      defaultValue={editingExpense.receipt_date || ''} 
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => {
+                        setShowEditExpense(false);
+                        setEditingExpense(null);
+                      }}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="flex-1" 
+                      disabled={updateExpenseMutation.isPending}
+                    >
+                      {updateExpenseMutation.isPending ? "Updating..." : "Update Expense"}
+                    </Button>
+                  </div>
+                </form>
+              )}
+            </DialogContent>
+          </Dialog>
+
           {!Array.isArray(receipts) || receipts.length === 0 ? (
             <Card>
               <CardContent className="p-6 text-center text-gray-500">
