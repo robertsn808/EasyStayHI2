@@ -169,6 +169,10 @@ export interface IStorage {
   getMaintenancePredictions(roomId?: number): Promise<any>;
   updateMaintenancePrediction(id: number, data: any): Promise<any>;
   getMaintenanceCostAnalysis(): Promise<any>;
+
+  // Public Contact Settings
+  getPublicContactSettings(): Promise<schema.PublicContactSettings | undefined>;
+  updatePublicContactSettings(data: Partial<schema.InsertPublicContactSettings>): Promise<schema.PublicContactSettings>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -973,6 +977,42 @@ export class DatabaseStorage implements IStorage {
     }
 
     return suggestions;
+  }
+
+  async getPublicContactSettings(): Promise<schema.PublicContactSettings | undefined> {
+    const result = await db.select().from(schema.publicContactSettings).limit(1);
+    return result[0];
+  }
+
+  async updatePublicContactSettings(data: Partial<schema.InsertPublicContactSettings>): Promise<schema.PublicContactSettings> {
+    // Check if settings exist
+    const existing = await this.getPublicContactSettings();
+    
+    if (existing) {
+      // Update existing record
+      const result = await db
+        .update(schema.publicContactSettings)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(schema.publicContactSettings.id, existing.id))
+        .returning();
+      return result[0];
+    } else {
+      // Create new record with defaults
+      const result = await db
+        .insert(schema.publicContactSettings)
+        .values({
+          phone: data.phone || "(808) 219-6562",
+          address: data.address || "Honolulu, Hawaii",
+          email: data.email || "contact@easystayhi.com",
+          cashapp: data.cashapp || "$EasyStayHI",
+          businessName: data.businessName || "EasyStay HI",
+          tagline: data.tagline || "Your Home Away From Home",
+          showAvailability: data.showAvailability ?? true,
+          showPricing: data.showPricing ?? true,
+        })
+        .returning();
+      return result[0];
+    }
   }
 }
 

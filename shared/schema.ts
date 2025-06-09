@@ -312,6 +312,20 @@ export const invoices = pgTable("invoices", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const publicContactSettings = pgTable("public_contact_settings", {
+  id: serial("id").primaryKey(),
+  phone: varchar("phone", { length: 20 }).notNull(),
+  address: text("address").notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  cashapp: varchar("cashapp", { length: 50 }),
+  businessName: varchar("business_name", { length: 255 }).default("EasyStay HI"),
+  tagline: varchar("tagline", { length: 255 }).default("Your Home Away From Home"),
+  showAvailability: boolean("show_availability").default(true),
+  showPricing: boolean("show_pricing").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Type definitions for inserts
 export type InsertUser = typeof users.$inferSelect;
 export type InsertBuilding = typeof buildings.$inferInsert;
@@ -333,6 +347,7 @@ export type InsertSystemNotification = typeof systemNotifications.$inferInsert;
 export type InsertTemporaryAccessCode = typeof temporaryAccessCodes.$inferInsert;
 export type InsertAccessLog = typeof accessLogs.$inferInsert;
 export type InsertMaintenancePrediction = typeof maintenancePredictions.$inferInsert;
+export type InsertPublicContactSettings = typeof publicContactSettings.$inferInsert;
 
 // Type definitions for selects
 export type SelectUser = typeof users.$inferSelect;
@@ -355,6 +370,7 @@ export type SelectSystemNotification = typeof systemNotifications.$inferSelect;
 export type SelectTemporaryAccessCode = typeof temporaryAccessCodes.$inferSelect;
 export type SelectAccessLog = typeof accessLogs.$inferSelect;
 export type SelectMaintenancePrediction = typeof maintenancePredictions.$inferSelect;
+export type SelectPublicContactSettings = typeof publicContactSettings.$inferSelect;
 
 // Type aliases for compatibility
 export type User = SelectUser;
@@ -378,6 +394,7 @@ export type SystemNotification = SelectSystemNotification;
 export type TemporaryAccessCode = SelectTemporaryAccessCode;
 export type AccessLog = SelectAccessLog;
 export type MaintenancePrediction = SelectMaintenancePrediction;
+export type PublicContactSettings = SelectPublicContactSettings;
 
 // Validation schemas (simplified - using the insert types as schemas)
 export const insertInquirySchema = {
