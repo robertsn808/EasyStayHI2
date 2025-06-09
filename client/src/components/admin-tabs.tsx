@@ -15,6 +15,8 @@ import { BuildingTab } from "@/components/BuildingTab";
 import { PaymentTrackerTab } from "@/components/PaymentTrackerTab";
 import { QuickAccessTab } from "@/components/QuickAccessTab";
 import { FinancialReportsTab } from "@/components/FinancialReportsTab";
+import { ExpensesTab } from "@/components/ExpensesTab";
+import { PaymentHistoryTab } from "@/components/PaymentHistoryTab";
 
 interface AdminTabsProps {
   activeTab?: string;
@@ -183,6 +185,14 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
               </CardContent>
             </Card>
           </div>
+        )}
+
+        {selectedTab === "expenses" && (
+          <ExpensesTab receipts={Array.isArray(receipts) ? receipts : []} />
+        )}
+
+        {selectedTab === "payment-history" && (
+          <PaymentHistoryTab payments={Array.isArray(payments) ? payments : []} />
         )}
 
         {selectedTab === "financial-reports" && (

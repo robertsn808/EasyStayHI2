@@ -270,6 +270,15 @@ export default function ExpandableSideNav({
           urgent: false
         },
         {
+          id: "expenses",
+          label: "Expenses",
+          icon: DollarSign,
+          badge: Array.isArray(receipts) ? receipts.length : 0,
+          color: "red",
+          description: "Expense tracking and management",
+          urgent: false
+        },
+        {
           id: "payment-history",
           label: "Payment History",
           icon: FileText,

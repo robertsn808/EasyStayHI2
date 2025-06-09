@@ -19,12 +19,14 @@ interface PaymentsTabProps {
 
 export function PaymentsTab({ payments = [], showHistoryView = false }: PaymentsTabProps) {
   const { toast } = useToast();
-  const [activeSubTab, setActiveSubTab] = useState("payments");
+  const [activeSubTab, setActiveSubTab] = useState(showHistoryView ? "payment-history" : "payments");
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [showAddReceipt, setShowAddReceipt] = useState(false);
   const [editingExpense, setEditingExpense] = useState<any>(null);
   const [showEditExpense, setShowEditExpense] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20);
 
   // Fetch receipts data
   const { data: receipts = [] } = useQuery({
