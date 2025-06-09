@@ -5,7 +5,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
@@ -664,141 +665,168 @@ export function PropertiesTab({ buildings = [], rooms = [] }: PropertiesTabProps
 
       {/* Edit Room Dialog */}
       <Dialog open={isEditRoomDialogOpen} onOpenChange={setIsEditRoomDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[80vh] w-full max-w-2xl">
           <DialogHeader>
             <DialogTitle>Edit Room</DialogTitle>
+            <DialogDescription>
+              Update room details and tenant information
+            </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleRoomSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="editRoomNumber">Room Number</Label>
-                <Input
-                  id="editRoomNumber"
-                  value={roomForm.number}
-                  onChange={(e) => setRoomForm({...roomForm, number: e.target.value})}
-                  required
-                />
+          <ScrollArea className="max-h-[60vh] pr-4">
+            <form onSubmit={handleRoomSubmit} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="editRoomNumber" className="text-sm">Room Number</Label>
+                  <Input
+                    id="editRoomNumber"
+                    value={roomForm.number}
+                    onChange={(e) => setRoomForm({...roomForm, number: e.target.value})}
+                    required
+                    className="h-8"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editRoomBuilding" className="text-sm">Building</Label>
+                  <Select
+                    value={roomForm.buildingId}
+                    onValueChange={(value) => setRoomForm({...roomForm, buildingId: value})}
+                  >
+                    <SelectTrigger className="h-8">
+                      <SelectValue placeholder="Select building" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.isArray(buildingsData) && buildingsData.map((building: Building) => (
+                        <SelectItem key={building.id} value={building.id.toString()}>
+                          {building.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="editRoomStatus" className="text-sm">Status</Label>
+                  <Select
+                    value={roomForm.status}
+                    onValueChange={(value) => setRoomForm({...roomForm, status: value})}
+                  >
+                    <SelectTrigger className="h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="occupied">Occupied</SelectItem>
+                      <SelectItem value="needs_cleaning">Needs Cleaning</SelectItem>
+                      <SelectItem value="maintenance">Maintenance</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="editRoomSize" className="text-sm">Size</Label>
+                  <Input
+                    id="editRoomSize"
+                    value={roomForm.size}
+                    onChange={(e) => setRoomForm({...roomForm, size: e.target.value})}
+                    placeholder="e.g., 10x12"
+                    className="h-8"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editRoomFloor" className="text-sm">Floor</Label>
+                  <Input
+                    id="editRoomFloor"
+                    type="number"
+                    value={roomForm.floor}
+                    onChange={(e) => setRoomForm({...roomForm, floor: e.target.value})}
+                    placeholder="1"
+                    className="h-8"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editTenantName" className="text-sm">Tenant Name</Label>
+                  <Input
+                    id="editTenantName"
+                    value={roomForm.tenantName}
+                    onChange={(e) => setRoomForm({...roomForm, tenantName: e.target.value})}
+                    placeholder="Current tenant"
+                    className="h-8"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editTenantPhone" className="text-sm">Tenant Phone</Label>
+                  <Input
+                    id="editTenantPhone"
+                    value={roomForm.tenantPhone}
+                    onChange={(e) => setRoomForm({...roomForm, tenantPhone: e.target.value})}
+                    placeholder="(808) 555-0123"
+                    className="h-8"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editRentalRate" className="text-sm">Rental Rate</Label>
+                  <Input
+                    id="editRentalRate"
+                    value={roomForm.rentalRate}
+                    onChange={(e) => setRoomForm({...roomForm, rentalRate: e.target.value})}
+                    placeholder="$500"
+                    className="h-8"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editRentalPeriod" className="text-sm">Rental Period</Label>
+                  <Select
+                    value={roomForm.rentalPeriod}
+                    onValueChange={(value) => setRoomForm({...roomForm, rentalPeriod: value})}
+                  >
+                    <SelectTrigger className="h-8">
+                      <SelectValue placeholder="Select period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Daily</SelectItem>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="editNextPaymentDue" className="text-sm">Next Payment Due</Label>
+                  <Input
+                    id="editNextPaymentDue"
+                    type="date"
+                    value={roomForm.nextPaymentDue}
+                    onChange={(e) => setRoomForm({...roomForm, nextPaymentDue: e.target.value})}
+                    className="h-8"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="editLastCleaned" className="text-sm">Last Cleaned</Label>
+                  <Input
+                    id="editLastCleaned"
+                    type="date"
+                    value={roomForm.lastCleaned}
+                    onChange={(e) => setRoomForm({...roomForm, lastCleaned: e.target.value})}
+                    className="h-8"
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="editRoomBuilding">Building</Label>
-                <Select
-                  value={roomForm.buildingId}
-                  onValueChange={(value) => setRoomForm({...roomForm, buildingId: value})}
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsEditRoomDialogOpen(false)}
+                  className="h-8"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select building" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.isArray(buildingsData) && buildingsData.map((building: Building) => (
-                      <SelectItem key={building.id} value={building.id.toString()}>
-                        {building.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="editRoomStatus">Status</Label>
-                <Select
-                  value={roomForm.status}
-                  onValueChange={(value) => setRoomForm({...roomForm, status: value})}
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={updateRoomMutation.isPending}
+                  className="h-8"
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="occupied">Occupied</SelectItem>
-                    <SelectItem value="needs_cleaning">Needs Cleaning</SelectItem>
-                    <SelectItem value="maintenance">Maintenance</SelectItem>
-                  </SelectContent>
-                </Select>
+                  {updateRoomMutation.isPending ? "Updating..." : "Update Room"}
+                </Button>
               </div>
-              <div>
-                <Label htmlFor="editRoomSize">Size</Label>
-                <Input
-                  id="editRoomSize"
-                  value={roomForm.size}
-                  onChange={(e) => setRoomForm({...roomForm, size: e.target.value})}
-                  placeholder="e.g., 10x12"
-                />
-              </div>
-              <div>
-                <Label htmlFor="editRoomFloor">Floor</Label>
-                <Input
-                  id="editRoomFloor"
-                  type="number"
-                  value={roomForm.floor}
-                  onChange={(e) => setRoomForm({...roomForm, floor: e.target.value})}
-                  placeholder="1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="editTenantName">Tenant Name</Label>
-                <Input
-                  id="editTenantName"
-                  value={roomForm.tenantName}
-                  onChange={(e) => setRoomForm({...roomForm, tenantName: e.target.value})}
-                  placeholder="Current tenant"
-                />
-              </div>
-              <div>
-                <Label htmlFor="editTenantPhone">Tenant Phone (Optional)</Label>
-                <Input
-                  id="editTenantPhone"
-                  value={roomForm.tenantPhone}
-                  onChange={(e) => setRoomForm({...roomForm, tenantPhone: e.target.value})}
-                  placeholder="(808) 555-0123"
-                />
-              </div>
-              <div>
-                <Label htmlFor="editRentalRate">Rental Rate</Label>
-                <Input
-                  id="editRentalRate"
-                  value={roomForm.rentalRate}
-                  onChange={(e) => setRoomForm({...roomForm, rentalRate: e.target.value})}
-                  placeholder="$500"
-                />
-              </div>
-              <div>
-                <Label htmlFor="editRentalPeriod">Rental Period</Label>
-                <Select
-                  value={roomForm.rentalPeriod}
-                  onValueChange={(value) => setRoomForm({...roomForm, rentalPeriod: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select period" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="daily">Daily</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="editNextPaymentDue">Next Payment Due</Label>
-                <Input
-                  id="editNextPaymentDue"
-                  type="date"
-                  value={roomForm.nextPaymentDue}
-                  onChange={(e) => setRoomForm({...roomForm, nextPaymentDue: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="editLastCleaned">Last Cleaned</Label>
-                <Input
-                  id="editLastCleaned"
-                  type="date"
-                  value={roomForm.lastCleaned}
-                  onChange={(e) => setRoomForm({...roomForm, lastCleaned: e.target.value})}
-                />
-              </div>
-            </div>
-            <Button type="submit" disabled={updateRoomMutation.isPending}>
-              {updateRoomMutation.isPending ? "Updating..." : "Update Room"}
-            </Button>
-          </form>
+            </form>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>
