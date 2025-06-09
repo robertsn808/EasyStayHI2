@@ -211,9 +211,9 @@ export default function PublicPageEditor() {
 
           <Tabs defaultValue="announcements" className="w-full">
             <TabsList className="grid w-full grid-cols-3 h-10">
-              <TabsTrigger value="announcements" className="text-xs sm:text-sm">Announcements</TabsTrigger>
-              <TabsTrigger value="contacts" className="text-xs sm:text-sm">Contact Info</TabsTrigger>
-              <TabsTrigger value="public-info" className="text-xs sm:text-sm">Settings</TabsTrigger>
+              <TabsTrigger value="announcements" className="text-[10px] sm:text-xs">Announcements</TabsTrigger>
+              <TabsTrigger value="contacts" className="text-[10px] sm:text-xs">Contact Info</TabsTrigger>
+              <TabsTrigger value="public-info" className="text-[10px] sm:text-xs">Settings</TabsTrigger>
             </TabsList>
 
             {/* Announcements Tab */}
