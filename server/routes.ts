@@ -912,7 +912,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(room);
     } catch (error) {
       console.error("Room update error:", error);
-      res.status(400).json({ message: "Failed to update room", error: error.message });
+      res.status(400).json({ message: "Failed to update room", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -930,7 +930,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(room);
     } catch (error) {
       console.error("Room update error:", error);
-      res.status(400).json({ message: "Failed to update room", error: error.message });
+      res.status(400).json({ message: "Failed to update room", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
