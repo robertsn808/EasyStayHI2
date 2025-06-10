@@ -912,7 +912,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(room);
     } catch (error) {
       console.error("Room update error:", error);
-      res.status(400).json({ message: "Failed to update room", error: error instanceof Error ? error.message : "Unknown error" });
+      res.status(400).json({ message: "Failed to update room", error: error instanceof Error ? error instanceof Error ? error.message : "Unknown error" : "Unknown error" });
     }
   });
 
@@ -930,7 +930,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(room);
     } catch (error) {
       console.error("Room update error:", error);
-      res.status(400).json({ message: "Failed to update room", error: error instanceof Error ? error.message : "Unknown error" });
+      res.status(400).json({ message: "Failed to update room", error: error instanceof Error ? error instanceof Error ? error.message : "Unknown error" : "Unknown error" });
     }
   });
 
@@ -950,7 +950,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true, message: "Room deleted successfully" });
     } catch (error) {
       console.error("Room deletion error:", error);
-      res.status(500).json({ message: "Failed to delete room", error: error.message });
+      res.status(500).json({ message: "Failed to delete room", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -960,7 +960,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(inquiries);
     } catch (error) {
       console.error("Error fetching inquiries:", error);
-      res.status(500).json({ message: "Failed to fetch inquiries", error: error.message });
+      res.status(500).json({ message: "Failed to fetch inquiries", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -981,7 +981,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Inquiry deleted successfully" });
     } catch (error) {
       console.error("Delete inquiry error:", error);
-      res.status(500).json({ message: "Failed to delete inquiry", error: error.message });
+      res.status(500).json({ message: "Failed to delete inquiry", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -991,7 +991,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(contacts);
     } catch (error) {
       console.error("Contacts fetch error:", error);
-      res.status(500).json({ message: "Failed to fetch contacts", error: error.message });
+      res.status(500).json({ message: "Failed to fetch contacts", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -1011,7 +1011,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(events);
     } catch (error) {
       console.error("Calendar fetch error:", error);
-      res.status(500).json({ message: "Failed to fetch calendar events", error: error.message });
+      res.status(500).json({ message: "Failed to fetch calendar events", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -1023,7 +1023,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(event);
     } catch (error) {
       console.error("Calendar creation error:", error);
-      res.status(400).json({ message: "Invalid calendar event data", error: error.message });
+      res.status(400).json({ message: "Invalid calendar event data", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -1033,7 +1033,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(inventory);
     } catch (error) {
       console.error("Inventory fetch error:", error);
-      res.status(500).json({ message: "Failed to fetch inventory", error: error.message });
+      res.status(500).json({ message: "Failed to fetch inventory", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -1053,7 +1053,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(receipts);
     } catch (error) {
       console.error("Receipts fetch error:", error);
-      res.status(500).json({ message: "Failed to fetch receipts", error: error.message });
+      res.status(500).json({ message: "Failed to fetch receipts", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -1093,7 +1093,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(todos);
     } catch (error) {
       console.error("Todos fetch error:", error);
-      res.status(500).json({ message: "Failed to fetch todos", error: error.message });
+      res.status(500).json({ message: "Failed to fetch todos", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -1445,7 +1445,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ guest, invoice });
     } catch (error) {
       console.error("Payment processing error:", error);
-      res.status(500).json({ message: "Failed to process payment", error: error.message });
+      res.status(500).json({ message: "Failed to process payment", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -1463,7 +1463,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       console.error("Update guest error:", error);
-      res.status(500).json({ message: "Failed to update guest", error: error.message });
+      res.status(500).json({ message: "Failed to update guest", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
@@ -1588,7 +1588,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(guest);
     } catch (error) {
       console.error("Guest update error:", error);
-      res.status(400).json({ message: "Failed to update guest profile", error: error.message });
+      res.status(400).json({ message: "Failed to update guest profile", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 

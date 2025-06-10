@@ -128,6 +128,7 @@ export interface IStorage {
   // Guest Profile Operations
   createGuestProfile(data: InsertGuestProfile): Promise<GuestProfile>;
   getGuestProfiles(): Promise<GuestProfile[]>;
+  getGuestProfileById(id: number): Promise<GuestProfile | undefined>;
   getGuestProfilesByRoom(roomId: number): Promise<GuestProfile[]>;
   updateGuestProfile(id: number, data: Partial<InsertGuestProfile>): Promise<GuestProfile>;
   markPaymentReceived(guestId: number, paymentMethod: string): Promise<GuestProfile>;
@@ -536,6 +537,11 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(guestProfiles).where(eq(guestProfiles.isActive, true));
   }
 
+  async getGuestProfileById(id: number): Promise<GuestProfile | undefined> {
+    const [result] = await db.select().from(guestProfiles).where(eq(guestProfiles.id, id));
+    return result;
+  }
+
   async getGuestProfilesByRoom(roomId: number): Promise<GuestProfile[]> {
     return await db
       .select()
@@ -806,13 +812,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getSystemNotifications(buildingId?: number): Promise<schema.SystemNotification[]> {
-    let query = db.select().from(schema.systemNotifications);
-
     if (buildingId) {
-      query = query.where(eq(schema.systemNotifications.buildingId, buildingId));
+      return await db
+        .select()
+        .from(schema.systemNotifications)
+        .where(eq(schema.systemNotifications.buildingId, buildingId))
+        .orderBy(desc(schema.systemNotifications.createdAt));
     }
 
-    return await query.orderBy(desc(schema.systemNotifications.createdAt));
+    return await db
+      .select()
+      .from(schema.systemNotifications)
+      .orderBy(desc(schema.systemNotifications.createdAt));
   }
 
   async markSystemNotificationRead(id: number): Promise<schema.SystemNotification> {
@@ -831,13 +842,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async clearAllNotifications(buildingId?: number): Promise<void> {
-    let deleteQuery = db.delete(schema.systemNotifications);
-
     if (buildingId) {
-      deleteQuery = deleteQuery.where(eq(schema.systemNotifications.buildingId, buildingId));
+      await db
+        .delete(schema.systemNotifications)
+        .where(eq(schema.systemNotifications.buildingId, buildingId));
+    } else {
+      await db.delete(schema.systemNotifications);
     }
-
-    await deleteQuery;
   }
 
   // Temporary Access Codes
