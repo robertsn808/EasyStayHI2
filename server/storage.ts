@@ -860,16 +860,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getActiveAccessCodes(roomId?: number) {
-    const query = db.select().from(schema.temporaryAccessCodes)
+    if (roomId) {
+      return await db.select().from(schema.temporaryAccessCodes)
+        .where(and(
+          eq(schema.temporaryAccessCodes.isActive, true),
+          gt(schema.temporaryAccessCodes.expiresAt, new Date()),
+          eq(schema.temporaryAccessCodes.roomId, roomId)
+        ));
+    }
+    
+    return await db.select().from(schema.temporaryAccessCodes)
       .where(and(
         eq(schema.temporaryAccessCodes.isActive, true),
         gt(schema.temporaryAccessCodes.expiresAt, new Date())
       ));
-
-    if (roomId) {
-      return query.where(eq(schema.temporaryAccessCodes.roomId, roomId));
-    }
-    return query;
   }
 
   async validateAccessCode(roomId: number, code: string) {
@@ -885,13 +889,16 @@ export class DatabaseStorage implements IStorage {
     if (!accessCode) return null;
 
     // Check usage limits
-    if (accessCode.maxUsage > 0 && accessCode.usageCount >= accessCode.maxUsage) {
+    const maxUsage = accessCode.maxUsage ?? 0;
+    const usageCount = accessCode.usageCount ?? 0;
+    
+    if (maxUsage > 0 && usageCount >= maxUsage) {
       return null;
     }
 
     // Increment usage count
     await db.update(schema.temporaryAccessCodes)
-      .set({ usageCount: accessCode.usageCount + 1 })
+      .set({ usageCount: usageCount + 1 })
       .where(eq(schema.temporaryAccessCodes.id, accessCode.id))
       .returning();
 
@@ -913,16 +920,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAccessLogs(roomId?: number, limit = 50) {
-    let query = db.select()
+    if (roomId) {
+      return await db.select()
+        .from(schema.accessLogs)
+        .where(eq(schema.accessLogs.roomId, roomId))
+        .orderBy(desc(schema.accessLogs.timestamp))
+        .limit(limit);
+    }
+    
+    return await db.select()
       .from(schema.accessLogs)
       .orderBy(desc(schema.accessLogs.timestamp))
       .limit(limit);
-
-    if (roomId) {
-      query = query.where(eq(schema.accessLogs.roomId, roomId));
-    }
-
-    return query;
   }
 
   async getSecurityAlerts(hours = 24) {
@@ -945,15 +954,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getMaintenancePredictions(roomId?: number) {
-    let query = db.select().from(schema.maintenancePredictions)
+    if (roomId) {
+      return await db.select().from(schema.maintenancePredictions)
+        .where(and(
+          eq(schema.maintenancePredictions.status, 'pending'),
+          eq(schema.maintenancePredictions.roomId, roomId)
+        ))
+        .orderBy(desc(schema.maintenancePredictions.priority), schema.maintenancePredictions.predictedFailureDate);
+    }
+    
+    return await db.select().from(schema.maintenancePredictions)
       .where(eq(schema.maintenancePredictions.status, 'pending'))
       .orderBy(desc(schema.maintenancePredictions.priority), schema.maintenancePredictions.predictedFailureDate);
-
-    if (roomId) {
-      query = query.where(eq(schema.maintenancePredictions.roomId, roomId));
-    }
-
-    return query;
   }
 
   async updateMaintenancePrediction(id: number, data: any) {
