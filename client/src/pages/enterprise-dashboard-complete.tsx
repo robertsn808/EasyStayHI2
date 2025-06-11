@@ -58,45 +58,93 @@ export default function EnterpriseDashboardComplete() {
     }
   }, [setLocation]);
 
-  // API Data Fetching
+  // API Data Fetching with proper authentication
   const { data: buildings = [] } = useQuery({
     queryKey: ["/api/admin/buildings"],
-    meta: { headers: { 'x-admin-token': 'admin-authenticated' } }
+    queryFn: async () => {
+      const response = await fetch('/api/admin/buildings', {
+        headers: { 'x-admin-token': 'admin-authenticated' }
+      });
+      if (!response.ok) throw new Error('Failed to fetch buildings');
+      return response.json();
+    }
   });
 
   const { data: rooms = [] } = useQuery({
     queryKey: ["/api/admin/rooms"],
-    meta: { headers: { 'x-admin-token': 'admin-authenticated' } }
+    queryFn: async () => {
+      const response = await fetch('/api/admin/rooms', {
+        headers: { 'x-admin-token': 'admin-authenticated' }
+      });
+      if (!response.ok) throw new Error('Failed to fetch rooms');
+      return response.json();
+    }
   });
 
   const { data: tenants = [] } = useQuery({
     queryKey: ["/api/admin/tenants"],
-    meta: { headers: { 'x-admin-token': 'admin-authenticated' } }
+    queryFn: async () => {
+      const response = await fetch('/api/admin/tenants', {
+        headers: { 'x-admin-token': 'admin-authenticated' }
+      });
+      if (!response.ok) throw new Error('Failed to fetch tenants');
+      return response.json();
+    }
   });
 
   const { data: payments = [] } = useQuery({
     queryKey: ["/api/admin/payments"],
-    meta: { headers: { 'x-admin-token': 'admin-authenticated' } }
+    queryFn: async () => {
+      const response = await fetch('/api/admin/payments', {
+        headers: { 'x-admin-token': 'admin-authenticated' }
+      });
+      if (!response.ok) throw new Error('Failed to fetch payments');
+      return response.json();
+    }
   });
 
   const { data: maintenanceRequests = [] } = useQuery({
     queryKey: ["/api/admin/maintenance"],
-    meta: { headers: { 'x-admin-token': 'admin-authenticated' } }
+    queryFn: async () => {
+      const response = await fetch('/api/admin/maintenance', {
+        headers: { 'x-admin-token': 'admin-authenticated' }
+      });
+      if (!response.ok) throw new Error('Failed to fetch maintenance requests');
+      return response.json();
+    }
   });
 
   const { data: inquiries = [] } = useQuery({
     queryKey: ["/api/admin/inquiries"],
-    meta: { headers: { 'x-admin-token': 'admin-authenticated' } }
+    queryFn: async () => {
+      const response = await fetch('/api/admin/inquiries', {
+        headers: { 'x-admin-token': 'admin-authenticated' }
+      });
+      if (!response.ok) throw new Error('Failed to fetch inquiries');
+      return response.json();
+    }
   });
 
   const { data: financialSummary = {} } = useQuery({
     queryKey: ["/api/admin/financial/summary"],
-    meta: { headers: { 'x-admin-token': 'admin-authenticated' } }
+    queryFn: async () => {
+      const response = await fetch('/api/admin/financial/summary', {
+        headers: { 'x-admin-token': 'admin-authenticated' }
+      });
+      if (!response.ok) throw new Error('Failed to fetch financial summary');
+      return response.json();
+    }
   });
 
   const { data: occupancyData = {} } = useQuery({
     queryKey: ["/api/admin/analytics/occupancy"],
-    meta: { headers: { 'x-admin-token': 'admin-authenticated' } }
+    queryFn: async () => {
+      const response = await fetch('/api/admin/analytics/occupancy', {
+        headers: { 'x-admin-token': 'admin-authenticated' }
+      });
+      if (!response.ok) throw new Error('Failed to fetch occupancy data');
+      return response.json();
+    }
   });
 
   // Calculate comprehensive stats
