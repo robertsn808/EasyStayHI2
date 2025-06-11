@@ -3,6 +3,8 @@ import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Bell, User, Search, CheckCircle, Home, DollarSign, 
@@ -180,6 +182,200 @@ export default function EnterpriseDashboardComplete() {
   const monthlyRevenue = (financialSummary as any)?.thisMonthRevenue || 0;
   const monthlyExpenses = (financialSummary as any)?.thisMonthExpenses || 0;
   const netIncome = monthlyRevenue - monthlyExpenses;
+
+  // Add room mutation
+  const addRoomMutation = useMutation({
+    mutationFn: async (roomData: any) => {
+      const response = await fetch('/api/admin/rooms', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'admin-authenticated'
+        },
+        body: JSON.stringify(roomData)
+      });
+      if (!response.ok) throw new Error('Failed to add room');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/analytics/occupancy"] });
+      setNewRoomForm({
+        number: "",
+        buildingId: "",
+        status: "available",
+        size: "studio",
+        floor: "1",
+        rentalRate: "",
+        rentalPeriod: "monthly",
+        accessPin: ""
+      });
+      setActiveTab("properties");
+      toast({
+        title: "Room added successfully",
+        description: "The new room has been added to the property"
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Failed to add room",
+        description: "Please check the room details and try again",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleAddRoom = () => {
+    if (newRoomForm.number && newRoomForm.buildingId && newRoomForm.rentalRate) {
+      addRoomMutation.mutate({
+        number: newRoomForm.number,
+        buildingId: parseInt(newRoomForm.buildingId),
+        status: newRoomForm.status,
+        size: newRoomForm.size,
+        floor: parseInt(newRoomForm.floor),
+        rentalRate: parseFloat(newRoomForm.rentalRate),
+        rentalPeriod: newRoomForm.rentalPeriod,
+        accessPin: newRoomForm.accessPin || Math.floor(1000 + Math.random() * 9000).toString()
+      });
+    }
+  };
+
+  const renderAddRoomTab = () => (
+    <div className="max-w-2xl mx-auto space-y-6">
+      <div className="flex items-center space-x-4">
+        <Button 
+          variant="outline"
+          onClick={() => setActiveTab("properties")}
+        >
+          ← Back to Properties
+        </Button>
+        <h2 className="text-2xl font-bold">Add New Room</h2>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Room Details</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Property</label>
+              <Select onValueChange={(value) => setNewRoomForm(prev => ({ ...prev, buildingId: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select property" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.isArray(buildings) && buildings.map((building: any) => (
+                    <SelectItem key={building.id} value={building.id.toString()}>
+                      {building.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Room Number</label>
+              <Input
+                placeholder="e.g., 301"
+                value={newRoomForm.number}
+                onChange={(e) => setNewRoomForm(prev => ({ ...prev, number: e.target.value }))}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Room Type</label>
+              <Select onValueChange={(value) => setNewRoomForm(prev => ({ ...prev, size: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select room type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="studio">Studio</SelectItem>
+                  <SelectItem value="1bed">1 Bedroom</SelectItem>
+                  <SelectItem value="2bed">2 Bedroom</SelectItem>
+                  <SelectItem value="3bed">3 Bedroom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Floor</label>
+              <Input
+                type="number"
+                placeholder="Floor number"
+                value={newRoomForm.floor}
+                onChange={(e) => setNewRoomForm(prev => ({ ...prev, floor: e.target.value }))}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Monthly Rent</label>
+              <Input
+                type="number"
+                placeholder="e.g., 2400"
+                value={newRoomForm.rentalRate}
+                onChange={(e) => setNewRoomForm(prev => ({ ...prev, rentalRate: e.target.value }))}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Status</label>
+              <Select onValueChange={(value) => setNewRoomForm(prev => ({ ...prev, status: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Room status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="available">Available</SelectItem>
+                  <SelectItem value="occupied">Occupied</SelectItem>
+                  <SelectItem value="maintenance">Under Maintenance</SelectItem>
+                  <SelectItem value="out_of_service">Out of Service</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Access PIN (Optional)</label>
+              <Input
+                placeholder="4-digit PIN (auto-generated if empty)"
+                maxLength={4}
+                value={newRoomForm.accessPin}
+                onChange={(e) => setNewRoomForm(prev => ({ ...prev, accessPin: e.target.value }))}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Rental Period</label>
+              <Select onValueChange={(value) => setNewRoomForm(prev => ({ ...prev, rentalPeriod: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Rental period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-4 pt-4">
+            <Button 
+              variant="outline"
+              onClick={() => setActiveTab("properties")}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAddRoom}
+              disabled={addRoomMutation.isPending || !newRoomForm.number || !newRoomForm.buildingId || !newRoomForm.rentalRate}
+            >
+              {addRoomMutation.isPending ? "Adding..." : "Add Room"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 
   const renderDashboardTab = () => (
     <div className="space-y-6">
@@ -625,6 +821,8 @@ export default function EnterpriseDashboardComplete() {
         return renderGuestsTab();
       case 'maintenance':
         return renderMaintenanceTab();
+      case 'add-room':
+        return renderAddRoomTab();
       default:
         return renderDashboardTab();
     }

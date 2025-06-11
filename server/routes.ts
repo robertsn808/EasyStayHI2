@@ -806,6 +806,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/rooms", simpleAdminAuth, async (req, res) => {
+    try {
+      const validatedData = insertRoomSchema.parse(req.body);
+      const room = await storage.createRoom(validatedData);
+      res.json(room);
+    } catch (error) {
+      console.error("Error creating room:", error);
+      res.status(400).json({ message: "Failed to create room", error: error instanceof Error ? error.message : "Unknown error" });
+    }
+  });
+
   
 
   app.put("/api/admin/rooms/:id", simpleAdminAuth, async (req, res) => {
