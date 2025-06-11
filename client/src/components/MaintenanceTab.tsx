@@ -132,6 +132,7 @@ export function MaintenanceTab({ requests = [] }: MaintenanceTabProps) {
                   <SelectContent>
                     <SelectItem value="low">Low</SelectItem>
                     <SelectItem value="normal">Normal</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
                     <SelectItem value="urgent">Urgent</SelectItem>
                   </SelectContent>
                 </Select>
@@ -204,9 +205,8 @@ export function MaintenanceTab({ requests = [] }: MaintenanceTabProps) {
                       <SelectValue placeholder="Technician" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="John Smith">John Smith</SelectItem>
-                      <SelectItem value="Mike Johnson">Mike Johnson</SelectItem>
-                      <SelectItem value="Sarah Wilson">Sarah Wilson</SelectItem>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
+                      <SelectItem value="staff">Available Staff</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button 

@@ -341,7 +341,7 @@ export function SettingsTab() {
           <TabsTrigger value="profile">My Profile</TabsTrigger>
           <TabsTrigger value="users">User Management</TabsTrigger>
           <TabsTrigger value="properties">Property Management</TabsTrigger>
-          <TabsTrigger value="api">Public API</TabsTrigger>
+          <TabsTrigger value="api">Integrations</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
@@ -641,83 +641,19 @@ export function SettingsTab() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Key className="w-5 h-5 mr-2" />
-                Public API Access
+                Integration Settings
               </CardTitle>
               <CardDescription>
-                Manage API keys and integrations for custom applications
+                Configure external system integrations and access controls
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="api-key">API Key</Label>
-                <div className="flex space-x-2">
-                  <Input 
-                    id="api-key" 
-                    type="text" 
-                    value="easystay_api_key_2024_..." 
-                    readOnly
-                    className="font-mono text-sm"
-                  />
-                  <Button variant="outline" size="sm">Copy</Button>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Use this key to authenticate API requests to the EasyStay system
-                </p>
-              </div>
-              
-              <div className="space-y-2">
-                <Label>API Endpoints</Label>
-                <div className="bg-muted p-4 rounded-lg font-mono text-sm space-y-2">
-                  <div>GET /api/public/rooms - List available rooms</div>
-                  <div>GET /api/public/buildings - List properties</div>
-                  <div>POST /api/public/inquiries - Submit inquiry</div>
-                  <div>GET /api/public/announcements - Get announcements</div>
-                </div>
-              </div>
-              
-              <div className="flex space-x-2">
-                <Button>Generate New Key</Button>
-                <Button variant="outline">View Documentation</Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Webhook Settings</CardTitle>
-              <CardDescription>
-                Configure webhooks for real-time notifications
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="webhook-url">Webhook URL</Label>
-                <Input 
-                  id="webhook-url" 
-                  type="url" 
-                  placeholder="https://your-app.com/webhook/easystay" 
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Events to Subscribe</Label>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <input type="checkbox" id="new-inquiry" className="rounded" />
-                    <Label htmlFor="new-inquiry">New Inquiry Received</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input type="checkbox" id="room-booked" className="rounded" />
-                    <Label htmlFor="room-booked">Room Booking Confirmed</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input type="checkbox" id="payment-received" className="rounded" />
-                    <Label htmlFor="payment-received">Payment Received</Label>
-                  </div>
-                </div>
-              </div>
-              
-              <Button>Save Webhook Settings</Button>
+              <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  External integrations are not currently configured. Contact system administrator to enable API access.
+                </AlertDescription>
+              </Alert>
             </CardContent>
           </Card>
         </TabsContent>
@@ -895,6 +831,7 @@ export function SettingsTab() {
           </form>
         </DialogContent>
       </Dialog>
+      </Tabs>
     </div>
   );
 }

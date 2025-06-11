@@ -145,8 +145,9 @@ export function TodosTab({ todos = [] }: TodosTabProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="normal">Normal</SelectItem>
                       <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -180,7 +181,7 @@ export function TodosTab({ todos = [] }: TodosTabProps) {
                       {todo.title}
                     </CardTitle>
                   </div>
-                  <Badge variant={todo.priority === 'high' ? 'destructive' : todo.priority === 'medium' ? 'default' : 'secondary'}>
+                  <Badge variant={todo.priority === 'urgent' || todo.priority === 'high' ? 'destructive' : todo.priority === 'normal' ? 'default' : 'secondary'}>
                     {todo.priority}
                   </Badge>
                 </div>
