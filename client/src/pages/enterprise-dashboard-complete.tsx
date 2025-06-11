@@ -273,6 +273,61 @@ export default function EnterpriseDashboardComplete() {
     }
   };
 
+  // Room status change mutation
+  const updateRoomStatusMutation = useMutation({
+    mutationFn: async (data: {id: number, status: string}) => {
+      const response = await fetch(`/api/admin/rooms/${data.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'admin-authenticated'
+        },
+        body: JSON.stringify({ 
+          status: data.status,
+          lastCleaned: data.status === 'available' ? new Date().toISOString().split('T')[0] : undefined
+        })
+      });
+      if (!response.ok) throw new Error('Failed to update room status');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/analytics/occupancy"] });
+      toast({
+        title: "Room status updated",
+        description: "The room status has been successfully changed"
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Failed to update room status",
+        description: "Please try again",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleRoomStatusChange = (roomId: number, currentStatus: string) => {
+    let nextStatus = '';
+    switch (currentStatus) {
+      case 'occupied':
+        nextStatus = 'needs_cleaning';
+        break;
+      case 'needs_cleaning':
+        nextStatus = 'available';
+        break;
+      case 'available':
+        nextStatus = 'needs_cleaning';
+        break;
+      case 'maintenance':
+        nextStatus = 'available';
+        break;
+      default:
+        nextStatus = 'available';
+    }
+    updateRoomStatusMutation.mutate({ id: roomId, status: nextStatus });
+  };
+
   const renderAddRoomTab = () => (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center space-x-4">
@@ -652,13 +707,14 @@ export default function EnterpriseDashboardComplete() {
       const occupied = propertyRooms.filter((r: any) => r.status === 'occupied').length;
       const available = propertyRooms.filter((r: any) => r.status === 'available').length;
       const maintenance = propertyRooms.filter((r: any) => r.status === 'maintenance').length;
+      const needsCleaning = propertyRooms.filter((r: any) => r.status === 'needs_cleaning').length;
       const total = propertyRooms.length;
       const occupancyRate = total > 0 ? (occupied / total) * 100 : 0;
       const avgRent = propertyRooms.length > 0 
         ? propertyRooms.reduce((sum: number, room: any) => sum + (room.rentalRate || 0), 0) / propertyRooms.length 
         : 0;
       
-      return { total, occupied, available, maintenance, occupancyRate, avgRent, rooms: propertyRooms };
+      return { total, occupied, available, maintenance, needsCleaning, occupancyRate, avgRent, rooms: propertyRooms };
     };
 
     return (
@@ -720,12 +776,12 @@ export default function EnterpriseDashboardComplete() {
                       <p className="text-xs text-muted-foreground">Available</p>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-yellow-600">{stats.maintenance}</div>
-                      <p className="text-xs text-muted-foreground">Maintenance</p>
+                      <div className="text-2xl font-bold text-orange-600">{stats.needsCleaning}</div>
+                      <p className="text-xs text-muted-foreground">Needs Cleaning</p>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold">{stats.total}</div>
-                      <p className="text-xs text-muted-foreground">Total Units</p>
+                      <div className="text-2xl font-bold text-yellow-600">{stats.maintenance}</div>
+                      <p className="text-xs text-muted-foreground">Maintenance</p>
                     </div>
                   </div>
                   
@@ -769,19 +825,22 @@ export default function EnterpriseDashboardComplete() {
                         <div 
                           key={room.id} 
                           className={`
-                            relative p-2 rounded-lg border-2 text-center text-xs font-medium cursor-pointer
+                            relative p-2 rounded-lg border-2 text-center text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity
                             ${room.status === 'occupied' ? 'bg-red-100 border-red-300 text-red-800' :
                               room.status === 'available' ? 'bg-green-100 border-green-300 text-green-800' :
+                              room.status === 'needs_cleaning' ? 'bg-orange-100 border-orange-300 text-orange-800' :
                               room.status === 'maintenance' ? 'bg-yellow-100 border-yellow-300 text-yellow-800' :
                               'bg-gray-100 border-gray-300 text-gray-800'
                             }
                           `}
-                          title={`Room ${room.number} - ${room.status} - $${room.rentalRate}/month`}
+                          title={`Room ${room.number} - ${room.status.replace('_', ' ')} - $${room.rentalRate}/month`}
+                          onClick={() => handleRoomStatusChange(room.id, room.status)}
                         >
                           <div className="font-bold">{room.number}</div>
                           <div className="text-[10px] mt-1">
                             {room.status === 'occupied' ? '🔴' :
                              room.status === 'available' ? '🟢' :
+                             room.status === 'needs_cleaning' ? '🟠' :
                              room.status === 'maintenance' ? '🟡' : '⚪'}
                           </div>
                         </div>
@@ -789,7 +848,7 @@ export default function EnterpriseDashboardComplete() {
                     </div>
                     
                     {/* Room Status Legend */}
-                    <div className="flex justify-center space-x-4 text-xs">
+                    <div className="flex justify-center space-x-3 text-xs">
                       <div className="flex items-center space-x-1">
                         <div className="w-3 h-3 bg-green-200 border border-green-300 rounded"></div>
                         <span>Available</span>
@@ -797,6 +856,10 @@ export default function EnterpriseDashboardComplete() {
                       <div className="flex items-center space-x-1">
                         <div className="w-3 h-3 bg-red-200 border border-red-300 rounded"></div>
                         <span>Occupied</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-3 h-3 bg-orange-200 border border-orange-300 rounded"></div>
+                        <span>Needs Cleaning</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <div className="w-3 h-3 bg-yellow-200 border border-yellow-300 rounded"></div>
