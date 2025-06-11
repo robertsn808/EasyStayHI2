@@ -23,38 +23,48 @@ export default function Property934() {
   const [qrCodeData, setQrCodeData] = useState<{roomId: number, qrCode: string} | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
 
-  // Sample data for Property 934
+  // Fetch real data from database
+  const { data: buildings = [] } = useQuery({
+    queryKey: ['/api/buildings'],
+  });
+
+  const { data: rooms = [] } = useQuery({
+    queryKey: ['/api/rooms'],
+  });
+
+  const { data: maintenanceRequests = [] } = useQuery({
+    queryKey: ['/api/maintenance-requests'],
+  });
+
+  const { data: guestProfiles = [] } = useQuery({
+    queryKey: ['/api/guest-profiles'],
+  });
+
+  // Find the building for property 934
+  const building = buildings.find((b: any) => b.name === "934 Kapahulu Ave" || b.address?.includes("934"));
+  const buildingRooms = rooms.filter((r: any) => r.buildingId === building?.id);
+  
   const propertyData = {
-    id: 934,
-    address: "934 Kapahulu Ave",
-    totalRooms: 8,
-    occupiedRooms: 5,
-    availableRooms: 3,
-    maintenanceRooms: 0,
-    cleaningRooms: 0,
+    id: building?.id || 934,
+    address: building?.address || "934 Kapahulu Ave",
+    totalRooms: buildingRooms.length,
+    occupiedRooms: buildingRooms.filter((r: any) => r.status === "occupied").length,
+    availableRooms: buildingRooms.filter((r: any) => r.status === "available").length,
+    maintenanceRooms: buildingRooms.filter((r: any) => r.status === "out_of_service").length,
+    cleaningRooms: buildingRooms.filter((r: any) => r.status === "needs_cleaning").length,
   };
 
-  const rooms = [
-    { id: 1, number: "1A", status: "occupied", tenant: "John Smith", rent: 2000, dueDate: "2024-06-15" },
-    { id: 2, number: "1B", status: "available", tenant: null, rent: 2000, dueDate: null },
-    { id: 3, number: "2A", status: "occupied", tenant: "Sarah Johnson", rent: 2000, dueDate: "2024-06-20" },
-    { id: 4, number: "2B", status: "occupied", tenant: "Mike Chen", rent: 2000, dueDate: "2024-06-10" },
-    { id: 5, number: "3A", status: "available", tenant: null, rent: 2000, dueDate: null },
-    { id: 6, number: "3B", status: "occupied", tenant: "Lisa Wong", rent: 2000, dueDate: "2024-06-25" },
-    { id: 7, number: "4A", status: "occupied", tenant: "David Park", rent: 2000, dueDate: "2024-06-18" },
-    { id: 8, number: "4B", status: "available", tenant: null, rent: 2000, dueDate: null },
-  ];
+  const buildingMaintenanceRequests = maintenanceRequests.filter((req: any) => 
+    buildingRooms.some((room: any) => room.id === req.roomId)
+  );
 
-  const maintenanceRequests = [
-    { id: 1, room: "2A", issue: "Leaky faucet", priority: "medium", status: "pending", date: "2024-06-08" },
-    { id: 2, room: "3B", issue: "AC not working", priority: "high", status: "in-progress", date: "2024-06-07" },
-  ];
+  const { data: payments = [] } = useQuery({
+    queryKey: ['/api/payments'],
+  });
 
-  const payments = [
-    { id: 1, room: "1A", tenant: "John Smith", amount: 2000, status: "paid", date: "2024-06-01" },
-    { id: 2, room: "2B", tenant: "Mike Chen", amount: 2000, status: "overdue", date: "2024-05-25" },
-    { id: 3, room: "3B", tenant: "Lisa Wong", amount: 2000, status: "pending", date: "2024-06-20" },
-  ];
+  const buildingPayments = payments.filter((payment: any) => 
+    buildingRooms.some((room: any) => room.id === payment.roomId)
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -298,14 +308,14 @@ export default function Property934() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
-                  {rooms.map((room) => (
+                  {buildingRooms.map((room) => (
                     <div key={room.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center space-x-4">
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(room.status)}`}></div>
                         <div>
                           <div className="font-medium">Room {room.number}</div>
                           <div className="text-sm text-gray-600">
-                            {room.tenant || "Available"} • ${room.rent}/month
+                            {room.tenantName || "Available"} • ${room.rentalRate || 0}/{room.rentalPeriod || 'month'}
                           </div>
                         </div>
                       </div>
@@ -339,16 +349,18 @@ export default function Property934() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {maintenanceRequests.map((request) => (
+                  {buildingMaintenanceRequests.map((request) => {
+                    const room = buildingRooms.find(r => r.id === request.roomId);
+                    return (
                     <div key={request.id} className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
-                          <div className="font-medium">Room {request.room}</div>
-                          <div className="text-sm text-gray-600">{request.issue}</div>
-                          <div className="text-xs text-gray-500">Reported: {request.date}</div>
+                          <div className="font-medium">Room {room?.number}</div>
+                          <div className="text-sm text-gray-600">{request.title}</div>
+                          <div className="text-xs text-gray-500">Reported: {new Date(request.createdAt).toLocaleDateString()}</div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Badge variant={request.priority === 'high' ? 'destructive' : 'secondary'}>
+                          <Badge variant={request.priority === 'urgent' ? 'destructive' : 'secondary'}>
                             {request.priority}
                           </Badge>
                           <Badge variant="outline">
@@ -357,11 +369,11 @@ export default function Property934() {
                         </div>
                       </div>
                       <div className="flex gap-2 mt-3">
-                        <Button size="sm" variant="outline" onClick={() => handleUpdateMaintenanceStatus(request.id, 'in-progress')}>Update Status</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleUpdateMaintenanceStatus(request.id, 'in_progress')}>Update Status</Button>
                         <Button size="sm" variant="outline" onClick={() => handleViewMaintenanceDetails(request.id)}>View Details</Button>
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
               </CardContent>
             </Card>
@@ -380,13 +392,15 @@ export default function Property934() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {payments.map((payment) => (
+                  {buildingPayments.map((payment) => {
+                    const room = buildingRooms.find(r => r.id === payment.roomId);
+                    return (
                     <div key={payment.id} className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
-                          <div className="font-medium">Room {payment.room} - {payment.tenant}</div>
+                          <div className="font-medium">Room {room?.number} - {room?.tenantName}</div>
                           <div className="text-sm text-gray-600">${payment.amount}</div>
-                          <div className="text-xs text-gray-500">Due: {payment.date}</div>
+                          <div className="text-xs text-gray-500">Due: {new Date(payment.paymentDate).toLocaleDateString()}</div>
                         </div>
                         <Badge variant={getStatusBadge(payment.status)}>
                           {payment.status}
@@ -394,10 +408,11 @@ export default function Property934() {
                       </div>
                       <div className="flex gap-2 mt-3">
                         <Button size="sm" variant="outline" onClick={() => handleUpdatePaymentStatus(payment.id)}>Update Status</Button>
-                        <Button size="sm" variant="outline" onClick={() => handleSendReminder(payment.tenant)}>Send Reminder</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleSendReminder(room?.tenantName || '')}>Send Reminder</Button>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
