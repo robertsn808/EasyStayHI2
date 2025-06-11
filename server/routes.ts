@@ -346,6 +346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         roomId: decoded.roomId,
         tenantName: decoded.tenantData.name,
+        title: `${req.body.category || 'Maintenance'} Request - ${req.body.location || 'Room ' + decoded.roomId}`,
         status: 'pending',
         createdAt: new Date(),
       };
