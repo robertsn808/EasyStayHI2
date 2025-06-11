@@ -31,7 +31,8 @@ type TabType =
   | "operations"
   | "marketing"
   | "security"
-  | "reports";
+  | "reports"
+  | "add-room";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -40,6 +41,17 @@ export default function EnterpriseDashboardComplete() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+  
+  const [newRoomForm, setNewRoomForm] = useState({
+    number: "",
+    buildingId: "",
+    status: "available",
+    size: "studio",
+    floor: "1",
+    rentalRate: "",
+    rentalPeriod: "monthly",
+    accessPin: ""
+  });
 
   const handleLogout = () => {
     localStorage.removeItem('admin-authenticated');
@@ -472,7 +484,18 @@ export default function EnterpriseDashboardComplete() {
                   </div>
                   
                   <div className="mt-4">
-                    <h4 className="font-medium mb-2">Room Details</h4>
+                    <div className="flex justify-between items-center mb-2">
+                      <h4 className="font-medium">Room Details</h4>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => setActiveTab("add-room")}
+                        className="text-xs"
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add Room
+                      </Button>
+                    </div>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
                       {stats.rooms.map((room: any) => (
                         <div key={room.id} className="flex justify-between text-xs">
