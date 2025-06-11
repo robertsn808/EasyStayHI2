@@ -316,6 +316,7 @@ export function CalendarTab({ events = [] }: CalendarTabProps) {
                         <div className="flex items-center gap-2 mt-2">
                           <Badge variant="outline" className={`text-xs ${
                             todo.priority === 'urgent' ? 'border-red-300 text-red-700' :
+                            todo.priority === 'high' ? 'border-orange-300 text-orange-700' :
                             todo.priority === 'normal' ? 'border-blue-300 text-blue-700' :
                             'border-gray-300 text-gray-700'
                           }`}>
