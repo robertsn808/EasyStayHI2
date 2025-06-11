@@ -402,55 +402,129 @@ export default function EnterpriseDashboardComplete() {
     </div>
   );
 
-  const renderPropertiesTab = () => (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Building Overview</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.isArray(buildings) && buildings.map((building: any) => (
-              <Card key={building.id} className="p-4">
-                <h3 className="font-semibold">{building.name}</h3>
-                <p className="text-sm text-muted-foreground">{building.address}</p>
-                <div className="mt-2 flex justify-between text-sm">
-                  <span>Units: {building.totalUnits || 0}</span>
-                  <span>Floors: {building.totalFloors || 0}</span>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+  const renderPropertiesTab = () => {
+    const buildingsArray = Array.isArray(buildings) ? buildings : [];
+    
+    // Calculate property-specific metrics
+    const getPropertyStats = (buildingId: number) => {
+      const propertyRooms = roomsArray.filter((r: any) => r.buildingId === buildingId);
+      const occupied = propertyRooms.filter((r: any) => r.status === 'occupied').length;
+      const available = propertyRooms.filter((r: any) => r.status === 'available').length;
+      const maintenance = propertyRooms.filter((r: any) => r.status === 'maintenance').length;
+      const total = propertyRooms.length;
+      const occupancyRate = total > 0 ? (occupied / total) * 100 : 0;
+      const avgRent = propertyRooms.length > 0 
+        ? propertyRooms.reduce((sum: number, room: any) => sum + (room.rentalRate || 0), 0) / propertyRooms.length 
+        : 0;
+      
+      return { total, occupied, available, maintenance, occupancyRate, avgRent, rooms: propertyRooms };
+    };
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Room Status</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{occupiedRooms}</div>
-              <p className="text-sm text-muted-foreground">Occupied</p>
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {buildingsArray.map((building: any) => {
+            const stats = getPropertyStats(building.id);
+            return (
+              <Card key={building.id} className="overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-green-50">
+                  <CardTitle className="text-xl">{building.name}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{building.address}</p>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">{stats.occupied}</div>
+                      <p className="text-xs text-muted-foreground">Occupied</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">{stats.available}</div>
+                      <p className="text-xs text-muted-foreground">Available</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-yellow-600">{stats.maintenance}</div>
+                      <p className="text-xs text-muted-foreground">Maintenance</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">{stats.total}</div>
+                      <p className="text-xs text-muted-foreground">Total Units</p>
+                    </div>
+                  </div>
+                  
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium">Occupancy Rate</span>
+                      <span className="text-sm font-bold">{stats.occupancyRate.toFixed(1)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-green-600 h-2 rounded-full" 
+                        style={{ width: `${stats.occupancyRate}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Average Rent</span>
+                    <span className="text-lg font-bold text-green-600">
+                      ${stats.avgRent.toLocaleString()}
+                    </span>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <h4 className="font-medium mb-2">Room Details</h4>
+                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                      {stats.rooms.map((room: any) => (
+                        <div key={room.id} className="flex justify-between text-xs">
+                          <span>Room {room.number}</span>
+                          <div className="flex items-center space-x-2">
+                            <span className={`px-2 py-1 rounded text-xs ${
+                              room.status === 'occupied' ? 'bg-green-100 text-green-800' :
+                              room.status === 'available' ? 'bg-blue-100 text-blue-800' :
+                              'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {room.status}
+                            </span>
+                            <span className="font-medium">${room.rentalRate}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Portfolio Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="text-center p-4 border rounded-lg">
+                <div className="text-2xl font-bold text-green-600">{occupiedRooms}</div>
+                <p className="text-sm text-muted-foreground">Total Occupied</p>
+              </div>
+              <div className="text-center p-4 border rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">{availableRooms}</div>
+                <p className="text-sm text-muted-foreground">Total Available</p>
+              </div>
+              <div className="text-center p-4 border rounded-lg">
+                <div className="text-2xl font-bold text-yellow-600">{maintenanceRooms}</div>
+                <p className="text-sm text-muted-foreground">Under Maintenance</p>
+              </div>
+              <div className="text-center p-4 border rounded-lg">
+                <div className="text-2xl font-bold">{totalRooms}</div>
+                <p className="text-sm text-muted-foreground">Total Portfolio</p>
+              </div>
             </div>
-            <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{availableRooms}</div>
-              <p className="text-sm text-muted-foreground">Available</p>
-            </div>
-            <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-yellow-600">{maintenanceRooms}</div>
-              <p className="text-sm text-muted-foreground">Maintenance</p>
-            </div>
-            <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold">{totalRooms}</div>
-              <p className="text-sm text-muted-foreground">Total Rooms</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
 
   const renderGuestsTab = () => (
     <div className="space-y-6">
