@@ -411,7 +411,7 @@ export default function Property934() {
                         <Button size="sm" variant="outline" onClick={() => handleSendReminder(room?.tenantName || '')}>Send Reminder</Button>
                       </div>
                     </div>
-                    );
+                    )
                   })}
                 </div>
               </CardContent>

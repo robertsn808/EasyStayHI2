@@ -734,24 +734,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User Management API endpoints
   app.get("/api/admin/users", simpleAdminAuth, async (req, res) => {
     try {
-      // Return mock admin users for now - Sesa and webmaster
-      const users = [
-        {
-          id: "sesa",
-          username: "Sesa",
-          role: "admin",
-          createdAt: "2024-01-01T00:00:00Z",
-          lastLogin: new Date().toISOString()
-        },
-        {
-          id: "webmaster",
-          username: "webmaster",
-          role: "maintenance",
-          createdAt: "2024-01-01T00:00:00Z",
-          lastLogin: null
-        }
-      ];
-      res.json(users);
+      // Real implementation would fetch from actual user database
+      // For now, return empty array as no user management system is implemented
+      res.json([]);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch users" });
     }
@@ -761,8 +746,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { currentPassword, newPassword } = req.body;
       
-      // In a real implementation, you would verify the current password
-      // and update it in your user database
       if (!currentPassword || !newPassword) {
         return res.status(400).json({ message: "Current and new password required" });
       }
@@ -771,8 +754,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Password must be at least 6 characters long" });
       }
       
-      // Mock successful password change
-      res.json({ success: true, message: "Password updated successfully" });
+      // Password change functionality not implemented
+      res.status(501).json({ message: "Password change functionality not implemented" });
     } catch (error) {
       res.status(500).json({ message: "Failed to change password" });
     }
@@ -790,8 +773,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Password must be at least 6 characters long" });
       }
       
-      // Mock successful profile update
-      res.json({ success: true, message: "Profile updated successfully" });
+      // Profile update functionality not implemented
+      res.status(501).json({ message: "Profile update functionality not implemented" });
     } catch (error) {
       res.status(500).json({ message: "Failed to update profile" });
     }
@@ -813,16 +796,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid role specified" });
       }
       
-      // Mock successful user creation
-      const newUser = {
-        id: username.toLowerCase(),
-        username,
-        role,
-        createdAt: new Date().toISOString(),
-        lastLogin: null
-      };
-      
-      res.json(newUser);
+      // User creation functionality not implemented
+      res.status(501).json({ message: "User creation functionality not implemented" });
     } catch (error) {
       res.status(500).json({ message: "Failed to create user" });
     }
@@ -832,12 +807,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = req.params;
       
-      if (userId === "sesa") {
-        return res.status(400).json({ message: "Cannot delete main admin account" });
-      }
-      
-      // Mock successful user deletion
-      res.json({ success: true, message: "User deleted successfully" });
+      // User deletion functionality not implemented
+      res.status(501).json({ message: "User deletion functionality not implemented" });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete user" });
     }

@@ -23,41 +23,48 @@ export default function Property949() {
   const [qrCodeData, setQrCodeData] = useState<{roomId: number, qrCode: string} | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
 
-  // Sample data for Property 949
+  // Fetch real data from database
+  const { data: buildings = [] } = useQuery({
+    queryKey: ['/api/buildings'],
+  });
+
+  const { data: rooms = [] } = useQuery({
+    queryKey: ['/api/rooms'],
+  });
+
+  const { data: maintenanceRequests = [] } = useQuery({
+    queryKey: ['/api/maintenance-requests'],
+  });
+
+  const { data: payments = [] } = useQuery({
+    queryKey: ['/api/payments'],
+  });
+
+  const { data: guestProfiles = [] } = useQuery({
+    queryKey: ['/api/guest-profiles'],
+  });
+
+  // Find the building for property 949
+  const building = (buildings as any[]).find((b: any) => b.name === "949 Kawaiahao St" || b.address?.includes("949"));
+  const buildingRooms = (rooms as any[]).filter((r: any) => r.buildingId === building?.id);
+  
   const propertyData = {
-    id: 949,
-    address: "949 Kawaiahao St",
-    totalRooms: 10,
-    occupiedRooms: 7,
-    availableRooms: 3,
-    maintenanceRooms: 0,
-    cleaningRooms: 0,
+    id: building?.id || 949,
+    address: building?.address || "949 Kawaiahao St",
+    totalRooms: buildingRooms.length,
+    occupiedRooms: buildingRooms.filter((r: any) => r.status === "occupied").length,
+    availableRooms: buildingRooms.filter((r: any) => r.status === "available").length,
+    maintenanceRooms: buildingRooms.filter((r: any) => r.status === "out_of_service").length,
+    cleaningRooms: buildingRooms.filter((r: any) => r.status === "needs_cleaning").length,
   };
 
-  const rooms = [
-    { id: 1, number: "Suite 1", status: "occupied", tenant: "Emma Davis", rent: 600, dueDate: "2024-06-15" },
-    { id: 2, number: "Suite 2", status: "available", tenant: null, rent: 600, dueDate: null },
-    { id: 3, number: "Suite 3", status: "occupied", tenant: "David Chen", rent: 600, dueDate: "2024-06-20" },
-    { id: 4, number: "Suite 4", status: "occupied", tenant: "Maria Rodriguez", rent: 600, dueDate: "2024-06-10" },
-    { id: 5, number: "Suite 5", status: "available", tenant: null, rent: 600, dueDate: null },
-    { id: 6, number: "Suite 6", status: "occupied", tenant: "James Wilson", rent: 600, dueDate: "2024-06-25" },
-    { id: 7, number: "Suite 7", status: "occupied", tenant: "Anna Thompson", rent: 600, dueDate: "2024-06-18" },
-    { id: 8, number: "Suite 8", status: "available", tenant: null, rent: 600, dueDate: null },
-    { id: 9, number: "Suite 9", status: "occupied", tenant: "Robert Kim", rent: 600, dueDate: "2024-06-12" },
-    { id: 10, number: "Suite 10", status: "occupied", tenant: "Sophie Martinez", rent: 600, dueDate: "2024-06-22" },
-  ];
+  const buildingMaintenanceRequests = (maintenanceRequests as any[]).filter((req: any) => 
+    buildingRooms.some((room: any) => room.id === req.roomId)
+  );
 
-  const maintenanceRequests = [
-    { id: 1, room: "Suite 3", issue: "WiFi connectivity issues", priority: "medium", status: "pending", date: "2024-06-08" },
-    { id: 2, room: "Suite 7", issue: "Bathroom sink drain slow", priority: "low", status: "in-progress", date: "2024-06-06" },
-  ];
-
-  const payments = [
-    { id: 1, room: "Suite 1", tenant: "Emma Davis", amount: 600, status: "paid", date: "2024-06-01" },
-    { id: 2, room: "Suite 4", tenant: "Maria Rodriguez", amount: 600, status: "overdue", date: "2024-05-28" },
-    { id: 3, room: "Suite 6", tenant: "James Wilson", amount: 600, status: "pending", date: "2024-06-20" },
-    { id: 4, room: "Suite 9", tenant: "Robert Kim", amount: 600, status: "paid", date: "2024-06-05" },
-  ];
+  const buildingPayments = (payments as any[]).filter((payment: any) => 
+    buildingRooms.some((room: any) => room.id === payment.roomId)
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
