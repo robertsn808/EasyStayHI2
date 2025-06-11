@@ -308,7 +308,7 @@ export default function Property949() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
-                  {rooms.map((room) => (
+                  {buildingRooms.map((room) => (
                     <div key={room.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center space-x-4">
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(room.status)}`}></div>
@@ -349,7 +349,9 @@ export default function Property949() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {maintenanceRequests.map((request) => (
+                  {buildingMaintenanceRequests.map((request) => {
+                    const room = buildingRooms.find(r => r.id === request.roomId);
+                    return (
                     <div key={request.id} className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
