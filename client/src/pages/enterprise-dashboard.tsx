@@ -19,7 +19,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { format, subDays, isSameDay, parseISO } from "date-fns";
-import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell, Area, AreaChart } from "recharts";
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell, Area, AreaChart } from "recharts";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -233,7 +233,7 @@ export default function EnterpriseDashboard() {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
-                  label={(entry) => `${entry.name}: ${entry.value}`}
+                  label={(entry: any) => `${entry.name}: ${entry.value}`}
                 >
                   {occupancyData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
