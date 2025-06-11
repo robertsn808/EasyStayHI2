@@ -177,7 +177,37 @@ export const inquiries = pgTable("inquiries", {
   phone: varchar("phone", { length: 50 }),
   message: text("message"),
   contactPreference: varchar("contact_preference", { length: 50 }).default("any"), // phone, text, email, any
-  status: varchar("status", { length: 50 }).default("new"), // new, contacted, closed
+  checkInDate: date("check_in_date"),
+  checkOutDate: date("check_out_date"),
+  numberOfGuests: integer("number_of_guests").default(1),
+  roomPreference: varchar("room_preference", { length: 100 }), // building preference or room type
+  estimatedCost: numeric("estimated_cost", { precision: 10, scale: 2 }),
+  status: varchar("status", { length: 50 }).default("new"), // new, contacted, closed, booked
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Bookings table for confirmed reservations
+export const bookings = pgTable("bookings", {
+  id: serial("id").primaryKey(),
+  inquiryId: integer("inquiry_id").references(() => inquiries.id),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  guestName: varchar("guest_name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }),
+  checkInDate: date("check_in_date").notNull(),
+  checkOutDate: date("check_out_date").notNull(),
+  numberOfGuests: integer("number_of_guests").default(1),
+  numberOfNights: integer("number_of_nights").notNull(),
+  ratePerNight: numeric("rate_per_night", { precision: 10, scale: 2 }).notNull().default("100"),
+  totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
+  amountPaid: numeric("amount_paid", { precision: 10, scale: 2 }).default("0"),
+  balance: numeric("balance", { precision: 10, scale: 2 }).notNull(),
+  paymentMethod: varchar("payment_method", { length: 50 }),
+  paymentStatus: varchar("payment_status", { length: 20 }).default("pending"), // pending, partial, paid, refunded
+  bookingStatus: varchar("booking_status", { length: 20 }).default("confirmed"), // confirmed, checked_in, checked_out, cancelled
+  specialRequests: text("special_requests"),
+  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -458,4 +488,12 @@ export type InsertBiometricCredential = typeof biometricCredentials.$inferInsert
 
 export const insertBiometricCredentialSchema = {
   parse: (data: any) => data as InsertBiometricCredential
+};
+
+// Booking types
+export type Booking = typeof bookings.$inferSelect;
+export type InsertBooking = typeof bookings.$inferInsert;
+
+export const insertBookingSchema = {
+  parse: (data: any) => data as InsertBooking
 };

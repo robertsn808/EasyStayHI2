@@ -15,8 +15,12 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Send, MapPin, Phone, Mail, FileText, AlertTriangle } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Send, MapPin, Phone, Mail, FileText, AlertTriangle, Calendar as CalendarIcon, Users, DollarSign } from "lucide-react";
 import { Link } from "wouter";
+import { format, differenceInDays, addDays } from "date-fns";
 
 export default function InquiryPage() {
   const { toast } = useToast();
@@ -28,9 +32,18 @@ export default function InquiryPage() {
     rentalPeriod: "",
     message: "",
     contactPreference: "",
+    numberOfGuests: 1,
+    roomPreference: "",
   });
+  const [checkInDate, setCheckInDate] = useState<Date>();
+  const [checkOutDate, setCheckOutDate] = useState<Date>();
   const [showAgreement, setShowAgreement] = useState(false);
   const [hasReadAgreement, setHasReadAgreement] = useState(false);
+  
+  // Calculate booking details
+  const numberOfNights = checkInDate && checkOutDate ? differenceInDays(checkOutDate, checkInDate) : 0;
+  const ratePerNight = 100;
+  const totalCost = numberOfNights * ratePerNight;
 
   // Get property from URL parameters
   useEffect(() => {
