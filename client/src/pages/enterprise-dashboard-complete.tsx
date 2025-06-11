@@ -55,6 +55,8 @@ export default function EnterpriseDashboardComplete() {
     accessPin: ""
   });
 
+  const [editingProperty, setEditingProperty] = useState<{id: number, name: string} | null>(null);
+
   const handleLogout = () => {
     localStorage.removeItem('admin-authenticated');
     toast({
@@ -182,6 +184,37 @@ export default function EnterpriseDashboardComplete() {
   const monthlyRevenue = (financialSummary as any)?.thisMonthRevenue || 0;
   const monthlyExpenses = (financialSummary as any)?.thisMonthExpenses || 0;
   const netIncome = monthlyRevenue - monthlyExpenses;
+
+  // Property name update mutation
+  const updatePropertyMutation = useMutation({
+    mutationFn: async (data: {id: number, name: string}) => {
+      const response = await fetch(`/api/admin/buildings/${data.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': 'admin-authenticated'
+        },
+        body: JSON.stringify({ name: data.name })
+      });
+      if (!response.ok) throw new Error('Failed to update property name');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/buildings"] });
+      setEditingProperty(null);
+      toast({
+        title: "Property name updated",
+        description: "The property name has been successfully changed"
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Failed to update property name",
+        description: "Please try again",
+        variant: "destructive"
+      });
+    }
+  });
 
   // Add room mutation
   const addRoomMutation = useMutation({
@@ -636,8 +669,45 @@ export default function EnterpriseDashboardComplete() {
             return (
               <Card key={building.id} className="overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-blue-50 to-green-50">
-                  <CardTitle className="text-xl">{building.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{building.address}</p>
+                  <div className="flex items-center justify-between">
+                    {editingProperty?.id === building.id ? (
+                      <div className="flex items-center space-x-2 flex-1">
+                        <Input
+                          value={editingProperty?.name || ''}
+                          onChange={(e) => setEditingProperty(prev => prev ? {...prev, name: e.target.value} : null)}
+                          className="text-xl font-semibold"
+                        />
+                        <Button 
+                          size="sm" 
+                          onClick={() => editingProperty && updatePropertyMutation.mutate({id: building.id, name: editingProperty.name})}
+                          disabled={updatePropertyMutation.isPending}
+                        >
+                          Save
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => setEditingProperty(null)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between w-full">
+                        <div>
+                          <CardTitle className="text-xl">{building.name}</CardTitle>
+                          <p className="text-sm text-muted-foreground">{building.address}</p>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => setEditingProperty({id: building.id, name: building.name})}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="grid grid-cols-2 gap-4 mb-4">
@@ -680,8 +750,8 @@ export default function EnterpriseDashboardComplete() {
                   </div>
                   
                   <div className="mt-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className="font-medium">Room Details</h4>
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-medium">Room Status Grid</h4>
                       <Button 
                         size="sm" 
                         variant="outline"
@@ -692,22 +762,46 @@ export default function EnterpriseDashboardComplete() {
                         Add Room
                       </Button>
                     </div>
-                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                    
+                    {/* Visual Room Status Grid */}
+                    <div className="grid grid-cols-6 gap-2 mb-4">
                       {stats.rooms.map((room: any) => (
-                        <div key={room.id} className="flex justify-between text-xs">
-                          <span>Room {room.number}</span>
-                          <div className="flex items-center space-x-2">
-                            <span className={`px-2 py-1 rounded text-xs ${
-                              room.status === 'occupied' ? 'bg-green-100 text-green-800' :
-                              room.status === 'available' ? 'bg-blue-100 text-blue-800' :
-                              'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {room.status}
-                            </span>
-                            <span className="font-medium">${room.rentalRate}</span>
+                        <div 
+                          key={room.id} 
+                          className={`
+                            relative p-2 rounded-lg border-2 text-center text-xs font-medium cursor-pointer
+                            ${room.status === 'occupied' ? 'bg-red-100 border-red-300 text-red-800' :
+                              room.status === 'available' ? 'bg-green-100 border-green-300 text-green-800' :
+                              room.status === 'maintenance' ? 'bg-yellow-100 border-yellow-300 text-yellow-800' :
+                              'bg-gray-100 border-gray-300 text-gray-800'
+                            }
+                          `}
+                          title={`Room ${room.number} - ${room.status} - $${room.rentalRate}/month`}
+                        >
+                          <div className="font-bold">{room.number}</div>
+                          <div className="text-[10px] mt-1">
+                            {room.status === 'occupied' ? '🔴' :
+                             room.status === 'available' ? '🟢' :
+                             room.status === 'maintenance' ? '🟡' : '⚪'}
                           </div>
                         </div>
                       ))}
+                    </div>
+                    
+                    {/* Room Status Legend */}
+                    <div className="flex justify-center space-x-4 text-xs">
+                      <div className="flex items-center space-x-1">
+                        <div className="w-3 h-3 bg-green-200 border border-green-300 rounded"></div>
+                        <span>Available</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-3 h-3 bg-red-200 border border-red-300 rounded"></div>
+                        <span>Occupied</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-3 h-3 bg-yellow-200 border border-yellow-300 rounded"></div>
+                        <span>Maintenance</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

@@ -787,6 +787,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/admin/buildings/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updateData = req.body;
+      const building = await storage.updateBuilding(id, updateData);
+      res.json(building);
+    } catch (error) {
+      console.error("Building update error:", error);
+      res.status(400).json({ message: "Failed to update building", error: error instanceof Error ? error.message : "Unknown error" });
+    }
+  });
+
   app.get("/api/rooms", async (req, res) => {
     try {
       const rooms = await storage.getRooms();
