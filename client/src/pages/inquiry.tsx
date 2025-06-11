@@ -68,6 +68,7 @@ export default function InquiryPage() {
       
       const inquiryData = {
         ...data,
+        property: selectedProperty,
         checkInDate: checkInDate.toISOString().split('T')[0],
         checkOutDate: checkOutDate.toISOString().split('T')[0],
         numberOfGuests: formData.numberOfGuests,

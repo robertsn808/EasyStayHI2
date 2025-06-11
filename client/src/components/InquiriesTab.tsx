@@ -128,11 +128,15 @@ export function InquiriesTab({ inquiries = [] }: InquiriesTabProps) {
     kapahulu: Array.isArray(inquiries) ? inquiries.filter((inquiry: any) => 
       inquiry.message?.toLowerCase().includes('934') || 
       inquiry.message?.toLowerCase().includes('kapahulu') ||
-      (!inquiry.message?.toLowerCase().includes('949') && !inquiry.message?.toLowerCase().includes('kawaiahao'))
+      inquiry.property === '934' ||
+      (!inquiry.message?.toLowerCase().includes('949') && 
+       !inquiry.message?.toLowerCase().includes('kawaiahao') && 
+       inquiry.property !== '949')
     ) : [],
     kawaiahao: Array.isArray(inquiries) ? inquiries.filter((inquiry: any) => 
       inquiry.message?.toLowerCase().includes('949') || 
-      inquiry.message?.toLowerCase().includes('kawaiahao')
+      inquiry.message?.toLowerCase().includes('kawaiahao') ||
+      inquiry.property === '949'
     ) : []
   };
 
