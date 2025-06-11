@@ -120,11 +120,13 @@ export default function TenantPortalComplete() {
   // Mutations
   const signInMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest('/api/tenant/signin', {
+      const response = await fetch('/api/tenant/signin', {
         method: 'POST',
-        body: data
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
-      return response;
+      if (!response.ok) throw new Error('Sign in failed');
+      return response.json();
     },
     onSuccess: (data) => {
       setSessionToken(data.token);
@@ -146,11 +148,16 @@ export default function TenantPortalComplete() {
 
   const maintenanceMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest('/api/tenant/maintenance', {
+      const response = await fetch('/api/tenant/maintenance', {
         method: 'POST',
-        body: { ...data, roomId },
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`
+        },
+        body: JSON.stringify({ ...data, roomId })
       });
+      if (!response.ok) throw new Error('Failed to submit maintenance request');
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tenant/maintenance", roomId] });
@@ -169,11 +176,16 @@ export default function TenantPortalComplete() {
 
   const paymentMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest('/api/tenant/payment', {
+      const response = await fetch('/api/tenant/payment', {
         method: 'POST',
-        body: { ...data, roomId },
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`
+        },
+        body: JSON.stringify({ ...data, roomId })
       });
+      if (!response.ok) throw new Error('Failed to submit payment');
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tenant/payments", roomId] });
@@ -185,6 +197,36 @@ export default function TenantPortalComplete() {
       toast({
         title: "Payment submitted",
         description: "Your payment is being processed"
+      });
+    }
+  });
+
+  const checkoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/tenant/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to checkout');
+      return response.json();
+    },
+    onSuccess: () => {
+      localStorage.removeItem(`tenant_session_${roomId}`);
+      setIsSignedIn(false);
+      setSessionToken(null);
+      toast({
+        title: "Checked out successfully",
+        description: "Room has been marked for housekeeping. Thank you for staying with us!"
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Checkout failed",
+        description: "Please try again or contact management",
+        variant: "destructive"
       });
     }
   });
@@ -606,6 +648,15 @@ export default function TenantPortalComplete() {
               <span className="text-sm text-gray-600">
                 Welcome, {tenantData?.firstName || signInForm.tenantName}
               </span>
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                onClick={() => checkoutMutation.mutate()}
+                disabled={checkoutMutation.isPending}
+              >
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                {checkoutMutation.isPending ? "Checking out..." : "Check Out"}
+              </Button>
               <Button variant="outline" size="sm" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
