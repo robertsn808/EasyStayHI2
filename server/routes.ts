@@ -634,59 +634,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Seed database with buildings and rooms
+  // Property seeding endpoint discontinued
   app.post("/api/admin/seed-properties", adminAuth, async (req, res) => {
-    try {
-      // Create buildings
-      const building934 = await storage.createBuilding({
-        name: "934 Kapahulu Ave",
-        address: "934 Kapahulu Ave, Honolulu, HI 96816"
-      });
-
-      const building949 = await storage.createBuilding({
-        name: "949 Kawaiahao St", 
-        address: "949 Kawaiahao St, Honolulu, HI 96813"
-      });
-
-      // Create 8 rooms for 934 Kapahulu Ave
-      const rooms934 = [];
-      for (let i = 1; i <= 8; i++) {
-        const room = await storage.createRoom({
-          number: `${i.toString().padStart(3, '0')}`,
-          buildingId: building934.id,
-          status: "available",
-          size: "Studio",
-          floor: Math.ceil(i / 4),
-          rentalRate: "100",
-          rentalPeriod: "flexible"
-        });
-        rooms934.push(room);
-      }
-
-      // Create 10 rooms for 949 Kawaiahao St
-      const rooms949 = [];
-      for (let i = 1; i <= 10; i++) {
-        const room = await storage.createRoom({
-          number: `${i.toString().padStart(3, '0')}`,
-          buildingId: building949.id,
-          status: "available", 
-          size: "Suite",
-          floor: Math.ceil(i / 5),
-          rentalRate: "50",
-          rentalPeriod: "flexible"
-        });
-        rooms949.push(room);
-      }
-
-      res.json({
-        message: "Properties seeded successfully",
-        buildings: [building934, building949],
-        rooms: [...rooms934, ...rooms949]
-      });
-    } catch (error) {
-      console.error("Error seeding properties:", error);
-      res.status(500).json({ error: "Failed to seed properties" });
-    }
+    res.status(410).json({ 
+      message: "Property seeding endpoint discontinued. Use the admin interface to create buildings and rooms with authentic data." 
+    });
   });
 
   

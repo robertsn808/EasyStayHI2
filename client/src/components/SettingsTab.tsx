@@ -50,7 +50,7 @@ export function SettingsTab() {
   });
   
   const [profileData, setProfileData] = useState({
-    username: "Sesa",
+    username: "",
     newPassword: "",
     confirmPassword: ""
   });
@@ -228,15 +228,11 @@ export function SettingsTab() {
 
   const createMaintenanceAccount = () => {
     setUserData({
-      username: "webmaster",
-      password: "Camputer69!",
+      username: "",
+      password: "",
       role: "maintenance"
     });
-    createUserMutation.mutate({
-      username: "webmaster",
-      password: "Camputer69!",
-      role: "maintenance"
-    });
+    setShowUserDialog(true);
   };
 
   // Room management mutations
@@ -492,48 +488,49 @@ export function SettingsTab() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Current Admin */}
-                <div className="flex items-center justify-between p-4 border rounded-lg bg-blue-50 border-blue-200">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-white" />
+                {adminUsers.map((user: AdminUser) => (
+                  <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-10 h-10 ${user.role === 'admin' ? 'bg-blue-500' : 'bg-orange-500'} rounded-full flex items-center justify-center`}>
+                        {user.role === 'admin' ? (
+                          <User className="w-5 h-5 text-white" />
+                        ) : (
+                          <Shield className="w-5 h-5 text-white" />
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">{user.username}</h4>
+                        <p className="text-sm text-gray-600">{user.role === 'admin' ? 'Administrator' : 'Maintenance'}</p>
+                        {user.lastLogin && (
+                          <p className="text-xs text-gray-500">Last login: {new Date(user.lastLogin).toLocaleDateString()}</p>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">Sesa (You)</h4>
-                      <p className="text-sm text-gray-600">Administrator</p>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>{user.role}</Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingUser(user)}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteUserMutation.mutate(user.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                  <Badge variant="default">Current User</Badge>
-                </div>
-
-                {/* Maintenance Account */}
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
-                      <Shield className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">webmaster</h4>
-                      <p className="text-sm text-gray-600">Maintenance Account</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant="secondary">Maintenance</Badge>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => deleteUserMutation.mutate("webmaster")}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                ))}
 
                 {adminUsers.length === 0 && (
                   <Alert>
                     <AlertTriangle className="h-4 w-4" />
                     <AlertDescription>
-                      No additional users found. You can create user accounts using the buttons above.
+                      No user accounts configured. Create your first admin account using the button above.
                     </AlertDescription>
                   </Alert>
                 )}
