@@ -497,3 +497,212 @@ export type InsertBooking = typeof bookings.$inferInsert;
 export const insertBookingSchema = {
   parse: (data: any) => data as InsertBooking
 };
+
+// Financial Reporting and Analytics
+export const financialReports = pgTable("financial_reports", {
+  id: serial("id").primaryKey(),
+  reportType: varchar("report_type", { length: 50 }).notNull(), // monthly, quarterly, yearly, custom
+  period: varchar("period", { length: 20 }).notNull(), // 2024-01, 2024-Q1, 2024
+  totalRevenue: numeric("total_revenue", { precision: 12, scale: 2 }).notNull().default("0"),
+  totalExpenses: numeric("total_expenses", { precision: 12, scale: 2 }).notNull().default("0"),
+  netIncome: numeric("net_income", { precision: 12, scale: 2 }).notNull().default("0"),
+  occupancyRate: numeric("occupancy_rate", { precision: 5, scale: 2 }).default("0"), // percentage
+  averageDailyRate: numeric("average_daily_rate", { precision: 10, scale: 2 }).default("0"),
+  revenuePar: numeric("revenue_par", { precision: 10, scale: 2 }).default("0"), // Revenue Per Available Room
+  buildingId: integer("building_id").references(() => buildings.id),
+  generatedAt: timestamp("generated_at").defaultNow(),
+  generatedBy: varchar("generated_by", { length: 255 }),
+});
+
+// Property Maintenance Schedules
+export const maintenanceSchedules = pgTable("maintenance_schedules", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  taskName: varchar("task_name", { length: 255 }).notNull(),
+  taskType: varchar("task_type", { length: 50 }).notNull(), // cleaning, inspection, repair, replacement
+  frequency: varchar("frequency", { length: 20 }).notNull(), // daily, weekly, monthly, quarterly, yearly
+  lastCompleted: date("last_completed"),
+  nextDue: date("next_due").notNull(),
+  estimatedDuration: integer("estimated_duration"), // in minutes
+  assignedTo: varchar("assigned_to", { length: 255 }),
+  priority: varchar("priority", { length: 20 }).default("normal"),
+  isActive: boolean("is_active").default(true),
+  instructions: text("instructions"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Guest Communication Logs
+export const communicationLogs = pgTable("communication_logs", {
+  id: serial("id").primaryKey(),
+  guestId: integer("guest_id").references(() => guestProfiles.id),
+  roomId: integer("room_id").references(() => rooms.id),
+  communicationType: varchar("communication_type", { length: 30 }).notNull(), // sms, email, phone, in_person
+  direction: varchar("direction", { length: 10 }).notNull(), // inbound, outbound
+  subject: varchar("subject", { length: 255 }),
+  content: text("content").notNull(),
+  status: varchar("status", { length: 20 }).default("sent"), // sent, delivered, read, failed
+  sentBy: varchar("sent_by", { length: 255 }),
+  sentAt: timestamp("sent_at").defaultNow(),
+  responseReceived: boolean("response_received").default(false),
+  responseAt: timestamp("response_at"),
+});
+
+// Lease Agreements
+export const leaseAgreements = pgTable("lease_agreements", {
+  id: serial("id").primaryKey(),
+  guestId: integer("guest_id").references(() => guestProfiles.id).notNull(),
+  roomId: integer("room_id").references(() => rooms.id).notNull(),
+  leaseNumber: varchar("lease_number", { length: 50 }).notNull().unique(),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date"),
+  rentAmount: numeric("rent_amount", { precision: 10, scale: 2 }).notNull(),
+  securityDeposit: numeric("security_deposit", { precision: 10, scale: 2 }).default("0"),
+  paymentFrequency: varchar("payment_frequency", { length: 20 }).notNull(), // daily, weekly, monthly
+  terms: text("terms").notNull(),
+  status: varchar("status", { length: 20 }).default("active"), // active, expired, terminated, renewed
+  signedDate: date("signed_date"),
+  terminationDate: date("termination_date"),
+  terminationReason: text("termination_reason"),
+  documentUrl: varchar("document_url", { length: 500 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Vendor Management
+export const vendors = pgTable("vendors", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  contactPerson: varchar("contact_person", { length: 255 }),
+  email: varchar("email", { length: 255 }),
+  phone: varchar("phone", { length: 50 }),
+  address: text("address"),
+  serviceType: varchar("service_type", { length: 100 }).notNull(), // plumbing, electrical, cleaning, landscaping
+  rating: numeric("rating", { precision: 2, scale: 1 }).default("0"), // 0.0 to 5.0
+  isActive: boolean("is_active").default(true),
+  contractUrl: varchar("contract_url", { length: 500 }),
+  insuranceCertUrl: varchar("insurance_cert_url", { length: 500 }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Service Requests to Vendors
+export const serviceRequests = pgTable("service_requests", {
+  id: serial("id").primaryKey(),
+  vendorId: integer("vendor_id").references(() => vendors.id).notNull(),
+  roomId: integer("room_id").references(() => rooms.id),
+  requestType: varchar("request_type", { length: 50 }).notNull(),
+  description: text("description").notNull(),
+  urgency: varchar("urgency", { length: 20 }).default("normal"), // urgent, high, normal, low
+  estimatedCost: numeric("estimated_cost", { precision: 10, scale: 2 }),
+  actualCost: numeric("actual_cost", { precision: 10, scale: 2 }),
+  status: varchar("status", { length: 30 }).default("requested"), // requested, quoted, approved, in_progress, completed, cancelled
+  requestedDate: date("requested_date").notNull(),
+  scheduledDate: date("scheduled_date"),
+  completedDate: date("completed_date"),
+  notes: text("notes"),
+  createdBy: varchar("created_by", { length: 255 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Property Insurance Claims
+export const insuranceClaims = pgTable("insurance_claims", {
+  id: serial("id").primaryKey(),
+  claimNumber: varchar("claim_number", { length: 50 }).notNull().unique(),
+  roomId: integer("room_id").references(() => rooms.id),
+  incidentDate: date("incident_date").notNull(),
+  incidentType: varchar("incident_type", { length: 50 }).notNull(), // damage, theft, liability, other
+  description: text("description").notNull(),
+  estimatedDamage: numeric("estimated_damage", { precision: 12, scale: 2 }),
+  claimAmount: numeric("claim_amount", { precision: 12, scale: 2 }),
+  settlementAmount: numeric("settlement_amount", { precision: 12, scale: 2 }),
+  status: varchar("status", { length: 30 }).default("filed"), // filed, under_review, approved, denied, settled
+  insuranceCompany: varchar("insurance_company", { length: 255 }),
+  policyNumber: varchar("policy_number", { length: 100 }),
+  adjusterName: varchar("adjuster_name", { length: 255 }),
+  adjusterContact: varchar("adjuster_contact", { length: 100 }),
+  documentUrls: text("document_urls"), // JSON array of document URLs
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Emergency Contacts and Procedures
+export const emergencyContacts = pgTable("emergency_contacts", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  relationship: varchar("relationship", { length: 100 }).notNull(), // police, fire, hospital, utility, landlord
+  phone: varchar("phone", { length: 50 }).notNull(),
+  alternatePhone: varchar("alternate_phone", { length: 50 }),
+  email: varchar("email", { length: 255 }),
+  address: text("address"),
+  availableHours: varchar("available_hours", { length: 100 }), // 24/7, business_hours, emergency_only
+  notes: text("notes"),
+  isActive: boolean("is_active").default(true),
+  priority: integer("priority").default(1), // 1 = highest priority
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Utility Tracking
+export const utilityReadings = pgTable("utility_readings", {
+  id: serial("id").primaryKey(),
+  roomId: integer("room_id").references(() => rooms.id),
+  buildingId: integer("building_id").references(() => buildings.id),
+  utilityType: varchar("utility_type", { length: 30 }).notNull(), // electricity, water, gas, internet
+  readingDate: date("reading_date").notNull(),
+  previousReading: numeric("previous_reading", { precision: 10, scale: 2 }),
+  currentReading: numeric("current_reading", { precision: 10, scale: 2 }).notNull(),
+  usage: numeric("usage", { precision: 10, scale: 2 }),
+  unitCost: numeric("unit_cost", { precision: 10, scale: 4 }),
+  totalCost: numeric("total_cost", { precision: 10, scale: 2 }),
+  billDate: date("bill_date"),
+  dueDate: date("due_date"),
+  paidDate: date("paid_date"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Marketing Campaigns
+export const marketingCampaigns = pgTable("marketing_campaigns", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // email, social_media, paid_ads, referral
+  platform: varchar("platform", { length: 50 }), // facebook, instagram, google, airbnb
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date"),
+  budget: numeric("budget", { precision: 10, scale: 2 }),
+  spent: numeric("spent", { precision: 10, scale: 2 }).default("0"),
+  impressions: integer("impressions").default(0),
+  clicks: integer("clicks").default(0),
+  conversions: integer("conversions").default(0),
+  revenue: numeric("revenue", { precision: 10, scale: 2 }).default("0"),
+  status: varchar("status", { length: 20 }).default("draft"), // draft, active, paused, completed
+  targetAudience: text("target_audience"),
+  createdBy: varchar("created_by", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Type definitions for new tables
+export type FinancialReport = typeof financialReports.$inferSelect;
+export type InsertFinancialReport = typeof financialReports.$inferInsert;
+export type MaintenanceSchedule = typeof maintenanceSchedules.$inferSelect;
+export type InsertMaintenanceSchedule = typeof maintenanceSchedules.$inferInsert;
+export type CommunicationLog = typeof communicationLogs.$inferSelect;
+export type InsertCommunicationLog = typeof communicationLogs.$inferInsert;
+export type LeaseAgreement = typeof leaseAgreements.$inferSelect;
+export type InsertLeaseAgreement = typeof leaseAgreements.$inferInsert;
+export type Vendor = typeof vendors.$inferSelect;
+export type InsertVendor = typeof vendors.$inferInsert;
+export type ServiceRequest = typeof serviceRequests.$inferSelect;
+export type InsertServiceRequest = typeof serviceRequests.$inferInsert;
+export type InsuranceClaim = typeof insuranceClaims.$inferSelect;
+export type InsertInsuranceClaim = typeof insuranceClaims.$inferInsert;
+export type EmergencyContact = typeof emergencyContacts.$inferSelect;
+export type InsertEmergencyContact = typeof emergencyContacts.$inferInsert;
+export type UtilityReading = typeof utilityReadings.$inferSelect;
+export type InsertUtilityReading = typeof utilityReadings.$inferInsert;
+export type MarketingCampaign = typeof marketingCampaigns.$inferSelect;
+export type InsertMarketingCampaign = typeof marketingCampaigns.$inferInsert;

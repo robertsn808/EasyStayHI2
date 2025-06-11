@@ -13,6 +13,16 @@ import {
   portalSecurity,
   systemNotifications,
   invoices,
+  financialReports,
+  maintenanceSchedules,
+  communicationLogs,
+  leaseAgreements,
+  vendors,
+  serviceRequests,
+  insuranceClaims,
+  emergencyContacts,
+  utilityReadings,
+  marketingCampaigns,
   type User,
   type UpsertUser,
   type Building,
@@ -183,6 +193,69 @@ export interface IStorage {
   updateBiometricCredentialCounter(credentialId: string, counter: number): Promise<schema.BiometricCredential>;
   deleteBiometricCredential(credentialId: string): Promise<void>;
   getAllBiometricCredentials(): Promise<schema.BiometricCredential[]>;
+
+  // Financial Reporting
+  generateFinancialReport(type: string, period: string, buildingId?: number): Promise<schema.FinancialReport>;
+  getFinancialReports(buildingId?: number): Promise<schema.FinancialReport[]>;
+  getFinancialSummary(buildingId?: number): Promise<any>;
+
+  // Maintenance Scheduling
+  createMaintenanceSchedule(data: schema.InsertMaintenanceSchedule): Promise<schema.MaintenanceSchedule>;
+  getMaintenanceSchedules(roomId?: number): Promise<schema.MaintenanceSchedule[]>;
+  updateMaintenanceSchedule(id: number, data: Partial<schema.InsertMaintenanceSchedule>): Promise<schema.MaintenanceSchedule>;
+  completeMaintenanceTask(scheduleId: number): Promise<schema.MaintenanceSchedule>;
+  getOverdueMaintenanceTasks(): Promise<schema.MaintenanceSchedule[]>;
+
+  // Communication Logs
+  createCommunicationLog(data: schema.InsertCommunicationLog): Promise<schema.CommunicationLog>;
+  getCommunicationLogs(guestId?: number, roomId?: number): Promise<schema.CommunicationLog[]>;
+  markCommunicationResponse(logId: number): Promise<schema.CommunicationLog>;
+
+  // Lease Management
+  createLeaseAgreement(data: schema.InsertLeaseAgreement): Promise<schema.LeaseAgreement>;
+  getLeaseAgreements(guestId?: number, roomId?: number): Promise<schema.LeaseAgreement[]>;
+  updateLeaseAgreement(id: number, data: Partial<schema.InsertLeaseAgreement>): Promise<schema.LeaseAgreement>;
+  terminateLease(leaseId: number, reason: string): Promise<schema.LeaseAgreement>;
+  getExpiringLeases(days: number): Promise<schema.LeaseAgreement[]>;
+
+  // Vendor Management
+  createVendor(data: schema.InsertVendor): Promise<schema.Vendor>;
+  getVendors(serviceType?: string): Promise<schema.Vendor[]>;
+  updateVendor(id: number, data: Partial<schema.InsertVendor>): Promise<schema.Vendor>;
+  rateVendor(vendorId: number, rating: number): Promise<schema.Vendor>;
+
+  // Service Requests
+  createServiceRequest(data: schema.InsertServiceRequest): Promise<schema.ServiceRequest>;
+  getServiceRequests(vendorId?: number, roomId?: number): Promise<schema.ServiceRequest[]>;
+  updateServiceRequest(id: number, data: Partial<schema.InsertServiceRequest>): Promise<schema.ServiceRequest>;
+  approveServiceRequest(requestId: number, approvedCost: number): Promise<schema.ServiceRequest>;
+
+  // Insurance Claims
+  createInsuranceClaim(data: schema.InsertInsuranceClaim): Promise<schema.InsuranceClaim>;
+  getInsuranceClaims(roomId?: number): Promise<schema.InsuranceClaim[]>;
+  updateInsuranceClaim(id: number, data: Partial<schema.InsertInsuranceClaim>): Promise<schema.InsuranceClaim>;
+
+  // Emergency Contacts
+  createEmergencyContact(data: schema.InsertEmergencyContact): Promise<schema.EmergencyContact>;
+  getEmergencyContacts(): Promise<schema.EmergencyContact[]>;
+  updateEmergencyContact(id: number, data: Partial<schema.InsertEmergencyContact>): Promise<schema.EmergencyContact>;
+
+  // Utility Management
+  createUtilityReading(data: schema.InsertUtilityReading): Promise<schema.UtilityReading>;
+  getUtilityReadings(roomId?: number, buildingId?: number, utilityType?: string): Promise<schema.UtilityReading[]>;
+  calculateUtilityCosts(roomId: number, month: number, year: number): Promise<any>;
+
+  // Marketing Campaigns
+  createMarketingCampaign(data: schema.InsertMarketingCampaign): Promise<schema.MarketingCampaign>;
+  getMarketingCampaigns(): Promise<schema.MarketingCampaign[]>;
+  updateMarketingCampaign(id: number, data: Partial<schema.InsertMarketingCampaign>): Promise<schema.MarketingCampaign>;
+  getCampaignROI(campaignId: number): Promise<any>;
+
+  // Advanced Analytics
+  getOccupancyAnalytics(buildingId?: number, period?: string): Promise<any>;
+  getRevenueAnalytics(buildingId?: number, period?: string): Promise<any>;
+  getMaintenanceAnalytics(roomId?: number, period?: string): Promise<any>;
+  getPredictiveInsights(): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1093,6 +1166,588 @@ export class DatabaseStorage implements IStorage {
 
   async getAllBiometricCredentials(): Promise<schema.BiometricCredential[]> {
     return await db.select().from(schema.biometricCredentials);
+  }
+
+  // Financial Reporting Methods
+  async generateFinancialReport(type: string, period: string, buildingId?: number): Promise<schema.FinancialReport> {
+    // Calculate revenue from payments and bookings
+    const payments = await db.select().from(schema.payments)
+      .where(eq(schema.payments.status, 'completed'));
+    
+    const totalRevenue = payments.reduce((sum, p) => sum + parseFloat(p.amount || '0'), 0);
+    
+    // Calculate expenses from receipts
+    const receipts = await db.select().from(schema.receipts);
+    const totalExpenses = receipts.reduce((sum, r) => sum + parseFloat(r.amount || '0'), 0);
+    
+    // Calculate occupancy rate
+    const allRooms = await db.select().from(schema.rooms);
+    const occupiedRooms = allRooms.filter(r => r.status === 'occupied');
+    const occupancyRate = allRooms.length > 0 ? (occupiedRooms.length / allRooms.length) * 100 : 0;
+    
+    const reportData = {
+      reportType: type,
+      period: period,
+      totalRevenue: totalRevenue.toString(),
+      totalExpenses: totalExpenses.toString(),
+      netIncome: (totalRevenue - totalExpenses).toString(),
+      occupancyRate: occupancyRate.toString(),
+      averageDailyRate: occupiedRooms.length > 0 ? (totalRevenue / occupiedRooms.length / 30).toString() : '0',
+      revenuePar: allRooms.length > 0 ? (totalRevenue / allRooms.length).toString() : '0',
+      buildingId: buildingId,
+      generatedBy: 'system'
+    };
+
+    const [report] = await db.insert(schema.financialReports)
+      .values(reportData)
+      .returning();
+    return report;
+  }
+
+  async getFinancialReports(buildingId?: number): Promise<schema.FinancialReport[]> {
+    if (buildingId) {
+      return db.select().from(schema.financialReports)
+        .where(eq(schema.financialReports.buildingId, buildingId))
+        .orderBy(desc(schema.financialReports.generatedAt));
+    }
+    return db.select().from(schema.financialReports)
+      .orderBy(desc(schema.financialReports.generatedAt));
+  }
+
+  async getFinancialSummary(buildingId?: number): Promise<any> {
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    
+    // Get current month revenue
+    const payments = await db.select().from(schema.payments)
+      .where(eq(schema.payments.status, 'completed'));
+    
+    const thisMonthRevenue = payments
+      .filter(p => p.createdAt && p.createdAt.toISOString().slice(0, 7) === currentMonth)
+      .reduce((sum, p) => sum + parseFloat(p.amount || '0'), 0);
+
+    // Get expenses
+    const receipts = await db.select().from(schema.receipts);
+    const thisMonthExpenses = receipts
+      .filter(r => r.receiptDate && r.receiptDate.toISOString().slice(0, 7) === currentMonth)
+      .reduce((sum, r) => sum + parseFloat(r.amount || '0'), 0);
+
+    return {
+      thisMonthRevenue,
+      thisMonthExpenses,
+      netIncome: thisMonthRevenue - thisMonthExpenses,
+      totalPaymentsDue: await this.getPaymentDueGuests().then(guests => 
+        guests.reduce((sum, g) => sum + parseFloat(g.paymentAmount || '0'), 0)
+      )
+    };
+  }
+
+  // Maintenance Scheduling Methods
+  async createMaintenanceSchedule(data: schema.InsertMaintenanceSchedule): Promise<schema.MaintenanceSchedule> {
+    const [schedule] = await db.insert(schema.maintenanceSchedules)
+      .values(data)
+      .returning();
+    return schedule;
+  }
+
+  async getMaintenanceSchedules(roomId?: number): Promise<schema.MaintenanceSchedule[]> {
+    if (roomId) {
+      return db.select().from(schema.maintenanceSchedules)
+        .where(and(
+          eq(schema.maintenanceSchedules.roomId, roomId),
+          eq(schema.maintenanceSchedules.isActive, true)
+        ))
+        .orderBy(schema.maintenanceSchedules.nextDue);
+    }
+    return db.select().from(schema.maintenanceSchedules)
+      .where(eq(schema.maintenanceSchedules.isActive, true))
+      .orderBy(schema.maintenanceSchedules.nextDue);
+  }
+
+  async updateMaintenanceSchedule(id: number, data: Partial<schema.InsertMaintenanceSchedule>): Promise<schema.MaintenanceSchedule> {
+    const [schedule] = await db.update(schema.maintenanceSchedules)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.maintenanceSchedules.id, id))
+      .returning();
+    return schedule;
+  }
+
+  async completeMaintenanceTask(scheduleId: number): Promise<schema.MaintenanceSchedule> {
+    const schedule = await db.select().from(schema.maintenanceSchedules)
+      .where(eq(schema.maintenanceSchedules.id, scheduleId))
+      .limit(1);
+    
+    if (schedule.length === 0) throw new Error('Schedule not found');
+    
+    const current = schedule[0];
+    const today = new Date();
+    let nextDue = new Date(today);
+    
+    // Calculate next due date based on frequency
+    switch (current.frequency) {
+      case 'daily':
+        nextDue.setDate(today.getDate() + 1);
+        break;
+      case 'weekly':
+        nextDue.setDate(today.getDate() + 7);
+        break;
+      case 'monthly':
+        nextDue.setMonth(today.getMonth() + 1);
+        break;
+      case 'quarterly':
+        nextDue.setMonth(today.getMonth() + 3);
+        break;
+      case 'yearly':
+        nextDue.setFullYear(today.getFullYear() + 1);
+        break;
+    }
+
+    const [updated] = await db.update(schema.maintenanceSchedules)
+      .set({
+        lastCompleted: today.toISOString().split('T')[0],
+        nextDue: nextDue.toISOString().split('T')[0],
+        updatedAt: new Date()
+      })
+      .where(eq(schema.maintenanceSchedules.id, scheduleId))
+      .returning();
+    
+    return updated;
+  }
+
+  async getOverdueMaintenanceTasks(): Promise<schema.MaintenanceSchedule[]> {
+    const today = new Date().toISOString().split('T')[0];
+    return db.select().from(schema.maintenanceSchedules)
+      .where(and(
+        eq(schema.maintenanceSchedules.isActive, true),
+        lte(schema.maintenanceSchedules.nextDue, today)
+      ))
+      .orderBy(schema.maintenanceSchedules.priority, schema.maintenanceSchedules.nextDue);
+  }
+
+  // Communication Logs Methods
+  async createCommunicationLog(data: schema.InsertCommunicationLog): Promise<schema.CommunicationLog> {
+    const [log] = await db.insert(schema.communicationLogs)
+      .values(data)
+      .returning();
+    return log;
+  }
+
+  async getCommunicationLogs(guestId?: number, roomId?: number): Promise<schema.CommunicationLog[]> {
+    let query = db.select().from(schema.communicationLogs);
+    
+    if (guestId && roomId) {
+      return query.where(and(
+        eq(schema.communicationLogs.guestId, guestId),
+        eq(schema.communicationLogs.roomId, roomId)
+      )).orderBy(desc(schema.communicationLogs.sentAt));
+    } else if (guestId) {
+      return query.where(eq(schema.communicationLogs.guestId, guestId))
+        .orderBy(desc(schema.communicationLogs.sentAt));
+    } else if (roomId) {
+      return query.where(eq(schema.communicationLogs.roomId, roomId))
+        .orderBy(desc(schema.communicationLogs.sentAt));
+    }
+    
+    return query.orderBy(desc(schema.communicationLogs.sentAt));
+  }
+
+  async markCommunicationResponse(logId: number): Promise<schema.CommunicationLog> {
+    const [log] = await db.update(schema.communicationLogs)
+      .set({
+        responseReceived: true,
+        responseAt: new Date()
+      })
+      .where(eq(schema.communicationLogs.id, logId))
+      .returning();
+    return log;
+  }
+
+  // Lease Management Methods
+  async createLeaseAgreement(data: schema.InsertLeaseAgreement): Promise<schema.LeaseAgreement> {
+    const [lease] = await db.insert(schema.leaseAgreements)
+      .values(data)
+      .returning();
+    return lease;
+  }
+
+  async getLeaseAgreements(guestId?: number, roomId?: number): Promise<schema.LeaseAgreement[]> {
+    let query = db.select().from(schema.leaseAgreements);
+    
+    if (guestId && roomId) {
+      return query.where(and(
+        eq(schema.leaseAgreements.guestId, guestId),
+        eq(schema.leaseAgreements.roomId, roomId)
+      )).orderBy(desc(schema.leaseAgreements.startDate));
+    } else if (guestId) {
+      return query.where(eq(schema.leaseAgreements.guestId, guestId))
+        .orderBy(desc(schema.leaseAgreements.startDate));
+    } else if (roomId) {
+      return query.where(eq(schema.leaseAgreements.roomId, roomId))
+        .orderBy(desc(schema.leaseAgreements.startDate));
+    }
+    
+    return query.orderBy(desc(schema.leaseAgreements.startDate));
+  }
+
+  async updateLeaseAgreement(id: number, data: Partial<schema.InsertLeaseAgreement>): Promise<schema.LeaseAgreement> {
+    const [lease] = await db.update(schema.leaseAgreements)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.leaseAgreements.id, id))
+      .returning();
+    return lease;
+  }
+
+  async terminateLease(leaseId: number, reason: string): Promise<schema.LeaseAgreement> {
+    const [lease] = await db.update(schema.leaseAgreements)
+      .set({
+        status: 'terminated',
+        terminationDate: new Date().toISOString().split('T')[0],
+        terminationReason: reason,
+        updatedAt: new Date()
+      })
+      .where(eq(schema.leaseAgreements.id, leaseId))
+      .returning();
+    return lease;
+  }
+
+  async getExpiringLeases(days: number): Promise<schema.LeaseAgreement[]> {
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + days);
+    const futureDateStr = futureDate.toISOString().split('T')[0];
+    
+    return db.select().from(schema.leaseAgreements)
+      .where(and(
+        eq(schema.leaseAgreements.status, 'active'),
+        lte(schema.leaseAgreements.endDate, futureDateStr)
+      ))
+      .orderBy(schema.leaseAgreements.endDate);
+  }
+
+  // Vendor Management Methods
+  async createVendor(data: schema.InsertVendor): Promise<schema.Vendor> {
+    const [vendor] = await db.insert(schema.vendors)
+      .values(data)
+      .returning();
+    return vendor;
+  }
+
+  async getVendors(serviceType?: string): Promise<schema.Vendor[]> {
+    if (serviceType) {
+      return db.select().from(schema.vendors)
+        .where(and(
+          eq(schema.vendors.serviceType, serviceType),
+          eq(schema.vendors.isActive, true)
+        ))
+        .orderBy(desc(schema.vendors.rating));
+    }
+    return db.select().from(schema.vendors)
+      .where(eq(schema.vendors.isActive, true))
+      .orderBy(desc(schema.vendors.rating));
+  }
+
+  async updateVendor(id: number, data: Partial<schema.InsertVendor>): Promise<schema.Vendor> {
+    const [vendor] = await db.update(schema.vendors)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.vendors.id, id))
+      .returning();
+    return vendor;
+  }
+
+  async rateVendor(vendorId: number, rating: number): Promise<schema.Vendor> {
+    const [vendor] = await db.update(schema.vendors)
+      .set({ 
+        rating: rating.toString(),
+        updatedAt: new Date()
+      })
+      .where(eq(schema.vendors.id, vendorId))
+      .returning();
+    return vendor;
+  }
+
+  // Service Request Methods
+  async createServiceRequest(data: schema.InsertServiceRequest): Promise<schema.ServiceRequest> {
+    const [request] = await db.insert(schema.serviceRequests)
+      .values(data)
+      .returning();
+    return request;
+  }
+
+  async getServiceRequests(vendorId?: number, roomId?: number): Promise<schema.ServiceRequest[]> {
+    let query = db.select().from(schema.serviceRequests);
+    
+    if (vendorId && roomId) {
+      return query.where(and(
+        eq(schema.serviceRequests.vendorId, vendorId),
+        eq(schema.serviceRequests.roomId, roomId)
+      )).orderBy(desc(schema.serviceRequests.requestedDate));
+    } else if (vendorId) {
+      return query.where(eq(schema.serviceRequests.vendorId, vendorId))
+        .orderBy(desc(schema.serviceRequests.requestedDate));
+    } else if (roomId) {
+      return query.where(eq(schema.serviceRequests.roomId, roomId))
+        .orderBy(desc(schema.serviceRequests.requestedDate));
+    }
+    
+    return query.orderBy(desc(schema.serviceRequests.requestedDate));
+  }
+
+  async updateServiceRequest(id: number, data: Partial<schema.InsertServiceRequest>): Promise<schema.ServiceRequest> {
+    const [request] = await db.update(schema.serviceRequests)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.serviceRequests.id, id))
+      .returning();
+    return request;
+  }
+
+  async approveServiceRequest(requestId: number, approvedCost: number): Promise<schema.ServiceRequest> {
+    const [request] = await db.update(schema.serviceRequests)
+      .set({
+        status: 'approved',
+        actualCost: approvedCost.toString(),
+        updatedAt: new Date()
+      })
+      .where(eq(schema.serviceRequests.id, requestId))
+      .returning();
+    return request;
+  }
+
+  // Insurance Claims Methods
+  async createInsuranceClaim(data: schema.InsertInsuranceClaim): Promise<schema.InsuranceClaim> {
+    const [claim] = await db.insert(schema.insuranceClaims)
+      .values(data)
+      .returning();
+    return claim;
+  }
+
+  async getInsuranceClaims(roomId?: number): Promise<schema.InsuranceClaim[]> {
+    if (roomId) {
+      return db.select().from(schema.insuranceClaims)
+        .where(eq(schema.insuranceClaims.roomId, roomId))
+        .orderBy(desc(schema.insuranceClaims.incidentDate));
+    }
+    return db.select().from(schema.insuranceClaims)
+      .orderBy(desc(schema.insuranceClaims.incidentDate));
+  }
+
+  async updateInsuranceClaim(id: number, data: Partial<schema.InsertInsuranceClaim>): Promise<schema.InsuranceClaim> {
+    const [claim] = await db.update(schema.insuranceClaims)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.insuranceClaims.id, id))
+      .returning();
+    return claim;
+  }
+
+  // Emergency Contacts Methods
+  async createEmergencyContact(data: schema.InsertEmergencyContact): Promise<schema.EmergencyContact> {
+    const [contact] = await db.insert(schema.emergencyContacts)
+      .values(data)
+      .returning();
+    return contact;
+  }
+
+  async getEmergencyContacts(): Promise<schema.EmergencyContact[]> {
+    return db.select().from(schema.emergencyContacts)
+      .where(eq(schema.emergencyContacts.isActive, true))
+      .orderBy(schema.emergencyContacts.priority);
+  }
+
+  async updateEmergencyContact(id: number, data: Partial<schema.InsertEmergencyContact>): Promise<schema.EmergencyContact> {
+    const [contact] = await db.update(schema.emergencyContacts)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.emergencyContacts.id, id))
+      .returning();
+    return contact;
+  }
+
+  // Utility Management Methods
+  async createUtilityReading(data: schema.InsertUtilityReading): Promise<schema.UtilityReading> {
+    const [reading] = await db.insert(schema.utilityReadings)
+      .values(data)
+      .returning();
+    return reading;
+  }
+
+  async getUtilityReadings(roomId?: number, buildingId?: number, utilityType?: string): Promise<schema.UtilityReading[]> {
+    let conditions = [];
+    
+    if (roomId) conditions.push(eq(schema.utilityReadings.roomId, roomId));
+    if (buildingId) conditions.push(eq(schema.utilityReadings.buildingId, buildingId));
+    if (utilityType) conditions.push(eq(schema.utilityReadings.utilityType, utilityType));
+    
+    if (conditions.length === 0) {
+      return db.select().from(schema.utilityReadings)
+        .orderBy(desc(schema.utilityReadings.readingDate));
+    }
+    
+    return db.select().from(schema.utilityReadings)
+      .where(and(...conditions))
+      .orderBy(desc(schema.utilityReadings.readingDate));
+  }
+
+  async calculateUtilityCosts(roomId: number, month: number, year: number): Promise<any> {
+    const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
+    const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+    
+    const readings = await db.select().from(schema.utilityReadings)
+      .where(and(
+        eq(schema.utilityReadings.roomId, roomId),
+        gte(schema.utilityReadings.readingDate, startDate),
+        lte(schema.utilityReadings.readingDate, endDate)
+      ));
+    
+    const totals = readings.reduce((acc, reading) => {
+      const type = reading.utilityType;
+      const cost = parseFloat(reading.totalCost || '0');
+      
+      if (!acc[type]) {
+        acc[type] = { usage: 0, cost: 0, readings: 0 };
+      }
+      
+      acc[type].usage += parseFloat(reading.usage || '0');
+      acc[type].cost += cost;
+      acc[type].readings += 1;
+      
+      return acc;
+    }, {} as any);
+    
+    return {
+      month,
+      year,
+      roomId,
+      utilities: totals,
+      totalCost: Object.values(totals).reduce((sum: number, util: any) => sum + util.cost, 0)
+    };
+  }
+
+  // Marketing Campaign Methods
+  async createMarketingCampaign(data: schema.InsertMarketingCampaign): Promise<schema.MarketingCampaign> {
+    const [campaign] = await db.insert(schema.marketingCampaigns)
+      .values(data)
+      .returning();
+    return campaign;
+  }
+
+  async getMarketingCampaigns(): Promise<schema.MarketingCampaign[]> {
+    return db.select().from(schema.marketingCampaigns)
+      .orderBy(desc(schema.marketingCampaigns.startDate));
+  }
+
+  async updateMarketingCampaign(id: number, data: Partial<schema.InsertMarketingCampaign>): Promise<schema.MarketingCampaign> {
+    const [campaign] = await db.update(schema.marketingCampaigns)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(schema.marketingCampaigns.id, id))
+      .returning();
+    return campaign;
+  }
+
+  async getCampaignROI(campaignId: number): Promise<any> {
+    const [campaign] = await db.select().from(schema.marketingCampaigns)
+      .where(eq(schema.marketingCampaigns.id, campaignId));
+    
+    if (!campaign) return null;
+    
+    const spent = parseFloat(campaign.spent || '0');
+    const revenue = parseFloat(campaign.revenue || '0');
+    const roi = spent > 0 ? ((revenue - spent) / spent) * 100 : 0;
+    
+    return {
+      campaignId,
+      spent,
+      revenue,
+      roi,
+      conversions: campaign.conversions,
+      costPerConversion: campaign.conversions > 0 ? spent / campaign.conversions : 0,
+      revenuePerConversion: campaign.conversions > 0 ? revenue / campaign.conversions : 0
+    };
+  }
+
+  // Advanced Analytics Methods
+  async getOccupancyAnalytics(buildingId?: number, period?: string): Promise<any> {
+    let rooms = await this.getRooms();
+    if (buildingId) {
+      rooms = rooms.filter(r => r.buildingId === buildingId);
+    }
+    
+    const totalRooms = rooms.length;
+    const occupiedRooms = rooms.filter(r => r.status === 'occupied').length;
+    const availableRooms = rooms.filter(r => r.status === 'available').length;
+    const maintenanceRooms = rooms.filter(r => r.status === 'needs_cleaning' || r.status === 'out_of_service').length;
+    
+    return {
+      totalRooms,
+      occupiedRooms,
+      availableRooms,
+      maintenanceRooms,
+      occupancyRate: totalRooms > 0 ? (occupiedRooms / totalRooms) * 100 : 0,
+      availabilityRate: totalRooms > 0 ? (availableRooms / totalRooms) * 100 : 0
+    };
+  }
+
+  async getRevenueAnalytics(buildingId?: number, period?: string): Promise<any> {
+    const payments = await db.select().from(schema.payments)
+      .where(eq(schema.payments.status, 'completed'));
+    
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const lastMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().slice(0, 7);
+    
+    const thisMonthRevenue = payments
+      .filter(p => p.createdAt && p.createdAt.toISOString().slice(0, 7) === currentMonth)
+      .reduce((sum, p) => sum + parseFloat(p.amount || '0'), 0);
+    
+    const lastMonthRevenue = payments
+      .filter(p => p.createdAt && p.createdAt.toISOString().slice(0, 7) === lastMonth)
+      .reduce((sum, p) => sum + parseFloat(p.amount || '0'), 0);
+    
+    const growth = lastMonthRevenue > 0 ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 : 0;
+    
+    return {
+      thisMonthRevenue,
+      lastMonthRevenue,
+      growth,
+      totalRevenue: payments.reduce((sum, p) => sum + parseFloat(p.amount || '0'), 0),
+      averagePayment: payments.length > 0 ? thisMonthRevenue / payments.filter(p => 
+        p.createdAt && p.createdAt.toISOString().slice(0, 7) === currentMonth
+      ).length : 0
+    };
+  }
+
+  async getMaintenanceAnalytics(roomId?: number, period?: string): Promise<any> {
+    let requests = await this.getMaintenanceRequests(roomId);
+    
+    const pending = requests.filter((r: any) => r.status === 'submitted').length;
+    const inProgress = requests.filter((r: any) => r.status === 'in_progress').length;
+    const completed = requests.filter((r: any) => r.status === 'completed').length;
+    
+    const urgentRequests = requests.filter((r: any) => r.priority === 'urgent').length;
+    
+    return {
+      totalRequests: requests.length,
+      pending,
+      inProgress,
+      completed,
+      urgentRequests,
+      completionRate: requests.length > 0 ? (completed / requests.length) * 100 : 0
+    };
+  }
+
+  async getPredictiveInsights(): Promise<any> {
+    const predictions = await this.getMaintenancePredictions();
+    const overdueSchedules = await this.getOverdueMaintenanceTasks();
+    const expiringLeases = await this.getExpiringLeases(30);
+    const paymentsDue = await this.getPaymentDueGuests();
+    
+    return {
+      maintenancePredictions: predictions.length,
+      overdueTasks: overdueSchedules.length,
+      expiringLeases: expiringLeases.length,
+      paymentsDue: paymentsDue.length,
+      recommendations: [
+        ...overdueSchedules.length > 0 ? [`${overdueSchedules.length} maintenance tasks are overdue`] : [],
+        ...expiringLeases.length > 0 ? [`${expiringLeases.length} leases expire within 30 days`] : [],
+        ...paymentsDue.length > 0 ? [`${paymentsDue.length} guests have payments due`] : [],
+        ...predictions.filter((p: any) => p.priority === 'urgent').length > 0 ? 
+          [`${predictions.filter((p: any) => p.priority === 'urgent').length} urgent maintenance predictions`] : []
+      ]
+    };
   }
 }
 
