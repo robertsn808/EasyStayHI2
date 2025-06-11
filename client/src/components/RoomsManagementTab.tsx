@@ -208,6 +208,64 @@ export function RoomsManagementTab({
 
   const totalRooms = Object.values(groupedRooms).flat().length;
 
+  // Generate todo list based on room statuses
+  const getTodoList = () => {
+    const todos: any[] = [];
+    const allRooms = Object.values(groupedRooms).flat();
+    
+    allRooms.forEach((room: any) => {
+      const roomDetails = getRoomDetails(room);
+      
+      if (roomDetails.stage.urgent) {
+        todos.push({
+          id: `room-${room.id}`,
+          type: 'urgent',
+          icon: roomDetails.stage.icon,
+          color: roomDetails.stage.color,
+          bgColor: roomDetails.stage.bgColor,
+          title: `Room ${room.number} - ${roomDetails.stage.label}`,
+          description: roomDetails.stage.checkoutTime 
+            ? `Guest checkout was due: ${roomDetails.stage.checkoutTime.toLocaleString()}`
+            : 'Requires immediate attention',
+          building: buildings.find(b => b.id === room.buildingId)?.name || 'Unknown Building'
+        });
+      }
+      
+      if (roomDetails.stage.stage === 'occupied' && roomDetails.stage.hoursUntilCheckout && roomDetails.stage.hoursUntilCheckout <= 6) {
+        todos.push({
+          id: `checkout-${room.id}`,
+          type: 'reminder',
+          icon: Clock,
+          color: 'text-yellow-600',
+          bgColor: 'bg-yellow-100',
+          title: `Room ${room.number} - Checkout Soon`,
+          description: `Guest checking out in ${Math.round(roomDetails.stage.hoursUntilCheckout)} hours`,
+          building: buildings.find(b => b.id === room.buildingId)?.name || 'Unknown Building'
+        });
+      }
+      
+      if (roomDetails.hasUnpaidBalance) {
+        todos.push({
+          id: `payment-${room.id}`,
+          type: 'payment',
+          icon: DollarSign,
+          color: 'text-red-600',
+          bgColor: 'bg-red-100',
+          title: `Room ${room.number} - Outstanding Payment`,
+          description: `Unpaid balance: $${roomDetails.totalBalance.toFixed(2)}`,
+          building: buildings.find(b => b.id === room.buildingId)?.name || 'Unknown Building'
+        });
+      }
+    });
+    
+    return todos.sort((a, b) => {
+      const priority: Record<string, number> = { urgent: 3, payment: 2, reminder: 1 };
+      return (priority[b.type] || 0) - (priority[a.type] || 0);
+    });
+  };
+
+  const todoList = getTodoList();
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -257,6 +315,47 @@ export function RoomsManagementTab({
           </TabsList>
         </Tabs>
       </div>
+
+      {/* Todo List - Action Items */}
+      {todoList.length > 0 && (
+        <Card className="border-l-4 border-l-orange-400">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <AlertCircle className="h-5 w-5 text-orange-500" />
+              <span>Action Items</span>
+              <Badge variant="destructive">{todoList.length}</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {todoList.map((todo) => (
+                <div 
+                  key={todo.id} 
+                  className={`flex items-center space-x-3 p-3 rounded-lg border ${
+                    todo.type === 'urgent' ? 'border-red-200 bg-red-50' : 
+                    todo.type === 'payment' ? 'border-orange-200 bg-orange-50' : 
+                    'border-yellow-200 bg-yellow-50'
+                  } ${todo.type === 'urgent' ? 'animate-pulse' : ''}`}
+                >
+                  <div className={`p-2 rounded-full ${todo.bgColor}`}>
+                    <todo.icon className={`h-4 w-4 ${todo.color}`} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className={`font-medium ${todo.color}`}>{todo.title}</h4>
+                    <p className="text-sm text-gray-600">{todo.description}</p>
+                    <p className="text-xs text-gray-500">{todo.building}</p>
+                  </div>
+                  {todo.type === 'urgent' && (
+                    <Badge variant="destructive" className="animate-pulse">
+                      Urgent
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Room List */}
       <div className="space-y-6">
@@ -439,9 +538,221 @@ export function RoomsManagementTab({
 
                           {/* Action Buttons */}
                           <div className="flex space-x-2 pt-2">
-                            <Button size="sm" variant="outline" className="flex-1">
-                              View Details
-                            </Button>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button size="sm" variant="outline" className="flex-1">
+                                  View Details
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle className="flex items-center space-x-2">
+                                    <Key className="h-5 w-5" />
+                                    <span>Room {room.number} Details</span>
+                                    <Badge className={`${getStatusColor(room.status)} border ml-2`}>
+                                      {getStatusIcon(room.status)}
+                                      <span className="ml-1 capitalize">{room.status}</span>
+                                    </Badge>
+                                  </DialogTitle>
+                                </DialogHeader>
+                                
+                                <div className="space-y-6">
+                                  {/* Room Status Indicator */}
+                                  <Card className={roomDetails.stage.urgent ? 'border-orange-300' : ''}>
+                                    <CardContent className="p-4">
+                                      <div className="flex items-center space-x-3">
+                                        <div className={`p-3 rounded-full ${roomDetails.stage.bgColor} ${roomDetails.stage.urgent ? 'animate-pulse' : ''}`}>
+                                          <roomDetails.stage.icon className={`h-6 w-6 ${roomDetails.stage.color}`} />
+                                        </div>
+                                        <div className="flex-1">
+                                          <h3 className={`font-semibold ${roomDetails.stage.color}`}>
+                                            {roomDetails.stage.label}
+                                          </h3>
+                                          {roomDetails.stage.checkoutTime && (
+                                            <p className="text-sm text-gray-600">
+                                              {roomDetails.stage.stage === 'occupied' ? 'Checkout scheduled: ' : 'Was due: '}
+                                              {roomDetails.stage.checkoutTime.toLocaleString()}
+                                            </p>
+                                          )}
+                                          {roomDetails.stage.hoursUntilCheckout !== undefined && roomDetails.stage.hoursUntilCheckout > 0 && (
+                                            <p className="text-sm text-blue-600 font-medium">
+                                              {Math.round(roomDetails.stage.hoursUntilCheckout)} hours remaining
+                                            </p>
+                                          )}
+                                        </div>
+                                        {roomDetails.stage.urgent && (
+                                          <Badge variant="destructive" className="animate-pulse">
+                                            Urgent Action Required
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+
+                                  {/* Room Basic Information */}
+                                  <Card>
+                                    <CardHeader>
+                                      <CardTitle className="text-lg">Room Information</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-3">
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <label className="text-sm font-medium text-gray-600">Room Number</label>
+                                          <p className="text-lg font-semibold">{room.number}</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-gray-600">Type</label>
+                                          <p className="capitalize">{room.type || 'Standard'}</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-gray-600">Rate</label>
+                                          <p className="font-medium">${room.rate || 'N/A'}/night</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-gray-600">Building</label>
+                                          <p>{buildings.find(b => b.id === room.buildingId)?.name || 'Unknown'}</p>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+
+                                  {/* Guest Information - Only for Occupied Rooms */}
+                                  {room.status === 'occupied' && roomDetails.guests.length > 0 && (
+                                    <Card>
+                                      <CardHeader>
+                                        <CardTitle className="text-lg flex items-center space-x-2">
+                                          <Users className="h-5 w-5 text-blue-500" />
+                                          <span>Current Guests</span>
+                                        </CardTitle>
+                                      </CardHeader>
+                                      <CardContent className="space-y-4">
+                                        {roomDetails.guests.map((guest: any, index: number) => (
+                                          <div key={guest.id} className="border rounded-lg p-4 bg-blue-50">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                              <div>
+                                                <label className="text-sm font-medium text-gray-600">Guest Name</label>
+                                                <p className="text-lg font-semibold text-blue-900">{guest.guestName}</p>
+                                              </div>
+                                              <div>
+                                                <label className="text-sm font-medium text-gray-600">Total Amount Paid</label>
+                                                <p className="text-lg font-semibold text-green-600">
+                                                  ${guest.amountPaid || '0.00'}
+                                                </p>
+                                              </div>
+                                              {guest.email && (
+                                                <div>
+                                                  <label className="text-sm font-medium text-gray-600">Email</label>
+                                                  <p className="flex items-center space-x-1">
+                                                    <Mail className="h-4 w-4 text-gray-500" />
+                                                    <span>{guest.email}</span>
+                                                  </p>
+                                                </div>
+                                              )}
+                                              {guest.phone && (
+                                                <div>
+                                                  <label className="text-sm font-medium text-gray-600">Phone</label>
+                                                  <p className="flex items-center space-x-1">
+                                                    <Phone className="h-4 w-4 text-gray-500" />
+                                                    <span>{guest.phone}</span>
+                                                  </p>
+                                                </div>
+                                              )}
+                                              {guest.checkInDate && (
+                                                <div>
+                                                  <label className="text-sm font-medium text-gray-600">Check-in Date & Time</label>
+                                                  <p className="flex items-center space-x-1">
+                                                    <CalendarDays className="h-4 w-4 text-green-500" />
+                                                    <span className="font-medium text-green-700">
+                                                      {new Date(guest.checkInDate).toLocaleString()}
+                                                    </span>
+                                                  </p>
+                                                </div>
+                                              )}
+                                              {guest.checkOutDate && (
+                                                <div>
+                                                  <label className="text-sm font-medium text-gray-600">Check-out Date & Time</label>
+                                                  <p className="flex items-center space-x-1">
+                                                    <ClockIcon className="h-4 w-4 text-blue-500" />
+                                                    <span className="font-medium text-blue-700">
+                                                      {new Date(guest.checkOutDate).toLocaleString()}
+                                                    </span>
+                                                  </p>
+                                                </div>
+                                              )}
+                                              {guest.paymentMethod && (
+                                                <div>
+                                                  <label className="text-sm font-medium text-gray-600">Payment Method</label>
+                                                  <p className="flex items-center space-x-1">
+                                                    <CreditCard className="h-4 w-4 text-gray-500" />
+                                                    <span className="capitalize">{guest.paymentMethod}</span>
+                                                  </p>
+                                                </div>
+                                              )}
+                                              <div className="md:col-span-2">
+                                                <label className="text-sm font-medium text-gray-600">Stay Duration</label>
+                                                <p className="text-sm text-gray-700">
+                                                  {guest.checkInDate && guest.checkOutDate ? (
+                                                    <>
+                                                      {Math.ceil((new Date(guest.checkOutDate).getTime() - new Date(guest.checkInDate).getTime()) / (1000 * 60 * 60 * 24))} days
+                                                    </>
+                                                  ) : 'Duration not specified'}
+                                                </p>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </CardContent>
+                                    </Card>
+                                  )}
+
+                                  {/* Payment Information */}
+                                  {roomDetails.payments.length > 0 && (
+                                    <Card>
+                                      <CardHeader>
+                                        <CardTitle className="text-lg flex items-center space-x-2">
+                                          <DollarSign className="h-5 w-5 text-green-500" />
+                                          <span>Payment History</span>
+                                        </CardTitle>
+                                      </CardHeader>
+                                      <CardContent>
+                                        <div className="space-y-3">
+                                          <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                            <span className="font-medium">Total Amount:</span>
+                                            <span className="text-xl font-bold text-green-600">
+                                              ${roomDetails.totalBalance.toFixed(2)}
+                                            </span>
+                                          </div>
+                                          {roomDetails.hasUnpaidBalance && (
+                                            <div className="flex items-center space-x-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                                              <span className="text-yellow-800 font-medium">Outstanding balance detected</span>
+                                            </div>
+                                          )}
+                                          <div className="space-y-2">
+                                            {roomDetails.payments.map((payment: any, index: number) => (
+                                              <div key={index} className="flex justify-between items-center p-2 border rounded">
+                                                <div>
+                                                  <span className="font-medium">${payment.payment?.amount}</span>
+                                                  <span className="text-sm text-gray-500 ml-2">
+                                                    {payment.payment?.createdAt ? new Date(payment.payment.createdAt).toLocaleDateString() : 'Date unknown'}
+                                                  </span>
+                                                </div>
+                                                <Badge 
+                                                  variant={payment.payment?.status === 'completed' ? 'default' : 'secondary'}
+                                                  className={payment.payment?.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}
+                                                >
+                                                  {payment.payment?.status || 'pending'}
+                                                </Badge>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  )}
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                             {room.status === 'occupied' && (
                               <Button size="sm" variant="outline">
                                 <DollarSign className="h-3 w-3" />
