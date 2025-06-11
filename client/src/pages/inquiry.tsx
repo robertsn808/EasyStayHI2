@@ -291,7 +291,7 @@ export default function InquiryPage() {
                             <Calendar
                               mode="single"
                               selected={checkInDate}
-                              onSelect={(date) => {
+                              onSelect={(date: Date | undefined) => {
                                 setCheckInDate(date);
                                 // Auto-set checkout to next day if not set
                                 if (date && !checkOutDate) {
@@ -324,7 +324,7 @@ export default function InquiryPage() {
                               mode="single"
                               selected={checkOutDate}
                               onSelect={setCheckOutDate}
-                              disabled={(date) => !checkInDate || date <= checkInDate}
+                              disabled={(date: Date) => !checkInDate || date <= checkInDate}
                               initialFocus
                             />
                           </PopoverContent>
@@ -338,7 +338,7 @@ export default function InquiryPage() {
                         <Label htmlFor="numberOfGuests">Number of Guests *</Label>
                         <Select 
                           value={formData.numberOfGuests.toString()} 
-                          onValueChange={(value) => handleInputChange("numberOfGuests", parseInt(value))}
+                          onValueChange={(value) => setFormData(prev => ({ ...prev, numberOfGuests: parseInt(value) }))}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select guests" />
@@ -355,7 +355,7 @@ export default function InquiryPage() {
 
                       <div className="space-y-2">
                         <Label htmlFor="roomPreference">Room Preference</Label>
-                        <Select onValueChange={(value) => handleInputChange("roomPreference", value)}>
+                        <Select onValueChange={(value) => setFormData(prev => ({ ...prev, roomPreference: value }))}>
                           <SelectTrigger>
                             <SelectValue placeholder="Any available room" />
                           </SelectTrigger>
