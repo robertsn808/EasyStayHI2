@@ -415,6 +415,7 @@ export default function EnterpriseDashboardComplete() {
                 <SelectContent>
                   <SelectItem value="available">Available</SelectItem>
                   <SelectItem value="occupied">Occupied</SelectItem>
+                  <SelectItem value="needs_cleaning">Needs Cleaning</SelectItem>
                   <SelectItem value="maintenance">Under Maintenance</SelectItem>
                   <SelectItem value="out_of_service">Out of Service</SelectItem>
                 </SelectContent>
