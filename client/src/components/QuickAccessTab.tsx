@@ -30,6 +30,7 @@ interface QuickAccessTabProps {
   guests?: any[];
   inquiries?: any[];
   maintenanceRequests?: any[];
+  onNavigateToRooms?: (filter?: 'all' | 'available' | 'occupied' | 'maintenance') => void;
 }
 
 export function QuickAccessTab({ 

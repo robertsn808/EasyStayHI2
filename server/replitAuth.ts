@@ -162,9 +162,17 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   }
 };
 
-// Simple admin authentication for demo purposes
+// Admin authentication using environment variables
 export function validateAdminCredentials(username: string, password: string): boolean {
-  return username === "admin" && password === "admin123";
+  const adminUsername = process.env.ADMIN_USERNAME;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  
+  if (!adminUsername || !adminPassword) {
+    console.error("Admin credentials not configured. Set ADMIN_USERNAME and ADMIN_PASSWORD environment variables.");
+    return false;
+  }
+  
+  return username === adminUsername && password === adminPassword;
 }
 
 export const isAdminAuthenticated: RequestHandler = async (req, res, next) => {
