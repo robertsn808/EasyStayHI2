@@ -14,8 +14,8 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import ModernDashboard from "@/pages/modern-dashboard";
 import EnterpriseDashboard from "@/pages/enterprise-dashboard";
 import EnterpriseDashboardComplete from "@/pages/enterprise-dashboard-complete";
-import TenantPortal from "@/pages/tenant-portal";
-import InquiryPage from "@/pages/inquiry";
+import TenantPortalComplete from "@/pages/tenant-portal-complete";
+import InquiryComplete from "@/pages/inquiry-complete";
 import AdminLogin from "@/pages/admin-login";
 import NotFound from "@/pages/not-found";
 
@@ -43,9 +43,9 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/tenant/:roomId" component={TenantPortal} />
-      <Route path="/tenant" component={TenantPortal} />
-      <Route path="/inquiry" component={InquiryPage} />
+      <Route path="/tenant/:roomId" component={TenantPortalComplete} />
+      <Route path="/tenant" component={TenantPortalComplete} />
+      <Route path="/inquiry" component={InquiryComplete} />
       <Route path="/public" component={Landing} />
       <Route path="/property-949" component={Property949} />
       <Route path="/property-934" component={Property934} />
