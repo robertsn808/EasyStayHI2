@@ -315,7 +315,7 @@ export default function Property949() {
                         <div>
                           <div className="font-medium">{room.number}</div>
                           <div className="text-sm text-gray-600">
-                            {room.tenant || "Available"} • ${room.rent}/month
+                            {room.tenantName || "Available"} • ${room.rentalRate || 0}/{room.rentalPeriod || 'month'}
                           </div>
                         </div>
                       </div>
@@ -355,12 +355,12 @@ export default function Property949() {
                     <div key={request.id} className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
-                          <div className="font-medium">{request.room}</div>
-                          <div className="text-sm text-gray-600">{request.issue}</div>
-                          <div className="text-xs text-gray-500">Reported: {request.date}</div>
+                          <div className="font-medium">Room {room?.number}</div>
+                          <div className="text-sm text-gray-600">{request.title}</div>
+                          <div className="text-xs text-gray-500">Reported: {new Date(request.createdAt).toLocaleDateString()}</div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Badge variant={request.priority === 'high' ? 'destructive' : request.priority === 'medium' ? 'secondary' : 'outline'}>
+                          <Badge variant={request.priority === 'urgent' ? 'destructive' : 'secondary'}>
                             {request.priority}
                           </Badge>
                           <Badge variant="outline">
@@ -369,11 +369,12 @@ export default function Property949() {
                         </div>
                       </div>
                       <div className="flex gap-2 mt-3">
-                        <Button size="sm" variant="outline">Update Status</Button>
-                        <Button size="sm" variant="outline">View Details</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleUpdateMaintenanceStatus(request.id, 'in_progress')}>Update Status</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleViewMaintenanceDetails(request.id)}>View Details</Button>
                       </div>
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -392,24 +393,27 @@ export default function Property949() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {payments.map((payment) => (
+                  {buildingPayments.map((payment) => {
+                    const room = buildingRooms.find(r => r.id === payment.roomId);
+                    return (
                     <div key={payment.id} className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
-                          <div className="font-medium">{payment.room} - {payment.tenant}</div>
+                          <div className="font-medium">Room {room?.number} - {room?.tenantName}</div>
                           <div className="text-sm text-gray-600">${payment.amount}</div>
-                          <div className="text-xs text-gray-500">Due: {payment.date}</div>
+                          <div className="text-xs text-gray-500">Due: {new Date(payment.paymentDate).toLocaleDateString()}</div>
                         </div>
                         <Badge variant={getStatusBadge(payment.status)}>
                           {payment.status}
                         </Badge>
                       </div>
                       <div className="flex gap-2 mt-3">
-                        <Button size="sm" variant="outline">Update Status</Button>
-                        <Button size="sm" variant="outline">Send Reminder</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleUpdatePaymentStatus(payment.id)}>Update Status</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleSendReminder(room?.tenantName || '')}>Send Reminder</Button>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
