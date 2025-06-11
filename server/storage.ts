@@ -421,16 +421,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Expense operations
-  async createExpense(expense: schema.InsertExpense): Promise<schema.Expense> {
+  async createExpense(expense: schema.InsertExpense): Promise<schema.SelectExpense> {
     const [result] = await db.insert(schema.expenses).values(expense).returning();
     return result;
   }
 
-  async getExpenses(): Promise<schema.Expense[]> {
+  async getExpenses(): Promise<schema.SelectExpense[]> {
     return await db.select().from(schema.expenses);
   }
 
-  async updateExpense(id: number, expense: Partial<schema.InsertExpense>): Promise<schema.Expense> {
+  async updateExpense(id: number, expense: Partial<schema.InsertExpense>): Promise<schema.SelectExpense> {
     const [result] = await db.update(schema.expenses).set(expense).where(eq(schema.expenses.id, id)).returning();
     return result;
   }
