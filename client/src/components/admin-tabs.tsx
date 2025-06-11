@@ -20,6 +20,7 @@ import { ExpensesTab } from "@/components/ExpensesTab";
 import { PaymentHistoryTab } from "@/components/PaymentHistoryTab";
 import { ReceiptEditorTab } from "@/components/ReceiptEditorTab";
 import BiometricAuthSettings from "@/components/BiometricAuthSettings";
+import { RoomsManagementTab } from "@/components/RoomsManagementTab";
 
 interface AdminTabsProps {
   activeTab?: string;
@@ -28,6 +29,7 @@ interface AdminTabsProps {
 
 export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabsProps) {
   const [selectedTab, setSelectedTab] = useState(activeTab);
+  const [roomsFilter, setRoomsFilter] = useState<'all' | 'available' | 'occupied' | 'maintenance'>('all');
 
   useEffect(() => {
     setSelectedTab(activeTab);
@@ -188,6 +190,20 @@ export default function AdminTabs({ activeTab = "934", setActiveTab }: AdminTabs
             guests={Array.isArray(guests) ? guests : []}
             inquiries={Array.isArray(inquiries) ? inquiries : []}
             maintenanceRequests={Array.isArray(maintenanceRequests) ? maintenanceRequests : []}
+            onNavigateToRooms={(filter) => {
+              setRoomsFilter(filter || 'all');
+              handleTabChange('rooms-management');
+            }}
+          />
+        )}
+
+        {selectedTab === "rooms-management" && (
+          <RoomsManagementTab
+            buildings={Array.isArray(buildings) ? buildings : []}
+            rooms={Array.isArray(rooms) ? rooms : []}
+            guests={Array.isArray(guests) ? guests : []}
+            filter={roomsFilter}
+            onBack={() => handleTabChange('quick-access')}
           />
         )}
 

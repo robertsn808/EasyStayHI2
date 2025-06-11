@@ -38,7 +38,8 @@ export function QuickAccessTab({
   rooms = [], 
   guests = [], 
   inquiries = [], 
-  maintenanceRequests = [] 
+  maintenanceRequests = [],
+  onNavigateToRooms
 }: QuickAccessTabProps) {
   const [selectedBuilding, setSelectedBuilding] = useState<string>("all");
   const { toast } = useToast();
@@ -136,7 +137,10 @@ export function QuickAccessTab({
     <div className="space-y-8">
       {/* Premium Quick Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50/80 to-blue-100/60 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+        <Card 
+          className="bg-gradient-to-br from-blue-50/80 to-blue-100/60 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
+          onClick={() => onNavigateToRooms?.('all')}
+        >
           <CardContent className="p-6">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
@@ -150,7 +154,10 @@ export function QuickAccessTab({
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 border-emerald-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+        <Card 
+          className="bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 border-emerald-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
+          onClick={() => onNavigateToRooms?.('available')}
+        >
           <CardContent className="p-6">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
@@ -164,7 +171,10 @@ export function QuickAccessTab({
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-indigo-50/80 to-indigo-100/60 border-indigo-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+        <Card 
+          className="bg-gradient-to-br from-indigo-50/80 to-indigo-100/60 border-indigo-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
+          onClick={() => onNavigateToRooms?.('occupied')}
+        >
           <CardContent className="p-6">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
@@ -178,7 +188,10 @@ export function QuickAccessTab({
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50/80 to-amber-100/60 border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+        <Card 
+          className="bg-gradient-to-br from-amber-50/80 to-amber-100/60 border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
+          onClick={() => onNavigateToRooms?.('maintenance')}
+        >
           <CardContent className="p-6">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
