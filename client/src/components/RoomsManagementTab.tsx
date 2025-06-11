@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   Home, 
   MapPin, 
@@ -21,7 +22,12 @@ import {
   Clock,
   ArrowLeft,
   Key,
-  Banknote
+  Banknote,
+  Sparkles,
+  CalendarDays,
+  ClockIcon,
+  CheckCircle2,
+  AlertTriangle
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -42,6 +48,7 @@ export function RoomsManagementTab({
 }: RoomsManagementTabProps) {
   const [selectedBuilding, setSelectedBuilding] = useState<string>("all");
   const [activeFilter, setActiveFilter] = useState(filter);
+  const [selectedRoom, setSelectedRoom] = useState<any>(null);
 
   // Fetch payments data for financial information
   const { data: payments = [] } = useQuery({
@@ -82,15 +89,98 @@ export function RoomsManagementTab({
     return grouped;
   }, [rooms, buildings, selectedBuilding, activeFilter]);
 
+  // Helper function to determine room stage and status
+  const getRoomStage = (room: any, roomGuests: any[]) => {
+    const now = new Date();
+    
+    if (room.status === 'available') {
+      return {
+        stage: 'ready',
+        icon: CheckCircle2,
+        color: 'text-green-500',
+        bgColor: 'bg-green-100',
+        label: 'Ready for booking',
+        urgent: false
+      };
+    }
+    
+    if (room.status === 'occupied' && roomGuests.length > 0) {
+      const guest = roomGuests[0];
+      const checkOutDate = guest.checkOutDate ? new Date(guest.checkOutDate) : null;
+      
+      if (checkOutDate) {
+        const hoursUntilCheckout = checkOutDate ? (checkOutDate.getTime() - now.getTime()) / (1000 * 60 * 60) : 0;
+        
+        if (hoursUntilCheckout <= 0) {
+          // Past checkout time - needs cleaning
+          return {
+            stage: 'needs_cleaning',
+            icon: Sparkles,
+            color: 'text-orange-500',
+            bgColor: 'bg-orange-100',
+            label: 'Needs cleaning',
+            urgent: true,
+            checkoutTime: checkOutDate
+          };
+        } else {
+          // Still occupied
+          return {
+            stage: 'occupied',
+            icon: Users,
+            color: 'text-blue-500',
+            bgColor: 'bg-blue-100',
+            label: 'Occupied',
+            urgent: false,
+            checkoutTime: checkOutDate,
+            hoursUntilCheckout
+          };
+        }
+      }
+    }
+    
+    if (room.status === 'cleaning') {
+      return {
+        stage: 'cleaning',
+        icon: Sparkles,
+        color: 'text-purple-500',
+        bgColor: 'bg-purple-100',
+        label: 'Being cleaned',
+        urgent: false
+      };
+    }
+    
+    if (room.status === 'maintenance') {
+      return {
+        stage: 'maintenance',
+        icon: Wrench,
+        color: 'text-yellow-500',
+        bgColor: 'bg-yellow-100',
+        label: 'Under maintenance',
+        urgent: false
+      };
+    }
+    
+    return {
+      stage: 'unknown',
+      icon: AlertTriangle,
+      color: 'text-gray-500',
+      bgColor: 'bg-gray-100',
+      label: 'Unknown status',
+      urgent: false
+    };
+  };
+
   // Get room details with guest and payment information
   const getRoomDetails = (room: any) => {
     const roomGuests = guests.filter((guest: any) => guest.roomId === room.id);
     const roomPayments = Array.isArray(payments) ? payments.filter((payment: any) => payment.payment?.roomId === room.id) : [];
+    const stage = getRoomStage(room, roomGuests);
     
     return {
       ...room,
       guests: roomGuests,
       payments: roomPayments,
+      stage,
       totalBalance: roomPayments.reduce((sum: number, p: any) => sum + (parseFloat(p.payment?.amount || '0')), 0),
       hasUnpaidBalance: roomPayments.some((p: any) => p.payment?.status === 'pending')
     };
@@ -196,7 +286,7 @@ export function RoomsManagementTab({
                     const roomDetails = getRoomDetails(room);
                     
                     return (
-                      <Card key={room.id} className="border-2 hover:shadow-md transition-shadow">
+                      <Card key={room.id} className={`border-2 hover:shadow-md transition-shadow ${roomDetails.stage.urgent ? 'ring-2 ring-orange-300' : ''}`}>
                         <CardHeader className="pb-2">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
@@ -207,6 +297,36 @@ export function RoomsManagementTab({
                               {getStatusIcon(room.status)}
                               <span className="ml-1 capitalize">{room.status}</span>
                             </Badge>
+                          </div>
+                          
+                          {/* Status Indicator Icons */}
+                          <div className="flex items-center justify-between mt-3">
+                            <div className="flex space-x-2">
+                              <div className={`p-2 rounded-full ${roomDetails.stage.bgColor} ${roomDetails.stage.urgent ? 'animate-pulse' : ''}`}>
+                                <roomDetails.stage.icon className={`h-4 w-4 ${roomDetails.stage.color}`} />
+                              </div>
+                              <div className="flex flex-col">
+                                <span className={`text-xs font-medium ${roomDetails.stage.color}`}>
+                                  {roomDetails.stage.label}
+                                </span>
+                                {roomDetails.stage.checkoutTime && (
+                                  <span className="text-xs text-gray-500">
+                                    {roomDetails.stage.stage === 'occupied' ? 'Checkout: ' : 'Was due: '}
+                                    {roomDetails.stage.checkoutTime.toLocaleString()}
+                                  </span>
+                                )}
+                                {roomDetails.stage.hoursUntilCheckout !== undefined && roomDetails.stage.hoursUntilCheckout > 0 && (
+                                  <span className="text-xs text-blue-600">
+                                    {Math.round(roomDetails.stage.hoursUntilCheckout)}h remaining
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {roomDetails.stage.urgent && (
+                              <Badge variant="destructive" className="text-xs animate-pulse">
+                                Urgent
+                              </Badge>
+                            )}
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-3">
