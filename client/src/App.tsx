@@ -12,6 +12,7 @@ import Building949 from "@/pages/building-949";
 import PublicPageEditor from "@/pages/public-page-editor";
 import AdminDashboard from "@/pages/admin-dashboard";
 import ModernDashboard from "@/pages/modern-dashboard";
+import EnterpriseDashboard from "@/pages/enterprise-dashboard";
 import TenantPortal from "@/pages/tenant-portal";
 import InquiryPage from "@/pages/inquiry";
 import AdminLogin from "@/pages/admin-login";
@@ -53,16 +54,19 @@ function Router() {
       <Route path="/949" component={Property949} />
       <Route path="/admin-login" component={AdminLogin} />
       <Route path="/admin-dashboard">
-        {() => <ProtectedAdminRoute component={ModernDashboard} />}
+        {() => <ProtectedAdminRoute component={EnterpriseDashboard} />}
       </Route>
       <Route path="/admin">
+        {() => <ProtectedAdminRoute component={EnterpriseDashboard} />}
+      </Route>
+      <Route path="/modern-dashboard">
         {() => <ProtectedAdminRoute component={ModernDashboard} />}
       </Route>
       <Route path="/legacy-admin">
         {() => <ProtectedAdminRoute component={AdminDashboard} />}
       </Route>
       {isAuthenticated ? (
-        <Route path="/" component={ModernDashboard} />
+        <Route path="/" component={EnterpriseDashboard} />
       ) : (
         <Route path="/" component={Landing} />
       )}

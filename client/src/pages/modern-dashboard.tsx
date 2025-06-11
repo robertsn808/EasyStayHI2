@@ -1,44 +1,46 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Bell, User, Search, CheckCircle, Home, DollarSign, 
   Wrench, AlertTriangle, Calendar, Users, MessageSquare,
   TrendingUp, Activity, Clock, MapPin, Building, Mail, 
-  Phone, Edit, Trash2, Plus, FileText, Package, LogOut
+  Phone, Edit, Trash2, Plus, FileText, Package, LogOut,
+  BarChart3, PieChart, LineChart, ArrowUpIcon, ArrowDownIcon,
+  Shield, Brain, Zap, Eye, Settings, Filter, Download,
+  Workflow, Target, Lightbulb, Award, Star, ChevronRight,
+  Grid, List, RefreshCw, ExternalLink, Copy, Share,
+  Calculator, Briefcase, CreditCard, Receipt
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import AdminTabs from "@/components/admin-tabs";
-import ExpandableSideNav from "@/components/ExpandableSideNav";
+import { format, subDays, isSameDay, parseISO } from "date-fns";
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell, Area, AreaChart } from "recharts";
 import backgroundImage from "@assets/image_1749351216300.png";
 
 type TabType = 
   | "dashboard"
-  | "inbox" 
-  | "calendar"
-  | "934" 
-  | "949" 
-  | "payment-tracker"
+  | "analytics" 
+  | "financial"
+  | "properties"
+  | "guests"
   | "maintenance"
-  | "announcement"
-  | "inquiries"
-  | "contacts"
-  | "inventory"
-  | "todos"
-  | "receipts"
-  | "receipt-editor"
-  | "expenses"
-  | "payment-history"
-  | "financial-reports"
-  | "public-page-editor"
-  | "admin-dashboard";
+  | "operations"
+  | "marketing"
+  | "security"
+  | "reports";
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
 export default function ModernDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
+  const [dateRange, setDateRange] = useState<string>("30d");
+  const [selectedBuilding, setSelectedBuilding] = useState<number | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -52,54 +54,85 @@ export default function ModernDashboard() {
     setLocation("/admin-login");
   };
 
+  // Comprehensive data queries
   const { data: rooms = [] } = useQuery({
     queryKey: ["/api/rooms"],
   });
 
-  const { data: inquiries = [] } = useQuery({
-    queryKey: ["/api/admin/inquiries"],
-  });
-
-  const { data: maintenanceRequests = [] } = useQuery({
-    queryKey: ["/api/admin/maintenance"],
+  const { data: buildings = [] } = useQuery({
+    queryKey: ["/api/admin/buildings"],
   });
 
   const { data: guests = [] } = useQuery({
     queryKey: ["/api/admin/guests"],
   });
 
+  const { data: maintenanceRequests = [] } = useQuery({
+    queryKey: ["/api/admin/maintenance"],
+  });
+
   const { data: payments = [] } = useQuery({
     queryKey: ["/api/admin/payments"],
   });
 
-  const { data: announcements = [] } = useQuery({
-    queryKey: ["/api/admin/announcements"],
+  const { data: inquiries = [] } = useQuery({
+    queryKey: ["/api/admin/inquiries"],
   });
 
-  const { data: calendarEvents = [] } = useQuery({
-    queryKey: ["/api/admin/calendar"],
+  const { data: financialSummary } = useQuery({
+    queryKey: ["/api/admin/financial/summary"],
   });
 
-  const { data: contacts = [] } = useQuery({
-    queryKey: ["/api/admin/contacts"],
+  const { data: occupancyAnalytics } = useQuery({
+    queryKey: ["/api/admin/analytics/occupancy"],
   });
 
-  const { data: inventory = [] } = useQuery({
-    queryKey: ["/api/admin/inventory"],
+  const { data: revenueAnalytics } = useQuery({
+    queryKey: ["/api/admin/analytics/revenue"],
   });
 
-  const { data: receipts = [] } = useQuery({
-    queryKey: ["/api/admin/receipts"],
+  const { data: maintenanceAnalytics } = useQuery({
+    queryKey: ["/api/admin/analytics/maintenance"],
   });
 
-  const { data: todos = [] } = useQuery({
-    queryKey: ["/api/admin/todos"],
+  const { data: predictiveInsights } = useQuery({
+    queryKey: ["/api/admin/analytics/insights"],
   });
 
-  // Calculate stats
-  const pendingInquiries = Array.isArray(inquiries) ? inquiries.filter((i: any) => i.status === 'pending').length : 0;
-  const urgentMaintenance = Array.isArray(maintenanceRequests) ? maintenanceRequests.filter((m: any) => m.priority === 'urgent').length : 0;
-  const incompleteTodos = Array.isArray(todos) ? todos.filter((t: any) => !t.completed).length : 0;
+  const { data: systemNotifications = [] } = useQuery({
+    queryKey: ["/api/admin/notifications"],
+  });
+
+  const { data: vendors = [] } = useQuery({
+    queryKey: ["/api/admin/vendors"],
+  });
+
+  const { data: leases = [] } = useQuery({
+    queryKey: ["/api/admin/leases"],
+  });
+
+  const { data: marketingCampaigns = [] } = useQuery({
+    queryKey: ["/api/admin/marketing/campaigns"],
+  });
+
+  // Calculate comprehensive stats
+  const totalRooms = rooms.length;
+  const occupiedRooms = rooms.filter((r: any) => r.status === 'occupied').length;
+  const availableRooms = rooms.filter((r: any) => r.status === 'available').length;
+  const maintenanceRooms = rooms.filter((r: any) => r.status === 'needs_cleaning' || r.status === 'out_of_service').length;
+  const occupancyRate = totalRooms > 0 ? (occupiedRooms / totalRooms) * 100 : 0;
+
+  const activeGuests = guests.filter((g: any) => g.isActive && !g.hasMovedOut).length;
+  const pendingPayments = guests.filter((g: any) => g.paymentStatus === 'pending').length;
+  const overduePayments = guests.filter((g: any) => g.paymentStatus === 'overdue').length;
+
+  const pendingMaintenance = Array.isArray(maintenanceRequests) ? maintenanceRequests.filter((m: any) => m.status === 'submitted').length : 0;
+  const urgentMaintenanceCount = Array.isArray(maintenanceRequests) ? maintenanceRequests.filter((m: any) => m.priority === 'urgent').length : 0;
+
+  const newInquiries = Array.isArray(inquiries) ? inquiries.filter((i: any) => i.status === 'new').length : 0;
+  const monthlyRevenue = (financialSummary as any)?.thisMonthRevenue || 0;
+  const monthlyExpenses = (financialSummary as any)?.thisMonthExpenses || 0;
+  const netIncome = monthlyRevenue - monthlyExpenses;
 
   const renderContent = () => {
     // Map modern dashboard tabs to admin tabs

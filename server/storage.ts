@@ -1228,7 +1228,7 @@ export class DatabaseStorage implements IStorage {
     // Get expenses
     const receipts = await db.select().from(schema.receipts);
     const thisMonthExpenses = receipts
-      .filter(r => r.receiptDate && r.receiptDate.toISOString().slice(0, 7) === currentMonth)
+      .filter(r => r.receiptDate && r.receiptDate.toString().slice(0, 7) === currentMonth)
       .reduce((sum, r) => sum + parseFloat(r.amount || '0'), 0);
 
     return {
@@ -1649,14 +1649,15 @@ export class DatabaseStorage implements IStorage {
     const revenue = parseFloat(campaign.revenue || '0');
     const roi = spent > 0 ? ((revenue - spent) / spent) * 100 : 0;
     
+    const conversions = campaign.conversions || 0;
     return {
       campaignId,
       spent,
       revenue,
       roi,
-      conversions: campaign.conversions,
-      costPerConversion: campaign.conversions > 0 ? spent / campaign.conversions : 0,
-      revenuePerConversion: campaign.conversions > 0 ? revenue / campaign.conversions : 0
+      conversions,
+      costPerConversion: conversions > 0 ? spent / conversions : 0,
+      revenuePerConversion: conversions > 0 ? revenue / conversions : 0
     };
   }
 

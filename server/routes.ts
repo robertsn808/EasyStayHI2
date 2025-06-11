@@ -1909,5 +1909,426 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Financial Reporting API
+  app.get("/api/admin/financial/reports", simpleAdminAuth, async (req, res) => {
+    try {
+      const buildingId = req.query.buildingId ? parseInt(req.query.buildingId as string) : undefined;
+      const reports = await storage.getFinancialReports(buildingId);
+      res.json(reports);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch financial reports" });
+    }
+  });
+
+  app.post("/api/admin/financial/reports", simpleAdminAuth, async (req, res) => {
+    try {
+      const { type, period, buildingId } = req.body;
+      const report = await storage.generateFinancialReport(type, period, buildingId);
+      res.json(report);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to generate financial report" });
+    }
+  });
+
+  app.get("/api/admin/financial/summary", simpleAdminAuth, async (req, res) => {
+    try {
+      const buildingId = req.query.buildingId ? parseInt(req.query.buildingId as string) : undefined;
+      const summary = await storage.getFinancialSummary(buildingId);
+      res.json(summary);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch financial summary" });
+    }
+  });
+
+  // Maintenance Scheduling API
+  app.get("/api/admin/maintenance/schedules", simpleAdminAuth, async (req, res) => {
+    try {
+      const roomId = req.query.roomId ? parseInt(req.query.roomId as string) : undefined;
+      const schedules = await storage.getMaintenanceSchedules(roomId);
+      res.json(schedules);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch maintenance schedules" });
+    }
+  });
+
+  app.post("/api/admin/maintenance/schedules", simpleAdminAuth, async (req, res) => {
+    try {
+      const schedule = await storage.createMaintenanceSchedule(req.body);
+      res.json(schedule);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create maintenance schedule" });
+    }
+  });
+
+  app.put("/api/admin/maintenance/schedules/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const schedule = await storage.updateMaintenanceSchedule(id, req.body);
+      res.json(schedule);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update maintenance schedule" });
+    }
+  });
+
+  app.post("/api/admin/maintenance/schedules/:id/complete", simpleAdminAuth, async (req, res) => {
+    try {
+      const scheduleId = parseInt(req.params.id);
+      const schedule = await storage.completeMaintenanceTask(scheduleId);
+      res.json(schedule);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to complete maintenance task" });
+    }
+  });
+
+  app.get("/api/admin/maintenance/overdue", simpleAdminAuth, async (req, res) => {
+    try {
+      const overdueTasks = await storage.getOverdueMaintenanceTasks();
+      res.json(overdueTasks);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch overdue maintenance tasks" });
+    }
+  });
+
+  // Communication Logs API
+  app.get("/api/admin/communication/logs", simpleAdminAuth, async (req, res) => {
+    try {
+      const guestId = req.query.guestId ? parseInt(req.query.guestId as string) : undefined;
+      const roomId = req.query.roomId ? parseInt(req.query.roomId as string) : undefined;
+      const logs = await storage.getCommunicationLogs(guestId, roomId);
+      res.json(logs);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch communication logs" });
+    }
+  });
+
+  app.post("/api/admin/communication/logs", simpleAdminAuth, async (req, res) => {
+    try {
+      const log = await storage.createCommunicationLog(req.body);
+      res.json(log);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create communication log" });
+    }
+  });
+
+  app.patch("/api/admin/communication/logs/:id/response", simpleAdminAuth, async (req, res) => {
+    try {
+      const logId = parseInt(req.params.id);
+      const log = await storage.markCommunicationResponse(logId);
+      res.json(log);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to mark communication response" });
+    }
+  });
+
+  // Lease Management API
+  app.get("/api/admin/leases", simpleAdminAuth, async (req, res) => {
+    try {
+      const guestId = req.query.guestId ? parseInt(req.query.guestId as string) : undefined;
+      const roomId = req.query.roomId ? parseInt(req.query.roomId as string) : undefined;
+      const leases = await storage.getLeaseAgreements(guestId, roomId);
+      res.json(leases);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch lease agreements" });
+    }
+  });
+
+  app.post("/api/admin/leases", simpleAdminAuth, async (req, res) => {
+    try {
+      const lease = await storage.createLeaseAgreement(req.body);
+      res.json(lease);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create lease agreement" });
+    }
+  });
+
+  app.put("/api/admin/leases/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const lease = await storage.updateLeaseAgreement(id, req.body);
+      res.json(lease);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update lease agreement" });
+    }
+  });
+
+  app.post("/api/admin/leases/:id/terminate", simpleAdminAuth, async (req, res) => {
+    try {
+      const leaseId = parseInt(req.params.id);
+      const { reason } = req.body;
+      const lease = await storage.terminateLease(leaseId, reason);
+      res.json(lease);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to terminate lease" });
+    }
+  });
+
+  app.get("/api/admin/leases/expiring", simpleAdminAuth, async (req, res) => {
+    try {
+      const days = req.query.days ? parseInt(req.query.days as string) : 30;
+      const expiringLeases = await storage.getExpiringLeases(days);
+      res.json(expiringLeases);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch expiring leases" });
+    }
+  });
+
+  // Vendor Management API
+  app.get("/api/admin/vendors", simpleAdminAuth, async (req, res) => {
+    try {
+      const serviceType = req.query.serviceType as string;
+      const vendors = await storage.getVendors(serviceType);
+      res.json(vendors);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch vendors" });
+    }
+  });
+
+  app.post("/api/admin/vendors", simpleAdminAuth, async (req, res) => {
+    try {
+      const vendor = await storage.createVendor(req.body);
+      res.json(vendor);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create vendor" });
+    }
+  });
+
+  app.put("/api/admin/vendors/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const vendor = await storage.updateVendor(id, req.body);
+      res.json(vendor);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update vendor" });
+    }
+  });
+
+  app.post("/api/admin/vendors/:id/rate", simpleAdminAuth, async (req, res) => {
+    try {
+      const vendorId = parseInt(req.params.id);
+      const { rating } = req.body;
+      const vendor = await storage.rateVendor(vendorId, rating);
+      res.json(vendor);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to rate vendor" });
+    }
+  });
+
+  // Service Requests API
+  app.get("/api/admin/service-requests", simpleAdminAuth, async (req, res) => {
+    try {
+      const vendorId = req.query.vendorId ? parseInt(req.query.vendorId as string) : undefined;
+      const roomId = req.query.roomId ? parseInt(req.query.roomId as string) : undefined;
+      const requests = await storage.getServiceRequests(vendorId, roomId);
+      res.json(requests);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch service requests" });
+    }
+  });
+
+  app.post("/api/admin/service-requests", simpleAdminAuth, async (req, res) => {
+    try {
+      const request = await storage.createServiceRequest(req.body);
+      res.json(request);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create service request" });
+    }
+  });
+
+  app.put("/api/admin/service-requests/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const request = await storage.updateServiceRequest(id, req.body);
+      res.json(request);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update service request" });
+    }
+  });
+
+  app.post("/api/admin/service-requests/:id/approve", simpleAdminAuth, async (req, res) => {
+    try {
+      const requestId = parseInt(req.params.id);
+      const { approvedCost } = req.body;
+      const request = await storage.approveServiceRequest(requestId, approvedCost);
+      res.json(request);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to approve service request" });
+    }
+  });
+
+  // Insurance Claims API
+  app.get("/api/admin/insurance/claims", simpleAdminAuth, async (req, res) => {
+    try {
+      const roomId = req.query.roomId ? parseInt(req.query.roomId as string) : undefined;
+      const claims = await storage.getInsuranceClaims(roomId);
+      res.json(claims);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch insurance claims" });
+    }
+  });
+
+  app.post("/api/admin/insurance/claims", simpleAdminAuth, async (req, res) => {
+    try {
+      const claim = await storage.createInsuranceClaim(req.body);
+      res.json(claim);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create insurance claim" });
+    }
+  });
+
+  app.put("/api/admin/insurance/claims/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const claim = await storage.updateInsuranceClaim(id, req.body);
+      res.json(claim);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update insurance claim" });
+    }
+  });
+
+  // Emergency Contacts API
+  app.get("/api/admin/emergency-contacts", simpleAdminAuth, async (req, res) => {
+    try {
+      const contacts = await storage.getEmergencyContacts();
+      res.json(contacts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch emergency contacts" });
+    }
+  });
+
+  app.post("/api/admin/emergency-contacts", simpleAdminAuth, async (req, res) => {
+    try {
+      const contact = await storage.createEmergencyContact(req.body);
+      res.json(contact);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create emergency contact" });
+    }
+  });
+
+  app.put("/api/admin/emergency-contacts/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const contact = await storage.updateEmergencyContact(id, req.body);
+      res.json(contact);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update emergency contact" });
+    }
+  });
+
+  // Utility Management API
+  app.get("/api/admin/utilities/readings", simpleAdminAuth, async (req, res) => {
+    try {
+      const roomId = req.query.roomId ? parseInt(req.query.roomId as string) : undefined;
+      const buildingId = req.query.buildingId ? parseInt(req.query.buildingId as string) : undefined;
+      const utilityType = req.query.utilityType as string;
+      const readings = await storage.getUtilityReadings(roomId, buildingId, utilityType);
+      res.json(readings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch utility readings" });
+    }
+  });
+
+  app.post("/api/admin/utilities/readings", simpleAdminAuth, async (req, res) => {
+    try {
+      const reading = await storage.createUtilityReading(req.body);
+      res.json(reading);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create utility reading" });
+    }
+  });
+
+  app.get("/api/admin/utilities/costs/:roomId", simpleAdminAuth, async (req, res) => {
+    try {
+      const roomId = parseInt(req.params.roomId);
+      const month = req.query.month ? parseInt(req.query.month as string) : new Date().getMonth() + 1;
+      const year = req.query.year ? parseInt(req.query.year as string) : new Date().getFullYear();
+      const costs = await storage.calculateUtilityCosts(roomId, month, year);
+      res.json(costs);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to calculate utility costs" });
+    }
+  });
+
+  // Marketing Campaigns API
+  app.get("/api/admin/marketing/campaigns", simpleAdminAuth, async (req, res) => {
+    try {
+      const campaigns = await storage.getMarketingCampaigns();
+      res.json(campaigns);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch marketing campaigns" });
+    }
+  });
+
+  app.post("/api/admin/marketing/campaigns", simpleAdminAuth, async (req, res) => {
+    try {
+      const campaign = await storage.createMarketingCampaign(req.body);
+      res.json(campaign);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create marketing campaign" });
+    }
+  });
+
+  app.put("/api/admin/marketing/campaigns/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const campaign = await storage.updateMarketingCampaign(id, req.body);
+      res.json(campaign);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update marketing campaign" });
+    }
+  });
+
+  app.get("/api/admin/marketing/campaigns/:id/roi", simpleAdminAuth, async (req, res) => {
+    try {
+      const campaignId = parseInt(req.params.id);
+      const roi = await storage.getCampaignROI(campaignId);
+      res.json(roi);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to calculate campaign ROI" });
+    }
+  });
+
+  // Advanced Analytics API
+  app.get("/api/admin/analytics/occupancy", simpleAdminAuth, async (req, res) => {
+    try {
+      const buildingId = req.query.buildingId ? parseInt(req.query.buildingId as string) : undefined;
+      const period = req.query.period as string;
+      const analytics = await storage.getOccupancyAnalytics(buildingId, period);
+      res.json(analytics);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch occupancy analytics" });
+    }
+  });
+
+  app.get("/api/admin/analytics/revenue", simpleAdminAuth, async (req, res) => {
+    try {
+      const buildingId = req.query.buildingId ? parseInt(req.query.buildingId as string) : undefined;
+      const period = req.query.period as string;
+      const analytics = await storage.getRevenueAnalytics(buildingId, period);
+      res.json(analytics);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch revenue analytics" });
+    }
+  });
+
+  app.get("/api/admin/analytics/maintenance", simpleAdminAuth, async (req, res) => {
+    try {
+      const roomId = req.query.roomId ? parseInt(req.query.roomId as string) : undefined;
+      const period = req.query.period as string;
+      const analytics = await storage.getMaintenanceAnalytics(roomId, period);
+      res.json(analytics);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch maintenance analytics" });
+    }
+  });
+
+  app.get("/api/admin/analytics/insights", simpleAdminAuth, async (req, res) => {
+    try {
+      const insights = await storage.getPredictiveInsights();
+      res.json(insights);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch predictive insights" });
+    }
+  });
+
   return createServer(app);
 }
