@@ -116,15 +116,17 @@ export default function ModernDashboard() {
   });
 
   // Calculate comprehensive stats
-  const totalRooms = rooms.length;
-  const occupiedRooms = rooms.filter((r: any) => r.status === 'occupied').length;
-  const availableRooms = rooms.filter((r: any) => r.status === 'available').length;
-  const maintenanceRooms = rooms.filter((r: any) => r.status === 'needs_cleaning' || r.status === 'out_of_service').length;
+  const roomsArray = Array.isArray(rooms) ? rooms : [];
+  const totalRooms = roomsArray.length;
+  const occupiedRooms = roomsArray.filter((r: any) => r.status === 'occupied').length;
+  const availableRooms = roomsArray.filter((r: any) => r.status === 'available').length;
+  const maintenanceRooms = roomsArray.filter((r: any) => r.status === 'needs_cleaning' || r.status === 'out_of_service').length;
   const occupancyRate = totalRooms > 0 ? (occupiedRooms / totalRooms) * 100 : 0;
 
-  const activeGuests = guests.filter((g: any) => g.isActive && !g.hasMovedOut).length;
-  const pendingPayments = guests.filter((g: any) => g.paymentStatus === 'pending').length;
-  const overduePayments = guests.filter((g: any) => g.paymentStatus === 'overdue').length;
+  const guestsArray = Array.isArray(guests) ? guests : [];
+  const activeGuests = guestsArray.filter((g: any) => g.isActive && !g.hasMovedOut).length;
+  const pendingPayments = guestsArray.filter((g: any) => g.paymentStatus === 'pending').length;
+  const overduePayments = guestsArray.filter((g: any) => g.paymentStatus === 'overdue').length;
 
   const pendingMaintenance = Array.isArray(maintenanceRequests) ? maintenanceRequests.filter((m: any) => m.status === 'submitted').length : 0;
   const urgentMaintenanceCount = Array.isArray(maintenanceRequests) ? maintenanceRequests.filter((m: any) => m.priority === 'urgent').length : 0;
@@ -138,16 +140,15 @@ export default function ModernDashboard() {
     // Map modern dashboard tabs to admin tabs
     const tabMapping: Record<TabType, string> = {
       "dashboard": "quick-access",
-      "inbox": "inquiries", 
-      "calendar": "calendar",
-      "934": "934",
-      "949": "949",
-      "payment-tracker": "payment-tracker",
+      "analytics": "analytics", 
+      "financial": "financial",
+      "properties": "properties",
+      "guests": "guests",
       "maintenance": "maintenance",
-      "announcement": "announcement", 
-      "inquiries": "inquiries",
-      "contacts": "contacts",
-      "inventory": "inventory",
+      "operations": "operations", 
+      "marketing": "marketing",
+      "security": "security",
+      "reports": "reports",
       "todos": "todos",
       "receipts": "receipts",
       "receipt-editor": "receipt-editor",
