@@ -59,13 +59,29 @@ export default function InquiryPage() {
       if (!hasReadAgreement) {
         throw new Error("Please read and agree to the rental agreement first.");
       }
-      const response = await apiRequest("POST", "/api/inquiries", data);
+      if (!checkInDate || !checkOutDate) {
+        throw new Error("Please select check-in and check-out dates.");
+      }
+      if (numberOfNights <= 0) {
+        throw new Error("Check-out date must be after check-in date.");
+      }
+      
+      const inquiryData = {
+        ...data,
+        checkInDate: checkInDate.toISOString().split('T')[0],
+        checkOutDate: checkOutDate.toISOString().split('T')[0],
+        numberOfGuests: formData.numberOfGuests,
+        roomPreference: formData.roomPreference,
+        estimatedCost: totalCost,
+      };
+      
+      const response = await apiRequest("POST", "/api/inquiries", inquiryData);
       return response;
     },
     onSuccess: () => {
       toast({
-        title: "Inquiry Sent Successfully!",
-        description: "We'll contact you soon about your rental inquiry.",
+        title: "Booking Inquiry Sent Successfully!",
+        description: `Your inquiry for ${numberOfNights} nights ($${totalCost}) has been submitted. We'll contact you within 24 hours.`,
       });
       setFormData({
         name: "",
@@ -74,7 +90,11 @@ export default function InquiryPage() {
         rentalPeriod: "",
         message: "",
         contactPreference: "",
+        numberOfGuests: 1,
+        roomPreference: "",
       });
+      setCheckInDate(undefined);
+      setCheckOutDate(undefined);
       setSelectedProperty("");
       setHasReadAgreement(false);
       setShowAgreement(false);
@@ -242,21 +262,153 @@ export default function InquiryPage() {
                   </Select>
                 </div>
 
+                {/* Booking Details Section */}
+                <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center text-blue-900 dark:text-blue-100">
+                      <CalendarIcon className="h-5 w-5 mr-2" />
+                      Booking Details
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Date Selection */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Check-in Date *</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={`w-full justify-start text-left font-normal ${
+                                !checkInDate && "text-muted-foreground"
+                              }`}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {checkInDate ? format(checkInDate, "PPP") : "Select check-in date"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={checkInDate}
+                              onSelect={(date) => {
+                                setCheckInDate(date);
+                                // Auto-set checkout to next day if not set
+                                if (date && !checkOutDate) {
+                                  setCheckOutDate(addDays(date, 1));
+                                }
+                              }}
+                              disabled={(date: Date) => date < new Date()}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Check-out Date *</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={`w-full justify-start text-left font-normal ${
+                                !checkOutDate && "text-muted-foreground"
+                              }`}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {checkOutDate ? format(checkOutDate, "PPP") : "Select check-out date"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={checkOutDate}
+                              onSelect={setCheckOutDate}
+                              disabled={(date) => !checkInDate || date <= checkInDate}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </div>
+
+                    {/* Guest and Room Details */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="numberOfGuests">Number of Guests *</Label>
+                        <Select 
+                          value={formData.numberOfGuests.toString()} 
+                          onValueChange={(value) => handleInputChange("numberOfGuests", parseInt(value))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select guests" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1">1 Guest</SelectItem>
+                            <SelectItem value="2">2 Guests</SelectItem>
+                            <SelectItem value="3">3 Guests</SelectItem>
+                            <SelectItem value="4">4 Guests</SelectItem>
+                            <SelectItem value="5">5+ Guests</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="roomPreference">Room Preference</Label>
+                        <Select onValueChange={(value) => handleInputChange("roomPreference", value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Any available room" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="any">Any Available Room</SelectItem>
+                            <SelectItem value="ocean-view">Ocean View</SelectItem>
+                            <SelectItem value="quiet">Quiet Room</SelectItem>
+                            <SelectItem value="ground-floor">Ground Floor</SelectItem>
+                            <SelectItem value="balcony">Room with Balcony</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Booking Summary */}
+                    {checkInDate && checkOutDate && numberOfNights > 0 && (
+                      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium">Booking Summary</span>
+                          <Badge variant="secondary">{numberOfNights} nights</Badge>
+                        </div>
+                        <div className="space-y-1 text-sm text-muted-foreground">
+                          <div className="flex justify-between">
+                            <span>Check-in: 12:00 PM</span>
+                            <span>Check-out: 10:00 AM</span>
+                          </div>
+                          <div className="flex justify-between items-center pt-2 border-t">
+                            <span className="flex items-center">
+                              <DollarSign className="h-4 w-4 mr-1" />
+                              Rate: $100/night
+                            </span>
+                            <span className="font-semibold text-lg">
+                              Total: ${totalCost}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
                 <div className="space-y-2">
-                  <Label htmlFor="rentalPeriod">Rental Period</Label>
+                  <Label htmlFor="rentalPeriod">Rental Period (Optional)</Label>
                   <Select onValueChange={(value) => handleInputChange("rentalPeriod", value)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select rental period" />
+                      <SelectValue placeholder="Select if extended stay" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1day">1 Day</SelectItem>
-                      <SelectItem value="2days">2 Days</SelectItem>
-                      <SelectItem value="3days">3 Days</SelectItem>
-                      <SelectItem value="4days">4 Days</SelectItem>
+                      <SelectItem value="short-term">Short Term (1-7 days)</SelectItem>
                       <SelectItem value="1week">1 Week</SelectItem>
-                      <SelectItem value="2weeks+">2 Weeks+</SelectItem>
-                      <SelectItem value="month">Month</SelectItem>
-                      <SelectItem value="2months+">2 Months+</SelectItem>
+                      <SelectItem value="2weeks">2 Weeks</SelectItem>
+                      <SelectItem value="month">1 Month</SelectItem>
+                      <SelectItem value="2months+">2+ Months</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
