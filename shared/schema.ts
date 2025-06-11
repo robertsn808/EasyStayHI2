@@ -65,7 +65,7 @@ export const rooms = pgTable("rooms", {
 export const tenantSessions = pgTable("tenant_sessions", {
   id: serial("id").primaryKey(),
   roomId: integer("room_id").references(() => rooms.id).notNull(),
-  sessionToken: varchar("session_token", { length: 255 }).notNull().unique(),
+  sessionToken: text("session_token").notNull().unique(),
   tenantName: varchar("tenant_name", { length: 255 }).notNull(),
   tenantEmail: varchar("tenant_email", { length: 255 }),
   tenantPhone: varchar("tenant_phone", { length: 50 }),
