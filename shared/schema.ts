@@ -242,6 +242,21 @@ export const receipts = pgTable("receipts", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const expenses = pgTable("expenses", {
+  id: serial("id").primaryKey(),
+  buildingId: integer("building_id").references(() => buildings.id),
+  category: varchar("category", { length: 100 }).notNull(),
+  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+  description: text("description").notNull(),
+  expenseDate: date("expense_date").notNull(),
+  vendor: varchar("vendor", { length: 255 }),
+  status: varchar("status", { length: 20 }).default("pending"), // pending, paid, overdue
+  paymentMethod: varchar("payment_method", { length: 50 }),
+  receiptUrl: varchar("receipt_url", { length: 500 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const todos = pgTable("todos", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),

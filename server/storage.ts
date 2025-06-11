@@ -420,6 +420,25 @@ export class DatabaseStorage implements IStorage {
     await db.delete(receipts).where(eq(receipts.id, id));
   }
 
+  // Expense operations
+  async createExpense(expense: schema.InsertExpense): Promise<schema.Expense> {
+    const [result] = await db.insert(schema.expenses).values(expense).returning();
+    return result;
+  }
+
+  async getExpenses(): Promise<schema.Expense[]> {
+    return await db.select().from(schema.expenses);
+  }
+
+  async updateExpense(id: number, expense: Partial<schema.InsertExpense>): Promise<schema.Expense> {
+    const [result] = await db.update(schema.expenses).set(expense).where(eq(schema.expenses.id, id)).returning();
+    return result;
+  }
+
+  async deleteExpense(id: number): Promise<void> {
+    await db.delete(schema.expenses).where(eq(schema.expenses.id, id));
+  }
+
   // Todo operations
   async createTodo(todo: InsertTodo): Promise<Todo> {
     const [result] = await db.insert(todos).values(todo).returning();
@@ -1225,11 +1244,13 @@ export class DatabaseStorage implements IStorage {
       .filter(p => p.createdAt && p.createdAt.toISOString().slice(0, 7) === currentMonth)
       .reduce((sum, p) => sum + parseFloat(p.amount || '0'), 0);
 
-    // Get expenses
-    const receipts = await db.select().from(schema.receipts);
-    const thisMonthExpenses = receipts
-      .filter(r => r.receiptDate && r.receiptDate.toString().slice(0, 7) === currentMonth)
-      .reduce((sum, r) => sum + parseFloat(r.amount || '0'), 0);
+    // Get current month expenses from the expenses table
+    const expenses = await db.select().from(schema.expenses)
+      .where(eq(schema.expenses.status, 'paid'));
+    
+    const thisMonthExpenses = expenses
+      .filter(e => e.expenseDate && e.expenseDate.toString().slice(0, 7) === currentMonth)
+      .reduce((sum, e) => sum + parseFloat(e.amount || '0'), 0);
 
     return {
       thisMonthRevenue,
