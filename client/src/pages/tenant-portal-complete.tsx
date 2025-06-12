@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { AIChatBot } from "@/components/AIChatBot";
 import { 
   Bell, Home, Wrench, DollarSign, 
   User, Phone, Mail, LogOut, CheckCircle2, Calendar,
@@ -31,6 +32,8 @@ export default function TenantPortalComplete() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [showChatBot, setShowChatBot] = useState(false);
+  const [chatBotMode, setChatBotMode] = useState<'tenant' | 'maintenance' | 'payment'>('tenant');
   
   const [signInForm, setSignInForm] = useState({
     tenantName: "",

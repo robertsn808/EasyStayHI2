@@ -20,6 +20,7 @@ import {
   insertGuestProfileSchema
 } from "@shared/schema";
 import { generateTenantQRCode, generateTenantToken, verifyTenantToken } from "./qrGenerator";
+import { aiChatBot } from "./aiChatBot";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -1585,6 +1586,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Report sharing error:", error);
       res.status(500).json({ message: "Failed to share report" });
+    }
+  });
+
+  // AI Chat Bot API Routes
+  app.post("/api/chat/tenant", async (req, res) => {
+    try {
+      const { message, roomNumber, conversationHistory = [] } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+
+      const response = await aiChatBot.handleTenantInquiry(message, conversationHistory);
+      res.json(response);
+    } catch (error) {
+      console.error("Tenant chat error:", error);
+      res.status(500).json({ message: "Failed to process chat request" });
+    }
+  });
+
+  app.post("/api/chat/property", async (req, res) => {
+    try {
+      const { message, conversationHistory = [] } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+
+      const response = await aiChatBot.handlePropertyInquiry(message, conversationHistory);
+      res.json(response);
+    } catch (error) {
+      console.error("Property chat error:", error);
+      res.status(500).json({ message: "Failed to process chat request" });
+    }
+  });
+
+  app.post("/api/chat/maintenance", async (req, res) => {
+    try {
+      const { message, roomNumber } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+
+      const response = await aiChatBot.handleMaintenanceInquiry(message, roomNumber);
+      res.json(response);
+    } catch (error) {
+      console.error("Maintenance chat error:", error);
+      res.status(500).json({ message: "Failed to process chat request" });
+    }
+  });
+
+  app.post("/api/chat/payment", async (req, res) => {
+    try {
+      const { message, roomNumber } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+
+      const response = await aiChatBot.handlePaymentInquiry(message, roomNumber);
+      res.json(response);
+    } catch (error) {
+      console.error("Payment chat error:", error);
+      res.status(500).json({ message: "Failed to process chat request" });
     }
   });
 
