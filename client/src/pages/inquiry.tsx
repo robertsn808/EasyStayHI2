@@ -167,34 +167,60 @@ export default function InquiryPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Choose Your Property</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <Card 
-              className={`cursor-pointer transition-all ${selectedProperty === "934" ? "ring-2 ring-blue-500 bg-blue-50" : "hover:shadow-lg"}`}
+              className={`cursor-pointer transition-all duration-500 overflow-hidden ${selectedProperty === "934" ? "ring-4 ring-emerald-500 shadow-2xl" : "hover:shadow-xl"}`}
               onClick={() => setSelectedProperty("934")}
             >
+              <div className="relative h-32 bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-800 overflow-hidden">
+                <div 
+                  className="absolute inset-0 opacity-20"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                  }}
+                />
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-slate-900/80 to-transparent" />
+                <div className="relative h-full flex items-center justify-center text-center">
+                  <div>
+                    <div className="text-2xl mb-1">🏢</div>
+                    <h3 className="text-lg font-bold text-white">EasyStay Downtown Plaza</h3>
+                  </div>
+                </div>
+              </div>
               <CardContent className="p-6">
                 <div className="text-center">
-                  <div className="text-4xl mb-4">🏢</div>
-                  <h3 className="text-xl font-bold mb-2">Property 934</h3>
-                  <p className="text-gray-600 mb-3">934 Kapahulu Ave, Honolulu, HI</p>
-                  <div className="text-sm text-gray-500">
-                    <div>8 Rooms Available</div>
-                    <div>$2,000/month</div>
+                  <p className="text-gray-600 mb-3 font-medium">934 Kapahulu Ave, Honolulu, HI</p>
+                  <div className="text-sm text-gray-500 space-y-1">
+                    <div className="font-semibold">8 Premium Suites</div>
+                    <div className="text-emerald-600 font-bold">$2,400/month</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card 
-              className={`cursor-pointer transition-all ${selectedProperty === "949" ? "ring-2 ring-purple-500 bg-purple-50" : "hover:shadow-lg"}`}
+              className={`cursor-pointer transition-all duration-500 overflow-hidden ${selectedProperty === "949" ? "ring-4 ring-teal-500 shadow-2xl" : "hover:shadow-xl"}`}
               onClick={() => setSelectedProperty("949")}
             >
+              <div className="relative h-32 bg-gradient-to-br from-cyan-900 via-blue-800 to-teal-800 overflow-hidden">
+                <div 
+                  className="absolute inset-0 opacity-25"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.12'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20v-40c11.046 0 20 8.954 20 20zM0 20v20h20c0-11.046-8.954-20-20-20zM40 20c0 11.046-8.954 20-20 20v-20h20zM20 0v20h20c0-11.046-8.954-20-20-20z'/%3E%3C/g%3E%3C/svg%3E")`
+                  }}
+                />
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-teal-900/80 to-transparent" />
+                <div className="relative h-full flex items-center justify-center text-center">
+                  <div>
+                    <div className="text-2xl mb-1">🏝️</div>
+                    <h3 className="text-lg font-bold text-white">EasyStay Waikiki Resort</h3>
+                  </div>
+                </div>
+              </div>
               <CardContent className="p-6">
                 <div className="text-center">
-                  <div className="text-4xl mb-4">🏠</div>
-                  <h3 className="text-xl font-bold mb-2">Property 949</h3>
-                  <p className="text-gray-600 mb-3">949 Kawaiahao St, Honolulu, HI</p>
-                  <div className="text-sm text-gray-500">
-                    <div>10 Suites Available</div>
-                    <div>$600/month</div>
+                  <p className="text-gray-600 mb-3 font-medium">949 Kawaiahao St, Honolulu, HI</p>
+                  <div className="text-sm text-gray-500 space-y-1">
+                    <div className="font-semibold">10 Tropical Suites</div>
+                    <div className="text-teal-600 font-bold">$720/month</div>
                   </div>
                 </div>
               </CardContent>

@@ -66,12 +66,23 @@ export default function Landing() {
         {/* Property Cards */}
         <div id="properties" className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12 lg:mb-16">
           {/* Property 934 */}
-          <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
-            <div className="h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-blue-100 to-green-100 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-4">🏢</div>
-                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">Property 934</h3>
-                <p className="text-sm sm:text-base text-gray-600">934 Kapahulu Ave</p>
+          <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+            <div className="relative h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-800 overflow-hidden">
+              {/* Elegant geometric pattern */}
+              <div 
+                className="absolute inset-0 opacity-20"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                }}
+              />
+              {/* Luxury building silhouette */}
+              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-900/80 to-transparent" />
+              <div className="relative h-full flex items-center justify-center text-center">
+                <div>
+                  <div className="text-3xl sm:text-4xl lg:text-5xl mb-2 sm:mb-3">🏢</div>
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white">EasyStay Downtown Plaza</h3>
+                  <p className="text-sm sm:text-base text-gray-200">Sophisticated Urban Living</p>
+                </div>
               </div>
             </div>
             <CardHeader className="pb-3 sm:pb-4">
@@ -117,12 +128,23 @@ export default function Landing() {
           </Card>
 
           {/* Property 949 */}
-          <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
-            <div className="h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-purple-100 to-yellow-100 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-4">🏠</div>
-                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">Property 949</h3>
-                <p className="text-sm sm:text-base text-gray-600">949 Kawaiahao St</p>
+          <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+            <div className="relative h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-cyan-900 via-blue-800 to-teal-800 overflow-hidden">
+              {/* Tropical wave pattern */}
+              <div 
+                className="absolute inset-0 opacity-25"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.12'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20v-40c11.046 0 20 8.954 20 20zM0 20v20h20c0-11.046-8.954-20-20-20zM40 20c0 11.046-8.954 20-20 20v-20h20zM20 0v20h20c0-11.046-8.954-20-20-20z'/%3E%3C/g%3E%3C/svg%3E")`
+                }}
+              />
+              {/* Beach resort ambiance */}
+              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-teal-900/80 to-transparent" />
+              <div className="relative h-full flex items-center justify-center text-center">
+                <div>
+                  <div className="text-3xl sm:text-4xl lg:text-5xl mb-2 sm:mb-3">🏝️</div>
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white">EasyStay Waikiki Resort</h3>
+                  <p className="text-sm sm:text-base text-gray-200">Tropical Paradise Living</p>
+                </div>
               </div>
             </div>
             <CardHeader className="pb-3 sm:pb-4">
