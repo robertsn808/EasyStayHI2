@@ -79,9 +79,9 @@ export default function Landing() {
               <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-900/80 to-transparent" />
               <div className="relative h-full flex items-center justify-center text-center">
                 <div>
-                  <div className="text-3xl sm:text-4xl lg:text-5xl mb-2 sm:mb-3">🏢</div>
-                  <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white">EasyStay Downtown Plaza</h3>
-                  <p className="text-sm sm:text-base text-gray-200">Sophisticated Urban Living</p>
+                  <div className="text-5xl sm:text-6xl lg:text-7xl mb-3 sm:mb-4">🏢</div>
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Property 934</h3>
+                  <p className="text-lg sm:text-xl text-gray-200">Sophisticated Urban Living</p>
                 </div>
               </div>
             </div>
@@ -141,9 +141,9 @@ export default function Landing() {
               <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-teal-900/80 to-transparent" />
               <div className="relative h-full flex items-center justify-center text-center">
                 <div>
-                  <div className="text-3xl sm:text-4xl lg:text-5xl mb-2 sm:mb-3">🏝️</div>
-                  <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white">EasyStay Waikiki Resort</h3>
-                  <p className="text-sm sm:text-base text-gray-200">Tropical Paradise Living</p>
+                  <div className="text-5xl sm:text-6xl lg:text-7xl mb-3 sm:mb-4">🏝️</div>
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Property 949</h3>
+                  <p className="text-lg sm:text-xl text-gray-200">Tropical Paradise Living</p>
                 </div>
               </div>
             </div>

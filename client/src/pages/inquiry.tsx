@@ -180,8 +180,8 @@ export default function InquiryPage() {
                 <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-slate-900/80 to-transparent" />
                 <div className="relative h-full flex items-center justify-center text-center">
                   <div>
-                    <div className="text-2xl mb-1">🏢</div>
-                    <h3 className="text-lg font-bold text-white">EasyStay Downtown Plaza</h3>
+                    <div className="text-4xl mb-2">🏢</div>
+                    <h3 className="text-xl font-bold text-white">Property 934</h3>
                   </div>
                 </div>
               </div>
