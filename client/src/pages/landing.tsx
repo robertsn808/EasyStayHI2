@@ -63,7 +63,7 @@ export default function Landing() {
         {/* Property Cards */}
         <div id="properties" className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12 lg:mb-16">
           {/* Property 934 */}
-          <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+          <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full">
             <div className="relative h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-800 overflow-hidden">
               {/* Elegant geometric pattern */}
               <div 
@@ -86,7 +86,7 @@ export default function Landing() {
                 Modern residential units perfect for long-term stays and monthly rentals.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4 bg-slate-50">
+            <CardContent className="space-y-3 sm:space-y-4 bg-slate-50 flex-grow flex flex-col">
               <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
                 <div className="p-2 sm:p-3 bg-blue-50 rounded-lg">
                   <div className="text-lg sm:text-2xl font-bold text-blue-900">$100</div>
@@ -101,7 +101,7 @@ export default function Landing() {
                   <div className="text-xs text-orange-700">Monthly</div>
                 </div>
               </div>
-              <div className="space-y-1 sm:space-y-2 text-sm sm:text-base">
+              <div className="space-y-1 sm:space-y-2 text-sm sm:text-base flex-grow">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Available Rooms:</span>
                   <span className="font-semibold text-green-600">{kapahulu934Available}</span>
@@ -111,7 +111,7 @@ export default function Landing() {
                   <span className="font-semibold">{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8}</span>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 mt-auto">
                 <Button 
                   onClick={() => window.open('/inquiry?property=934', '_blank')}
                   className="w-full bg-blue-600 hover:bg-blue-700"
@@ -123,7 +123,7 @@ export default function Landing() {
           </Card>
 
           {/* Property 949 */}
-          <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+          <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full">
             <div className="relative h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-cyan-900 via-blue-800 to-teal-800 overflow-hidden">
               {/* Tropical wave pattern */}
               <div 
@@ -146,7 +146,7 @@ export default function Landing() {
                 Comfortable suites ideal for budget-conscious travelers and extended stays.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4 bg-teal-50">
+            <CardContent className="space-y-3 sm:space-y-4 bg-teal-50 flex-grow flex flex-col">
               <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
                 <div className="p-2 sm:p-3 bg-purple-50 rounded-lg">
                   <div className="text-lg sm:text-2xl font-bold text-purple-900">$50</div>
@@ -161,7 +161,7 @@ export default function Landing() {
                   <div className="text-xs text-orange-700">Monthly</div>
                 </div>
               </div>
-              <div className="space-y-1 sm:space-y-2 text-sm sm:text-base">
+              <div className="space-y-1 sm:space-y-2 text-sm sm:text-base flex-grow">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Available Suites:</span>
                   <span className="font-semibold text-green-600">{kawaiahao949Available}</span>
@@ -171,7 +171,7 @@ export default function Landing() {
                   <span className="font-semibold">{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10}</span>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 mt-auto">
                 <Button 
                   onClick={() => window.open('/inquiry?property=949', '_blank')}
                   className="w-full bg-purple-600 hover:bg-purple-700"
