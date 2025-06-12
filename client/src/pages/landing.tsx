@@ -80,7 +80,7 @@ export default function Landing() {
               <div className="relative h-full flex items-center justify-center text-center">
                 <div>
                   <div className="text-5xl sm:text-6xl lg:text-7xl mb-3 sm:mb-4">🏢</div>
-                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Property 934</h3>
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">934</h3>
                   <p className="text-lg sm:text-xl text-gray-200">Sophisticated Urban Living</p>
                 </div>
               </div>
@@ -142,7 +142,7 @@ export default function Landing() {
               <div className="relative h-full flex items-center justify-center text-center">
                 <div>
                   <div className="text-5xl sm:text-6xl lg:text-7xl mb-3 sm:mb-4">🏝️</div>
-                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Property 949</h3>
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">949</h3>
                   <p className="text-lg sm:text-xl text-gray-200">Tropical Paradise Living</p>
                 </div>
               </div>
