@@ -21,6 +21,7 @@ import {
 } from "@shared/schema";
 import { generateTenantQRCode, generateTenantToken, verifyTenantToken } from "./qrGenerator";
 import { aiChatBot } from "./aiChatBot";
+import { fallbackAI } from "./fallbackAI";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -1598,7 +1599,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Message is required" });
       }
 
-      const response = await aiChatBot.handleTenantInquiry(message, conversationHistory);
+      // Use fallback AI directly for reliable responses
+      const response = await fallbackAI.handleTenantInquiry(message, conversationHistory);
       res.json(response);
     } catch (error) {
       console.error("Tenant chat error:", error);
@@ -1614,7 +1616,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Message is required" });
       }
 
-      const response = await aiChatBot.handlePropertyInquiry(message, conversationHistory);
+      const response = await fallbackAI.handlePropertyManagementInquiry(message, conversationHistory);
       res.json(response);
     } catch (error) {
       console.error("Property chat error:", error);
@@ -1630,7 +1632,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Message is required" });
       }
 
-      const response = await aiChatBot.handleMaintenanceInquiry(message, roomNumber);
+      const response = await fallbackAI.handleMaintenanceSupport(message, roomNumber);
       res.json(response);
     } catch (error) {
       console.error("Maintenance chat error:", error);
@@ -1646,7 +1648,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Message is required" });
       }
 
-      const response = await aiChatBot.handlePaymentInquiry(message, roomNumber);
+      const response = await fallbackAI.handlePaymentSupport(message, roomNumber);
       res.json(response);
     } catch (error) {
       console.error("Payment chat error:", error);

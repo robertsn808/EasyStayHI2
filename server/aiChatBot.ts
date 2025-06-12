@@ -51,7 +51,11 @@ export class AIChatBot {
       };
     } catch (error) {
       console.error('AI Chat Bot Error:', error);
-      throw new Error('Failed to communicate with AI assistant');
+      // Return a fallback error instead of throwing
+      return {
+        response: 'I apologize, but I could not process your request at this time. Please try again or contact support directly.',
+        conversationId: undefined
+      };
     }
   }
 
@@ -92,67 +96,87 @@ export class AIChatBot {
   }
 
   async handleTenantInquiry(message: string, conversationHistory: ChatMessage[] = []): Promise<ChatResponse> {
-    const systemContext = this.createTenantSupportContext();
-    const messages = [...systemContext, ...conversationHistory];
-    
-    return this.sendMessage({
-      messages,
-      sendMessage: message
-    });
+    try {
+      const systemContext = this.createTenantSupportContext();
+      const messages = [...systemContext, ...conversationHistory];
+      
+      return await this.sendMessage({
+        messages,
+        sendMessage: message
+      });
+    } catch (error) {
+      console.log('Using fallback AI for tenant inquiry');
+      return await fallbackAI.handleTenantInquiry(message, conversationHistory);
+    }
   }
 
   async handlePropertyInquiry(message: string, conversationHistory: ChatMessage[] = []): Promise<ChatResponse> {
-    const systemContext = this.createPropertyManagementContext();
-    const messages = [...systemContext, ...conversationHistory];
-    
-    return this.sendMessage({
-      messages,
-      sendMessage: message
-    });
+    try {
+      const systemContext = this.createPropertyManagementContext();
+      const messages = [...systemContext, ...conversationHistory];
+      
+      return await this.sendMessage({
+        messages,
+        sendMessage: message
+      });
+    } catch (error) {
+      console.log('Using fallback AI for property inquiry');
+      return await fallbackAI.handlePropertyManagementInquiry(message, conversationHistory);
+    }
   }
 
   async handleMaintenanceInquiry(message: string, roomNumber?: string): Promise<ChatResponse> {
-    const maintenanceContext: ChatMessage[] = [
-      {
-        role: 'system',
-        content: `You are a maintenance support assistant for EasyStay HI. Help tenants with:
-        - Submitting maintenance requests
-        - Understanding maintenance procedures
-        - Emergency maintenance situations
-        - Maintenance scheduling and timing
-        - What to expect during maintenance visits
-        
-        ${roomNumber ? `The tenant is in room ${roomNumber}.` : ''}
-        Always encourage tenants to submit official maintenance requests through the proper channels.`
-      }
-    ];
-    
-    return this.sendMessage({
-      messages: maintenanceContext,
-      sendMessage: message
-    });
+    try {
+      const maintenanceContext: ChatMessage[] = [
+        {
+          role: 'system',
+          content: `You are a maintenance support assistant for EasyStay HI. Help tenants with:
+          - Submitting maintenance requests
+          - Understanding maintenance procedures
+          - Emergency maintenance situations
+          - Maintenance scheduling and timing
+          - What to expect during maintenance visits
+          
+          ${roomNumber ? `The tenant is in room ${roomNumber}.` : ''}
+          Always encourage tenants to submit official maintenance requests through the proper channels.`
+        }
+      ];
+      
+      return await this.sendMessage({
+        messages: maintenanceContext,
+        sendMessage: message
+      });
+    } catch (error) {
+      console.log('Using fallback AI for maintenance inquiry');
+      return await fallbackAI.handleMaintenanceSupport(message, roomNumber);
+    }
   }
 
   async handlePaymentInquiry(message: string, roomNumber?: string): Promise<ChatResponse> {
-    const paymentContext: ChatMessage[] = [
-      {
-        role: 'system',
-        content: `You are a payment support assistant for EasyStay HI. Help tenants with:
-        - Payment due dates and amounts
-        - Payment methods accepted
-        - Late payment policies
-        - Payment confirmation and receipts
-        - Setting up automatic payments
-        
-        ${roomNumber ? `The tenant is in room ${roomNumber}.` : ''}
-        Always direct tenants to use the official payment portal for actual payments.`
-      }
-    ];
-    
-    return this.sendMessage({
-      messages: paymentContext,
-      sendMessage: message
-    });
+    try {
+      const paymentContext: ChatMessage[] = [
+        {
+          role: 'system',
+          content: `You are a payment support assistant for EasyStay HI. Help tenants with:
+          - Payment due dates and amounts
+          - Payment methods accepted
+          - Late payment policies
+          - Payment confirmation and receipts
+          - Setting up automatic payments
+          
+          ${roomNumber ? `The tenant is in room ${roomNumber}.` : ''}
+          Always direct tenants to use the official payment portal for actual payments.`
+        }
+      ];
+      
+      return await this.sendMessage({
+        messages: paymentContext,
+        sendMessage: message
+      });
+    } catch (error) {
+      console.log('Using fallback AI for payment inquiry');
+      return await fallbackAI.handlePaymentSupport(message, roomNumber);
+    }
   }
 }
 
