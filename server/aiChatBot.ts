@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { fallbackAI } from './fallbackAI';
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';

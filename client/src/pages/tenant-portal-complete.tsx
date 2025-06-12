@@ -379,6 +379,18 @@ export default function TenantPortalComplete() {
           <CardContent>
             <div className="text-2xl font-bold">${tenantData?.monthlyRent || 1800}</div>
             <p className="text-xs text-muted-foreground">Due on 1st of each month</p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2 w-full"
+              onClick={() => {
+                setChatBotMode('payment');
+                setShowChatBot(true);
+              }}
+            >
+              <MessageSquare className="h-3 w-3 mr-1" />
+              Payment Help
+            </Button>
           </CardContent>
         </Card>
         
@@ -728,7 +740,7 @@ export default function TenantPortalComplete() {
       {showChatBot && (
         <AIChatBot
           mode={chatBotMode}
-          roomNumber={roomId}
+          roomNumber={roomId ? roomId.toString() : undefined}
           isMinimized={false}
           onToggleMinimize={() => setShowChatBot(false)}
           onClose={() => setShowChatBot(false)}
