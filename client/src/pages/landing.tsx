@@ -169,7 +169,8 @@ export default function Landing() {
               <div className="flex gap-2 mt-auto">
                 <Button 
                   onClick={() => window.open('/inquiry?property=949', '_blank')}
-                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  variant="outline"
+                  className="w-full border-2 border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                 >
                   Inquire Now
                 </Button>
@@ -203,18 +204,16 @@ export default function Landing() {
         )}
 
         {/* Contact Information */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-3 sm:p-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-3 sm:mb-4">Contact Us</h2>
-          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 text-center">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-2 sm:p-3">
+          <h2 className="text-lg font-bold text-center text-gray-900 mb-2">Contact Us</h2>
+          <div className="grid sm:grid-cols-2 gap-2 text-center">
             <div>
-              <MapPin className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-1 sm:mb-2 text-blue-600" />
-              <h3 className="font-semibold mb-1 text-sm">Visit Us</h3>
-              <p className="text-sm text-gray-600">Honolulu, Hawaii</p>
+              <MapPin className="h-4 w-4 mx-auto mb-1 text-blue-600" />
+              <p className="text-xs text-gray-600">Honolulu, Hawaii</p>
             </div>
             <div>
-              <Phone className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-1 sm:mb-2 text-green-600" />
-              <h3 className="font-semibold mb-1 text-sm">Call Us</h3>
-              <p className="text-sm text-gray-600">(808) 219-6562</p>
+              <Phone className="h-4 w-4 mx-auto mb-1 text-green-600" />
+              <p className="text-xs text-gray-600">(808) 219-6562</p>
             </div>
           </div>
         </div>
