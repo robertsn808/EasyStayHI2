@@ -81,7 +81,7 @@ export default function Landing() {
               </div>
             </div>
             <CardHeader className="pb-3 sm:pb-4 bg-blue-50">
-              <CardTitle className="text-lg sm:text-xl">934 Kapahulu Ave, Honolulu, HI</CardTitle>
+              <CardTitle className="text-lg sm:text-xl"><span className="font-mono font-bold">934</span> Kapahulu Ave, Honolulu, HI</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4 bg-blue-50 flex-grow flex flex-col">
               <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
@@ -139,7 +139,7 @@ export default function Landing() {
               </div>
             </div>
             <CardHeader className="pb-3 sm:pb-4 bg-blue-50">
-              <CardTitle className="text-lg sm:text-xl">949 Kawaiahao St, Honolulu, HI</CardTitle>
+              <CardTitle className="text-lg sm:text-xl"><span className="font-mono font-bold">949</span> Kawaiahao St, Honolulu, HI</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4 bg-blue-50 flex-grow flex flex-col">
               <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
