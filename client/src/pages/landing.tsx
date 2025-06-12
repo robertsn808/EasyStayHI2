@@ -80,13 +80,13 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-            <CardHeader className="pb-3 sm:pb-4">
+            <CardHeader className="pb-3 sm:pb-4 bg-slate-50">
               <CardTitle className="text-lg sm:text-xl">934 Kapahulu Ave, Honolulu, HI</CardTitle>
               <CardDescription className="text-sm sm:text-base">
                 Modern residential units perfect for long-term stays and monthly rentals.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4 bg-slate-50">
               <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
                 <div className="p-2 sm:p-3 bg-blue-50 rounded-lg">
                   <div className="text-lg sm:text-2xl font-bold text-blue-900">$100</div>
@@ -140,13 +140,13 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-            <CardHeader className="pb-3 sm:pb-4">
+            <CardHeader className="pb-3 sm:pb-4 bg-teal-50">
               <CardTitle className="text-lg sm:text-xl">949 Kawaiahao St, Honolulu, HI</CardTitle>
               <CardDescription className="text-sm sm:text-base">
                 Comfortable suites ideal for budget-conscious travelers and extended stays.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4 bg-teal-50">
               <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
                 <div className="p-2 sm:p-3 bg-purple-50 rounded-lg">
                   <div className="text-lg sm:text-2xl font-bold text-purple-900">$50</div>

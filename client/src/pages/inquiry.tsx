@@ -184,7 +184,7 @@ export default function InquiryPage() {
                   </div>
                 </div>
               </div>
-              <CardContent className="p-6">
+              <CardContent className="p-6 bg-slate-50">
                 <div className="text-center">
                   <p className="text-gray-600 mb-3 font-medium">934 Kapahulu Ave, Honolulu, HI</p>
                   <div className="text-sm text-gray-500 space-y-1">
@@ -213,7 +213,7 @@ export default function InquiryPage() {
                   </div>
                 </div>
               </div>
-              <CardContent className="p-6">
+              <CardContent className="p-6 bg-teal-50">
                 <div className="text-center">
                   <p className="text-gray-600 mb-3 font-medium">949 Kawaiahao St, Honolulu, HI</p>
                   <div className="text-sm text-gray-500 space-y-1">
