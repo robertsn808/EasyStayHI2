@@ -85,15 +85,15 @@ export default function Landing() {
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4 bg-blue-50 flex-grow flex flex-col">
               <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-gray-200">
+                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
                   <div className="text-lg sm:text-2xl font-bold text-gray-800">$100</div>
                   <div className="text-xs text-gray-600">Daily</div>
                 </div>
-                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-gray-300">
+                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
                   <div className="text-lg sm:text-2xl font-bold text-gray-800">$500</div>
                   <div className="text-xs text-gray-600">Weekly</div>
                 </div>
-                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-gray-200">
+                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
                   <div className="text-lg sm:text-2xl font-bold text-gray-800">$2,000</div>
                   <div className="text-xs text-gray-600">Monthly</div>
                 </div>
