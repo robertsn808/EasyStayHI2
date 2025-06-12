@@ -25,14 +25,27 @@ export default function Landing() {
     : 0;
 
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
-    >
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-600/80 to-green-600/80 text-white">
+    <div className="min-h-screen relative">
+      {/* Video Background */}
+      <div className="fixed inset-0 z-0">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src="https://www.shutterstock.com/shutterstock/videos/11466428/preview/stock-footage-palm-trees-sunrise-lens-flare-through-palm-leaves-on-a-beautiful-blue-sky-background-instagram.webm" type="video/webm" />
+        </video>
         <div className="absolute inset-0 bg-black/40"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24">
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <div className="relative text-white">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24">
           <div className="text-center">
             <h1 className="text-8xl sm:text-9xl md:text-[12rem] mb-8 sm:mb-12" style={{ fontFamily: 'Great Vibes, cursive' }}>
               Welcome
@@ -55,10 +68,10 @@ export default function Landing() {
               </Button>
             </div>
           </div>
+          </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         
         {/* Property Cards */}
         <div id="properties" className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12 lg:mb-16 items-stretch">
@@ -216,6 +229,7 @@ export default function Landing() {
               <p className="text-sm text-gray-600">(808) 219-6562</p>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
