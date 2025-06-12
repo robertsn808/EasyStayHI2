@@ -140,9 +140,25 @@ export default function InquiryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      {/* Header */}
-      <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200">
+    <div className="min-h-screen relative">
+      {/* Video Background */}
+      <div className="fixed inset-0 z-0">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src="https://www.shutterstock.com/shutterstock/videos/11466428/preview/stock-footage-palm-trees-sunrise-lens-flare-through-palm-leaves-on-a-beautiful-blue-sky-background-instagram.webm" type="video/webm" />
+        </video>
+        <div className="absolute inset-0 bg-black/40"></div>
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
@@ -164,7 +180,7 @@ export default function InquiryPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Property Selection */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Choose Your Property</h2>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center drop-shadow-lg">Choose Your Property</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <Card 
               className={`cursor-pointer transition-all duration-500 overflow-hidden ${selectedProperty === "934" ? "ring-4 ring-emerald-500 shadow-2xl" : "hover:shadow-xl"}`}
