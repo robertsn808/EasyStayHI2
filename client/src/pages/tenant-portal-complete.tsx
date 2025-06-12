@@ -390,6 +390,18 @@ export default function TenantPortalComplete() {
           <CardContent>
             <div className="text-2xl font-bold">{maintenanceRequests.filter((r: any) => r.status === 'pending').length}</div>
             <p className="text-xs text-muted-foreground">Open requests</p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2 w-full"
+              onClick={() => {
+                setChatBotMode('maintenance');
+                setShowChatBot(true);
+              }}
+            >
+              <MessageSquare className="h-3 w-3 mr-1" />
+              Ask Assistant
+            </Button>
           </CardContent>
         </Card>
         
@@ -711,6 +723,33 @@ export default function TenantPortalComplete() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {renderContent()}
       </main>
+
+      {/* AI Chat Bot Assistant */}
+      {showChatBot && (
+        <AIChatBot
+          mode={chatBotMode}
+          roomNumber={roomId}
+          isMinimized={false}
+          onToggleMinimize={() => setShowChatBot(false)}
+          onClose={() => setShowChatBot(false)}
+        />
+      )}
+
+      {/* Quick Chat Access Button */}
+      {!showChatBot && (
+        <div className="fixed bottom-4 right-4 z-40">
+          <Button
+            onClick={() => {
+              setChatBotMode('tenant');
+              setShowChatBot(true);
+            }}
+            size="lg"
+            className="rounded-full w-14 h-14 bg-blue-600 hover:bg-blue-700 shadow-lg"
+          >
+            <MessageSquare className="h-6 w-6 text-white" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
