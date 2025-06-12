@@ -180,8 +180,7 @@ export default function InquiryPage() {
                 <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-slate-900/80 to-transparent" />
                 <div className="relative h-full flex items-center justify-center text-center">
                   <div>
-                    <div className="text-4xl mb-2">🏢</div>
-                    <h3 className="text-xl font-bold text-white">934</h3>
+                    <h3 className="text-3xl font-light tracking-wider text-white">934</h3>
                   </div>
                 </div>
               </div>
@@ -210,8 +209,7 @@ export default function InquiryPage() {
                 <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-teal-900/80 to-transparent" />
                 <div className="relative h-full flex items-center justify-center text-center">
                   <div>
-                    <div className="text-4xl mb-2">🏝️</div>
-                    <h3 className="text-xl font-bold text-white">949</h3>
+                    <h3 className="text-3xl font-light tracking-wider text-white">949</h3>
                   </div>
                 </div>
               </div>
