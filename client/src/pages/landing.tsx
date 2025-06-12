@@ -112,7 +112,7 @@ export default function Landing() {
                 <Button 
                   onClick={() => window.open('/inquiry?property=934', '_blank')}
                   variant="outline"
-                  className="w-full border-2 border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                  className="w-full border-2 border-gray-300 bg-white text-blue-700 hover:bg-gray-50"
                 >
                   Inquire Now
                 </Button>
@@ -170,7 +170,7 @@ export default function Landing() {
                 <Button 
                   onClick={() => window.open('/inquiry?property=949', '_blank')}
                   variant="outline"
-                  className="w-full border-2 border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                  className="w-full border-2 border-gray-300 bg-white text-blue-700 hover:bg-gray-50"
                 >
                   Inquire Now
                 </Button>
