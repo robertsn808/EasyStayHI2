@@ -34,7 +34,7 @@ export default function Landing() {
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24">
           <div className="text-center">
-            <h1 className="text-6xl sm:text-7xl md:text-8xl mb-8 sm:mb-12" style={{ fontFamily: 'Dancing Script, cursive' }}>
+            <h1 className="text-8xl sm:text-9xl md:text-[12rem] mb-8 sm:mb-12" style={{ fontFamily: 'Great Vibes, cursive' }}>
               Welcome
             </h1>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
