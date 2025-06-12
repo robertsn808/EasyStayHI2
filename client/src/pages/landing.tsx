@@ -80,25 +80,22 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-            <CardHeader className="pb-3 sm:pb-4 bg-slate-50">
+            <CardHeader className="pb-3 sm:pb-4 bg-green-50">
               <CardTitle className="text-lg sm:text-xl">934 Kapahulu Ave, Honolulu, HI</CardTitle>
-              <CardDescription className="text-sm sm:text-base">
-                Modern residential units perfect for long-term stays and monthly rentals.
-              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4 bg-slate-50 flex-grow flex flex-col">
+            <CardContent className="space-y-3 sm:space-y-4 bg-green-50 flex-grow flex flex-col">
               <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                <div className="p-2 sm:p-3 bg-blue-50 rounded-lg">
-                  <div className="text-lg sm:text-2xl font-bold text-blue-900">$100</div>
-                  <div className="text-xs text-blue-700">Daily</div>
+                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-gray-200">
+                  <div className="text-lg sm:text-2xl font-bold text-gray-800">$100</div>
+                  <div className="text-xs text-gray-600">Daily</div>
                 </div>
-                <div className="p-2 sm:p-3 bg-green-50 rounded-lg border-2 border-green-400">
-                  <div className="text-lg sm:text-2xl font-bold text-green-900">$500</div>
-                  <div className="text-xs text-green-700">Weekly</div>
+                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-gray-300">
+                  <div className="text-lg sm:text-2xl font-bold text-gray-800">$500</div>
+                  <div className="text-xs text-gray-600">Weekly</div>
                 </div>
-                <div className="p-2 sm:p-3 bg-orange-50 rounded-lg">
-                  <div className="text-lg sm:text-2xl font-bold text-orange-900">$2,000</div>
-                  <div className="text-xs text-orange-700">Monthly</div>
+                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-gray-200">
+                  <div className="text-lg sm:text-2xl font-bold text-gray-800">$2,000</div>
+                  <div className="text-xs text-gray-600">Monthly</div>
                 </div>
               </div>
               <div className="space-y-1 sm:space-y-2 text-sm sm:text-base flex-grow">
@@ -114,7 +111,8 @@ export default function Landing() {
               <div className="flex gap-2 mt-auto">
                 <Button 
                   onClick={() => window.open('/inquiry?property=934', '_blank')}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  variant="outline"
+                  className="w-full border-2 border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                 >
                   Inquire Now
                 </Button>
@@ -124,41 +122,38 @@ export default function Landing() {
 
           {/* Property 949 */}
           <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full">
-            <div className="relative h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-cyan-900 via-blue-800 to-teal-800 overflow-hidden">
-              {/* Tropical wave pattern */}
+            <div className="relative h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-800 overflow-hidden">
+              {/* Elegant geometric pattern */}
               <div 
-                className="absolute inset-0 opacity-25"
+                className="absolute inset-0 opacity-20"
                 style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.12'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20v-40c11.046 0 20 8.954 20 20zM0 20v20h20c0-11.046-8.954-20-20-20zM40 20c0 11.046-8.954 20-20 20v-20h20zM20 0v20h20c0-11.046-8.954-20-20-20z'/%3E%3C/g%3E%3C/svg%3E")`
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
                 }}
               />
-              {/* Beach resort ambiance */}
-              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-teal-900/80 to-transparent" />
+              {/* Luxury building silhouette */}
+              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-900/80 to-transparent" />
               <div className="relative h-full flex items-center justify-center text-center">
                 <div>
                   <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white">949</h3>
                 </div>
               </div>
             </div>
-            <CardHeader className="pb-3 sm:pb-4 bg-teal-50">
+            <CardHeader className="pb-3 sm:pb-4 bg-green-50">
               <CardTitle className="text-lg sm:text-xl">949 Kawaiahao St, Honolulu, HI</CardTitle>
-              <CardDescription className="text-sm sm:text-base">
-                Comfortable suites ideal for budget-conscious travelers and extended stays.
-              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4 bg-teal-50 flex-grow flex flex-col">
+            <CardContent className="space-y-3 sm:space-y-4 bg-green-50 flex-grow flex flex-col">
               <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                <div className="p-2 sm:p-3 bg-purple-50 rounded-lg">
-                  <div className="text-lg sm:text-2xl font-bold text-purple-900">$50</div>
-                  <div className="text-xs text-purple-700">Daily</div>
+                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-gray-200">
+                  <div className="text-lg sm:text-2xl font-bold text-gray-800">$50</div>
+                  <div className="text-xs text-gray-600">Daily</div>
                 </div>
-                <div className="p-2 sm:p-3 bg-green-50 rounded-lg border-2 border-green-400">
-                  <div className="text-lg sm:text-2xl font-bold text-green-900">$200</div>
-                  <div className="text-xs text-green-700">Weekly</div>
+                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-gray-300">
+                  <div className="text-lg sm:text-2xl font-bold text-gray-800">$200</div>
+                  <div className="text-xs text-gray-600">Weekly</div>
                 </div>
-                <div className="p-2 sm:p-3 bg-orange-50 rounded-lg">
-                  <div className="text-lg sm:text-2xl font-bold text-orange-900">$600</div>
-                  <div className="text-xs text-orange-700">Monthly</div>
+                <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-gray-200">
+                  <div className="text-lg sm:text-2xl font-bold text-gray-800">$600</div>
+                  <div className="text-xs text-gray-600">Monthly</div>
                 </div>
               </div>
               <div className="space-y-1 sm:space-y-2 text-sm sm:text-base flex-grow">
