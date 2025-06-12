@@ -185,46 +185,70 @@ export default function Property934() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      {/* Header */}
-      <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <div className="relative h-96 bg-gradient-to-r from-slate-900 to-slate-700 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        />
+        
+        {/* Elegant geometric overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-emerald-900/20" />
+        
+        {/* Luxury building silhouette */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-900/80 to-transparent" />
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+          <div className="text-center w-full">
+            <div className="mb-4">
               <Link href="/admin">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 mb-6">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
                 </Button>
               </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Property 934</h1>
-                <p className="text-gray-600">934 Kapahulu Ave, Honolulu, HI</p>
+            </div>
+            <h1 className="text-5xl font-bold text-white mb-4">EasyStay Downtown Plaza</h1>
+            <p className="text-xl text-gray-200 mb-6">934 Kapahulu Ave • Sophisticated Urban Living</p>
+            <div className="flex justify-center items-center space-x-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white">{propertyData.totalRooms}</div>
+                <div className="text-sm text-gray-300">Premium Suites</div>
+              </div>
+              <div className="h-8 w-px bg-gray-400" />
+              <div className="text-center">
+                <div className="text-3xl font-bold text-emerald-400">{propertyData.occupiedRooms}</div>
+                <div className="text-sm text-gray-300">Occupied</div>
+              </div>
+              <div className="h-8 w-px bg-gray-400" />
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-400">{propertyData.availableRooms}</div>
+                <div className="text-sm text-gray-300">Available</div>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="text-blue-600 border-blue-600">
-                8 Total Rooms
-              </Badge>
+            <div className="mt-8">
               <Dialog open={showAddRoom} onOpenChange={setShowAddRoom}>
                 <DialogTrigger asChild>
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Room
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 text-lg">
+                    <Plus className="h-5 w-5 mr-2" />
+                    Add Premium Suite
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Add New Room</DialogTitle>
+                    <DialogTitle>Add New Premium Suite</DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleAddRoom} className="space-y-4">
                     <div>
-                      <Label htmlFor="roomNumber">Room Number</Label>
+                      <Label htmlFor="roomNumber">Suite Number</Label>
                       <Input id="roomNumber" name="roomNumber" required />
                     </div>
                     <div>
-                      <Label htmlFor="rent">Monthly Rent</Label>
-                      <Input id="rent" name="rent" type="number" step="0.01" defaultValue="2000" required />
+                      <Label htmlFor="rent">Monthly Rate</Label>
+                      <Input id="rent" name="rent" type="number" step="0.01" defaultValue="2400" required />
                     </div>
                     <div>
                       <Label htmlFor="status">Initial Status</Label>
@@ -235,11 +259,11 @@ export default function Property934() {
                         <SelectContent>
                           <SelectItem value="available">Available</SelectItem>
                           <SelectItem value="maintenance">Maintenance</SelectItem>
-                          <SelectItem value="cleaning">Cleaning</SelectItem>
+                          <SelectItem value="needs_cleaning">Needs Cleaning</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <Button type="submit" className="w-full">Add Room</Button>
+                    <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700">Add Suite</Button>
                   </form>
                 </DialogContent>
               </Dialog>
