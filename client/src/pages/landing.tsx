@@ -209,11 +209,11 @@ export default function Landing() {
           <div className="grid sm:grid-cols-2 gap-2 text-center">
             <div>
               <MapPin className="h-4 w-4 mx-auto mb-1 text-blue-600" />
-              <p className="text-xs text-gray-600">Honolulu, Hawaii</p>
+              <p className="text-sm text-gray-600">Honolulu, Hawaii</p>
             </div>
             <div>
               <Phone className="h-4 w-4 mx-auto mb-1 text-green-600" />
-              <p className="text-xs text-gray-600">(808) 219-6562</p>
+              <p className="text-sm text-gray-600">(808) 219-6562</p>
             </div>
           </div>
         </div>
