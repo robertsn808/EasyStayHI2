@@ -22,7 +22,7 @@ export default function Landing() {
     : 0;
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative" style={{background: 'none'}}>
       {/* Video Background */}
       <div className="fixed inset-0 z-0">
         <video 
