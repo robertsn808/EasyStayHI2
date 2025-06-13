@@ -32,7 +32,7 @@ export default function Landing() {
           playsInline
           className="w-full h-full object-cover"
         >
-          <source src="https://videos.pexels.com/video-files/5752729/5752729-hd_1920_1080_30fps.mp4" type="video/mp4" />
+          <source src="https://videos.pexels.com/video-files/1093662/1093662-hd_1920_1080_30fps.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/40"></div>
       </div>
