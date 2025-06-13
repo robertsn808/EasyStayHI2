@@ -1,15 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { MapPin, Phone, ChevronDown, ChevronUp, Eye } from "lucide-react";
-import { useState } from "react";
-import propertyImage from "@assets/image_1749809298715.png";
+import { MapPin, Phone } from "lucide-react";
 
 export default function Landing() {
-  const [property934ImageOpen, setProperty934ImageOpen] = useState(false);
-  const [property949ImageOpen, setProperty949ImageOpen] = useState(false);
-
   const { data: announcements = [] } = useQuery({
     queryKey: ['/api/announcements'],
   });
@@ -89,24 +83,26 @@ export default function Landing() {
           <div id="properties" className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12 lg:mb-16 items-stretch">
             {/* Property 934 */}
             <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group hover:scale-105 transform">
+              <div className="relative h-40 sm:h-48 lg:h-64 overflow-hidden">
+                <img 
+                  src="/attached_assets/Untitled-2_1749795498139.png" 
+                  alt="934 Kapahulu Ave Property" 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
+                <div className="absolute top-4 right-4">
+                  <div className="bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    Premium
+                  </div>
+                </div>
+                <div className="absolute bottom-4 left-4">
+                  <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Playfair Display, serif' }}>934</h3>
+                </div>
+              </div>
               <CardHeader className="pb-3 sm:pb-4 bg-blue-50">
                 <CardTitle className="text-lg sm:text-xl"><span className="font-serif text-2xl font-extrabold text-blue-900 tracking-wider drop-shadow-sm">934</span> <span className="text-gray-700">Kapahulu Ave, Honolulu, HI</span></CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4 bg-blue-50 flex-grow flex flex-col">
-                <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$100</div>
-                    <div className="text-xs text-gray-600">Daily</div>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$500</div>
-                    <div className="text-xs text-gray-600">Weekly</div>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$2,000</div>
-                    <div className="text-xs text-gray-600">Monthly</div>
-                  </div>
-                </div>
                 <div className="space-y-1 sm:space-y-2 text-sm sm:text-base flex-grow">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Available Rooms:</span>
@@ -117,31 +113,13 @@ export default function Landing() {
                     <span className="font-semibold">{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8}</span>
                   </div>
                 </div>
-                
-                {/* Collapsible Property Image */}
-                <Collapsible open={property934ImageOpen} onOpenChange={setProperty934ImageOpen}>
-                  <CollapsibleTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-2 border-blue-900 bg-white text-blue-700 hover:bg-blue-50 flex items-center gap-2"
-                    >
-                      <Eye className="h-4 w-4" />
-                      {property934ImageOpen ? 'Hide' : 'View'} Property Images
-                      {property934ImageOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="mt-3">
-                    <div className="relative rounded-lg overflow-hidden">
-                      <img 
-                        src={propertyImage}
-                        alt="934 Kapahulu Ave Property Details" 
-                        className="w-full h-auto object-contain"
-                      />
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-
                 <div className="flex gap-2 mt-auto">
+                  <Button 
+                    onClick={() => window.open('/pricing', '_blank')}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    View Pricing
+                  </Button>
                   <Button 
                     onClick={() => window.open('/inquiry?property=934', '_blank')}
                     variant="outline"
@@ -155,24 +133,26 @@ export default function Landing() {
 
             {/* Property 949 */}
             <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group hover:scale-105 transform">
+              <div className="relative h-40 sm:h-48 lg:h-64 overflow-hidden">
+                <img 
+                  src="/attached_assets/Untitled-1_1749795498139.png" 
+                  alt="949 Kawaiahao St Property" 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
+                <div className="absolute top-4 right-4">
+                  <div className="bg-teal-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    Shared
+                  </div>
+                </div>
+                <div className="absolute bottom-4 left-4">
+                  <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Playfair Display, serif' }}>949</h3>
+                </div>
+              </div>
               <CardHeader className="pb-3 sm:pb-4 bg-blue-50">
                 <CardTitle className="text-lg sm:text-xl"><span className="font-serif text-2xl font-extrabold text-blue-900 tracking-wider drop-shadow-sm">949</span> <span className="text-gray-700">Kawaiahao St, Honolulu, HI</span></CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4 bg-blue-50 flex-grow flex flex-col">
-                <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$50</div>
-                    <div className="text-xs text-gray-600">Daily</div>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$200</div>
-                    <div className="text-xs text-gray-600">Weekly</div>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$600</div>
-                    <div className="text-xs text-gray-600">Monthly</div>
-                  </div>
-                </div>
                 <div className="space-y-1 sm:space-y-2 text-sm sm:text-base flex-grow">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Available Suites:</span>
@@ -183,31 +163,13 @@ export default function Landing() {
                     <span className="font-semibold">{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10}</span>
                   </div>
                 </div>
-                
-                {/* Collapsible Property Image */}
-                <Collapsible open={property949ImageOpen} onOpenChange={setProperty949ImageOpen}>
-                  <CollapsibleTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-2 border-blue-900 bg-white text-blue-700 hover:bg-blue-50 flex items-center gap-2"
-                    >
-                      <Eye className="h-4 w-4" />
-                      {property949ImageOpen ? 'Hide' : 'View'} Property Images
-                      {property949ImageOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="mt-3">
-                    <div className="relative rounded-lg overflow-hidden">
-                      <img 
-                        src={propertyImage}
-                        alt="949 Kawaiahao St Property Details" 
-                        className="w-full h-auto object-contain"
-                      />
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-
                 <div className="flex gap-2 mt-auto">
+                  <Button 
+                    onClick={() => window.open('/pricing', '_blank')}
+                    className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
+                  >
+                    View Pricing
+                  </Button>
                   <Button 
                     onClick={() => window.open('/inquiry?property=949', '_blank')}
                     variant="outline"
