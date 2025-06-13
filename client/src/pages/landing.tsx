@@ -41,8 +41,7 @@ export default function Landing() {
       <div className="relative z-10">
         {/* Hero Section */}
         <div className="relative text-white">
-          <div className="absolute inset-0 bg-black/20"></div>
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24">
             <div className="text-center">
               <h1 className="text-8xl sm:text-9xl md:text-[12rem] mb-8 sm:mb-12 animate-pulse" style={{ fontFamily: 'Great Vibes, cursive', textShadow: '0 0 30px rgba(255,255,255,0.5)' }}>
                 Welcome
