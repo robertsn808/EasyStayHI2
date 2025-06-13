@@ -15,7 +15,8 @@ import {
   Shield, Brain, Zap, Eye, Settings, Filter, Download,
   Workflow, Target, Lightbulb, Award, Star, ChevronRight,
   Grid, List, RefreshCw, ExternalLink, Copy, Share,
-  Calculator, Briefcase, CreditCard, Receipt
+  Calculator, Briefcase, CreditCard, Receipt, Menu, X,
+  Megaphone
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -40,6 +41,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'
 
 export default function EnterpriseDashboardComplete() {
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
+  const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -986,51 +988,114 @@ export default function EnterpriseDashboardComplete() {
     }
   };
 
+  const sideMenuItems = [
+    { key: "operations", label: "Operations", icon: Workflow },
+    { key: "maintenance", label: "Maintenance", icon: Wrench },
+    { key: "analytics", label: "Analytics", icon: BarChart3 },
+    { key: "financial", label: "Financial", icon: DollarSign },
+    { key: "marketing", label: "Marketing", icon: Megaphone },
+    { key: "security", label: "Security", icon: Shield },
+    { key: "reports", label: "Reports", icon: FileText },
+    { key: "add-room", label: "Add Room", icon: Plus },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <Building className="h-8 w-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">EasyStay HI</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Expandable Side Menu */}
+      <div className={`fixed inset-y-0 left-0 z-50 transform ${sideMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out bg-white shadow-lg border-r w-64`}>
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSideMenuOpen(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        <nav className="p-4 space-y-2">
+          {sideMenuItems.map((item) => (
+            <Button
+              key={item.key}
+              variant={activeTab === item.key ? "default" : "ghost"}
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab(item.key as TabType);
+                setSideMenuOpen(false);
+              }}
+            >
+              <item.icon className="h-4 w-4 mr-3" />
+              {item.label}
+            </Button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Overlay for mobile */}
+      {sideMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setSideMenuOpen(false)}
+        />
+      )}
+
+      {/* Main Content Area */}
+      <div className="flex-1">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b sticky top-0 z-30">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <div className="flex items-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSideMenuOpen(true)}
+                  className="mr-4"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+                <Building className="h-8 w-8 text-blue-600 mr-3" />
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">EasyStay HI</h1>
+                  <p className="text-sm text-gray-500">Property Management System</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Button variant="outline" size="sm">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Notifications
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabType)}>
-          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-10">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="financial">Financial</TabsTrigger>
-            <TabsTrigger value="properties">Properties</TabsTrigger>
-            <TabsTrigger value="guests">Guests</TabsTrigger>
-            <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
-            <TabsTrigger value="operations">Operations</TabsTrigger>
-            <TabsTrigger value="marketing">Marketing</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
-          </TabsList>
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Only show tabs for dashboard, inquiries, and properties */}
+          {(activeTab === "dashboard" || activeTab === "guests" || activeTab === "properties") ? (
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabType)}>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                <TabsTrigger value="guests">Inquiries</TabsTrigger>
+                <TabsTrigger value="properties">Properties</TabsTrigger>
+              </TabsList>
 
-          <TabsContent value={activeTab} className="mt-6">
-            {renderContent()}
-          </TabsContent>
-        </Tabs>
-      </main>
+              <TabsContent value={activeTab} className="mt-6">
+                {renderContent()}
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <div className="mt-6">
+              {renderContent()}
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }
