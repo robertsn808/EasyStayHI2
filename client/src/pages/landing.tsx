@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Phone } from "lucide-react";
 
 export default function Landing() {
@@ -82,7 +83,7 @@ export default function Landing() {
           {/* Property Cards */}
           <div id="properties" className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12 lg:mb-16 items-stretch">
             {/* Property 934 */}
-            <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group hover:scale-105 transform">
+            <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group">
               <div className="relative h-40 sm:h-48 lg:h-64 overflow-hidden">
                 <img 
                   src="/attached_assets/Untitled-2_1749795498139.png" 
@@ -99,40 +100,80 @@ export default function Landing() {
                   <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Playfair Display, serif' }}>934</h3>
                 </div>
               </div>
-              <CardHeader className="pb-3 sm:pb-4 bg-blue-50">
-                <CardTitle className="text-lg sm:text-xl"><span className="font-serif text-2xl font-extrabold text-blue-900 tracking-wider drop-shadow-sm">934</span> <span className="text-gray-700">Kapahulu Ave, Honolulu, HI</span></CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4 bg-blue-50 flex-grow flex flex-col">
-                <div className="space-y-1 sm:space-y-2 text-sm sm:text-base flex-grow">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Available Rooms:</span>
-                    <span className="font-semibold text-green-600">{kapahulu934Available}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Rooms:</span>
-                    <span className="font-semibold">{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-auto">
-                  <Button 
-                    onClick={() => window.open('/pricing', '_blank')}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                  >
-                    View Pricing
-                  </Button>
-                  <Button 
-                    onClick={() => window.open('/inquiry?property=934', '_blank')}
-                    variant="outline"
-                    className="w-full border-2 border-gray-300 bg-white text-blue-700 hover:bg-gray-50"
-                  >
-                    Inquire Now
-                  </Button>
-                </div>
-              </CardContent>
+              <div className="bg-blue-50 flex-grow flex flex-col">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg sm:text-xl">
+                    <span className="font-serif text-2xl font-extrabold text-blue-900 tracking-wider drop-shadow-sm">934</span> 
+                    <span className="text-gray-700"> Kapahulu Ave, Honolulu, HI</span>
+                  </CardTitle>
+                </CardHeader>
+                
+                <Accordion type="single" collapsible className="w-full px-6">
+                  <AccordionItem value="property-934" className="border-none">
+                    <AccordionTrigger className="text-left hover:no-underline py-2">
+                      <div className="flex justify-between items-center w-full pr-4">
+                        <span className="text-sm font-medium text-gray-700">Property Details</span>
+                        <div className="flex gap-4 text-sm">
+                          <span className="text-green-600 font-semibold">Available: {kapahulu934Available}</span>
+                          <span className="text-gray-600">Total: {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8}</span>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        {/* Pricing Boxes */}
+                        <div className="grid grid-cols-3 gap-3">
+                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
+                            <div className="text-xl font-bold text-blue-900">$100</div>
+                            <div className="text-xs text-gray-600">Daily</div>
+                          </div>
+                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
+                            <div className="text-xl font-bold text-blue-900">$500</div>
+                            <div className="text-xs text-gray-600">Weekly</div>
+                          </div>
+                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
+                            <div className="text-xl font-bold text-blue-900">$2,000</div>
+                            <div className="text-xs text-gray-600">Monthly</div>
+                          </div>
+                        </div>
+
+                        {/* Room Stats */}
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Available Rooms:</span>
+                            <span className="font-semibold text-green-600">{kapahulu934Available}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Total Rooms:</span>
+                            <span className="font-semibold">{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8}</span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={() => window.open('/pricing', '_blank')}
+                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                          >
+                            View Pricing
+                          </Button>
+                          <Button 
+                            onClick={() => window.open('/inquiry?property=934', '_blank')}
+                            variant="outline"
+                            className="w-full border-2 border-gray-300 bg-white text-blue-700 hover:bg-gray-50"
+                          >
+                            Inquire Now
+                          </Button>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
             </Card>
 
             {/* Property 949 */}
-            <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group hover:scale-105 transform">
+            <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group">
               <div className="relative h-40 sm:h-48 lg:h-64 overflow-hidden">
                 <img 
                   src="/attached_assets/Untitled-1_1749795498139.png" 
@@ -149,36 +190,76 @@ export default function Landing() {
                   <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Playfair Display, serif' }}>949</h3>
                 </div>
               </div>
-              <CardHeader className="pb-3 sm:pb-4 bg-blue-50">
-                <CardTitle className="text-lg sm:text-xl"><span className="font-serif text-2xl font-extrabold text-blue-900 tracking-wider drop-shadow-sm">949</span> <span className="text-gray-700">Kawaiahao St, Honolulu, HI</span></CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4 bg-blue-50 flex-grow flex flex-col">
-                <div className="space-y-1 sm:space-y-2 text-sm sm:text-base flex-grow">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Available Suites:</span>
-                    <span className="font-semibold text-green-600">{kawaiahao949Available}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Suites:</span>
-                    <span className="font-semibold">{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-auto">
-                  <Button 
-                    onClick={() => window.open('/pricing', '_blank')}
-                    className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
-                  >
-                    View Pricing
-                  </Button>
-                  <Button 
-                    onClick={() => window.open('/inquiry?property=949', '_blank')}
-                    variant="outline"
-                    className="w-full border-2 border-gray-300 bg-white text-blue-700 hover:bg-gray-50"
-                  >
-                    Inquire Now
-                  </Button>
-                </div>
-              </CardContent>
+              <div className="bg-blue-50 flex-grow flex flex-col">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg sm:text-xl">
+                    <span className="font-serif text-2xl font-extrabold text-blue-900 tracking-wider drop-shadow-sm">949</span> 
+                    <span className="text-gray-700"> Kawaiahao St, Honolulu, HI</span>
+                  </CardTitle>
+                </CardHeader>
+                
+                <Accordion type="single" collapsible className="w-full px-6">
+                  <AccordionItem value="property-949" className="border-none">
+                    <AccordionTrigger className="text-left hover:no-underline py-2">
+                      <div className="flex justify-between items-center w-full pr-4">
+                        <span className="text-sm font-medium text-gray-700">Property Details</span>
+                        <div className="flex gap-4 text-sm">
+                          <span className="text-green-600 font-semibold">Available: {kawaiahao949Available}</span>
+                          <span className="text-gray-600">Total: {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10}</span>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4">
+                      <div className="space-y-4">
+                        {/* Pricing Boxes */}
+                        <div className="grid grid-cols-3 gap-3">
+                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
+                            <div className="text-xl font-bold text-blue-900">$50</div>
+                            <div className="text-xs text-gray-600">Daily</div>
+                          </div>
+                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
+                            <div className="text-xl font-bold text-blue-900">$200</div>
+                            <div className="text-xs text-gray-600">Weekly</div>
+                          </div>
+                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
+                            <div className="text-xl font-bold text-blue-900">$600</div>
+                            <div className="text-xs text-gray-600">Monthly</div>
+                          </div>
+                        </div>
+
+                        {/* Suite Stats */}
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Available Suites:</span>
+                            <span className="font-semibold text-green-600">{kawaiahao949Available}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Total Suites:</span>
+                            <span className="font-semibold">{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10}</span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={() => window.open('/pricing', '_blank')}
+                            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
+                          >
+                            View Pricing
+                          </Button>
+                          <Button 
+                            onClick={() => window.open('/inquiry?property=949', '_blank')}
+                            variant="outline"
+                            className="w-full border-2 border-gray-300 bg-white text-blue-700 hover:bg-gray-50"
+                          >
+                            Inquire Now
+                          </Button>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
             </Card>
           </div>
 
