@@ -17,6 +17,7 @@ import EnterpriseDashboardComplete from "@/pages/enterprise-dashboard-complete";
 import EnterpriseDashboardWorking from "@/pages/enterprise-dashboard-working";
 import TenantPortalComplete from "@/pages/tenant-portal-complete";
 import InquiryComplete from "@/pages/inquiry-complete";
+import Pricing from "@/pages/pricing";
 import AdminLogin from "@/pages/admin-login";
 import NotFound from "@/pages/not-found";
 
@@ -47,6 +48,7 @@ function Router() {
       <Route path="/tenant/:roomId" component={TenantPortalComplete} />
       <Route path="/tenant" component={TenantPortalComplete} />
       <Route path="/inquiry" component={InquiryComplete} />
+      <Route path="/pricing" component={Pricing} />
       <Route path="/public" component={Landing} />
       <Route path="/property-949" component={Property949} />
       <Route path="/property-934" component={Property934} />

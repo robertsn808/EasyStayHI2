@@ -278,6 +278,24 @@ export default function Property934() {
           </Card>
         </div>
 
+        {/* Pricing Information Card */}
+        <Card className="mb-8">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Pricing & Rates</h3>
+                <p className="text-gray-600">View detailed pricing information and available room rates</p>
+              </div>
+              <Link href="/pricing">
+                <Button className="bg-emerald-600 hover:bg-emerald-700">
+                  <DollarSign className="h-4 w-4 mr-2" />
+                  View Pricing
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Tabs Section */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4">
