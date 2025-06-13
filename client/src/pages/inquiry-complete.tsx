@@ -83,20 +83,22 @@ export default function InquiryComplete() {
   const properties = [
     {
       id: 1,
-      name: "EasyStay Downtown",
-      address: "123 Main St, Honolulu, HI 96813",
-      type: "Modern Apartments",
-      priceRange: "$1,800 - $3,200",
-      amenities: ["Pool", "Gym", "Parking", "WiFi"],
+      name: "934 Kapahulu Ave",
+      address: "934 Kapahulu Ave, Honolulu, HI 96815",
+      type: "Premium Urban Suites",
+      priceRange: "$2,200 - $2,800",
+      monthlyRate: "$2,400",
+      amenities: ["WiFi", "Parking", "Security", "Modern Appliances"],
       image: "/api/placeholder/400/300"
     },
     {
       id: 2,
-      name: "EasyStay Waikiki",
-      address: "456 Beach Ave, Honolulu, HI 96815",
-      type: "Beachfront Condos",
-      priceRange: "$2,200 - $4,500",
-      amenities: ["Beach Access", "Pool", "Concierge", "WiFi"],
+      name: "949 Kawaiahao St",
+      address: "949 Kawaiahao St, Honolulu, HI 96813",
+      type: "Luxury Tropical Suites",
+      priceRange: "$1,600 - $2,200",
+      monthlyRate: "$1,800",
+      amenities: ["WiFi", "Tropical Views", "Modern Design", "Security"],
       image: "/api/placeholder/400/300"
     }
   ];
@@ -383,11 +385,17 @@ export default function InquiryComplete() {
                       <span className="text-sm">{property.address}</span>
                     </div>
                     <p className="text-sm text-gray-600 mb-3">{property.type}</p>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-lg font-bold text-green-600">{property.priceRange}</span>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-bold text-green-600">{property.priceRange}</span>
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                          <span className="text-sm text-gray-600 ml-1">4.8</span>
+                        </div>
+                      </div>
                       <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="text-sm text-gray-600 ml-1">4.8</span>
+                        <DollarSign className="h-4 w-4 text-gray-500 mr-1" />
+                        <span className="text-sm font-medium text-gray-700">Standard Rate: {property.monthlyRate}/month</span>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">

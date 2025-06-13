@@ -186,89 +186,51 @@ export default function Property949() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="relative h-96 bg-gradient-to-r from-cyan-900 via-blue-900 to-teal-900 overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20v-40c11.046 0 20 8.954 20 20zM0 20v20h20c0-11.046-8.954-20-20-20zM40 20c0 11.046-8.954 20-20 20v-20h20zM20 0v20h20c0-11.046-8.954-20-20-20z'/%3E%3C/g%3E%3C/svg%3E")`
-          }}
-        />
-        
-        {/* Tropical wave overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/30 via-transparent to-emerald-600/30" />
-        
-        {/* Beach resort ambiance */}
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-teal-900/90 to-transparent" />
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-          <div className="text-center w-full">
-            <div className="mb-4">
-              <Link href="/admin">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 mb-6">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Dashboard
-                </Button>
-              </Link>
-            </div>
-            <h1 className="text-5xl font-bold text-white mb-4">EasyStay Waikiki Resort</h1>
-            <p className="text-xl text-gray-200 mb-6">949 Kawaiahao St • Tropical Paradise Living</p>
-            <div className="flex justify-center items-center space-x-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white">{propertyData.totalRooms}</div>
-                <div className="text-sm text-gray-300">Luxury Suites</div>
-              </div>
-              <div className="h-8 w-px bg-gray-400" />
-              <div className="text-center">
-                <div className="text-3xl font-bold text-cyan-400">{propertyData.occupiedRooms}</div>
-                <div className="text-sm text-gray-300">Occupied</div>
-              </div>
-              <div className="h-8 w-px bg-gray-400" />
-              <div className="text-center">
-                <div className="text-3xl font-bold text-teal-400">{propertyData.availableRooms}</div>
-                <div className="text-sm text-gray-300">Available</div>
-              </div>
-            </div>
-            <div className="mt-8">
-              <Dialog open={showAddRoom} onOpenChange={setShowAddRoom}>
-                <DialogTrigger asChild>
-                  <Button className="bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-3 text-lg">
-                    <Plus className="h-5 w-5 mr-2" />
-                    Add Luxury Suite
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add New Luxury Suite</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleAddSuite} className="space-y-4">
-                    <div>
-                      <Label htmlFor="suiteNumber">Suite Number</Label>
-                      <Input id="suiteNumber" name="suiteNumber" required />
-                    </div>
-                    <div>
-                      <Label htmlFor="rent">Monthly Rate</Label>
-                      <Input id="rent" name="rent" type="number" step="0.01" defaultValue="1800" required />
-                    </div>
-                    <div>
-                      <Label htmlFor="status">Initial Status</Label>
-                      <Select name="status" required>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="available">Available</SelectItem>
-                          <SelectItem value="maintenance">Maintenance</SelectItem>
-                          <SelectItem value="needs_cleaning">Needs Cleaning</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700">Add Suite</Button>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            </div>
+      {/* Header with Property Name */}
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link href="/admin">
+              <Button variant="ghost" size="sm" className="text-gray-600 hover:bg-gray-100">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
+            <h1 className="text-2xl font-bold text-gray-900">949 Kawaiahao St</h1>
           </div>
+          <Dialog open={showAddRoom} onOpenChange={setShowAddRoom}>
+            <DialogTrigger asChild>
+              <Button className="bg-cyan-600 hover:bg-cyan-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Room
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Room</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddSuite} className="space-y-4">
+                <div>
+                  <Label htmlFor="suiteNumber">Room Number</Label>
+                  <Input id="suiteNumber" name="suiteNumber" required />
+                </div>
+                <div>
+                  <Label htmlFor="status">Initial Status</Label>
+                  <Select name="status" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="maintenance">Maintenance</SelectItem>
+                      <SelectItem value="needs_cleaning">Needs Cleaning</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700">Add Room</Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -337,9 +299,9 @@ export default function Property949() {
                       <div className="flex items-center space-x-4">
                         <div className={`w-3 h-3 rounded-full ${getStatusColor(room.status)}`}></div>
                         <div>
-                          <div className="font-medium">{room.number}</div>
+                          <div className="font-medium">Room {room.number}</div>
                           <div className="text-sm text-gray-600">
-                            {room.tenantName || "Available"} • ${room.rentalRate || 0}/{room.rentalPeriod || 'month'}
+                            {room.tenantName || "Available"}
                           </div>
                         </div>
                       </div>
