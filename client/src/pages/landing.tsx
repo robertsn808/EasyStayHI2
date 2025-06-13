@@ -103,20 +103,6 @@ export default function Landing() {
                 <CardTitle className="text-lg sm:text-xl"><span className="font-serif text-2xl font-extrabold text-blue-900 tracking-wider drop-shadow-sm">934</span> <span className="text-gray-700">Kapahulu Ave, Honolulu, HI</span></CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4 bg-blue-50 flex-grow flex flex-col">
-                <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$100</div>
-                    <div className="text-xs text-gray-600">Daily</div>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$500</div>
-                    <div className="text-xs text-gray-600">Weekly</div>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$2,000</div>
-                    <div className="text-xs text-gray-600">Monthly</div>
-                  </div>
-                </div>
                 <div className="space-y-1 sm:space-y-2 text-sm sm:text-base flex-grow">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Available Rooms:</span>
@@ -128,6 +114,12 @@ export default function Landing() {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-auto">
+                  <Button 
+                    onClick={() => window.open('/pricing', '_blank')}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    View Pricing
+                  </Button>
                   <Button 
                     onClick={() => window.open('/inquiry?property=934', '_blank')}
                     variant="outline"
@@ -161,20 +153,6 @@ export default function Landing() {
                 <CardTitle className="text-lg sm:text-xl"><span className="font-serif text-2xl font-extrabold text-blue-900 tracking-wider drop-shadow-sm">949</span> <span className="text-gray-700">Kawaiahao St, Honolulu, HI</span></CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4 bg-blue-50 flex-grow flex flex-col">
-                <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$50</div>
-                    <div className="text-xs text-gray-600">Daily</div>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$200</div>
-                    <div className="text-xs text-gray-600">Weekly</div>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-white rounded-lg border-2 border-blue-900">
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800">$600</div>
-                    <div className="text-xs text-gray-600">Monthly</div>
-                  </div>
-                </div>
                 <div className="space-y-1 sm:space-y-2 text-sm sm:text-base flex-grow">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Available Suites:</span>
@@ -186,6 +164,12 @@ export default function Landing() {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-auto">
+                  <Button 
+                    onClick={() => window.open('/pricing', '_blank')}
+                    className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
+                  >
+                    View Pricing
+                  </Button>
                   <Button 
                     onClick={() => window.open('/inquiry?property=949', '_blank')}
                     variant="outline"
