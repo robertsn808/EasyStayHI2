@@ -32,7 +32,7 @@ export default function Landing() {
           playsInline
           className="w-full h-full object-cover"
         >
-          <source src="https://www.shutterstock.com/shutterstock/videos/11466428/preview/stock-footage-palm-trees-sunrise-lens-flare-through-palm-leaves-on-a-beautiful-blue-sky-background-instagram.webm" type="video/webm" />
+          <source src="https://videos.pexels.com/video-files/5752729/5752729-hd_1920_1080_30fps.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/40"></div>
       </div>
