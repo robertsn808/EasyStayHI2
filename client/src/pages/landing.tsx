@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Phone } from "lucide-react";
-import backgroundImage from "@assets/image_1749733318992.png";
+import backgroundImage from"https://media.giphy.com/media/xUA7b9HAKGRDT3Rfsk/giphy.gif";
 
 export default function Landing() {
   const { data: announcements = [] } = useQuery({
@@ -54,15 +54,16 @@ export default function Landing() {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
                 <Button 
                   onClick={() => window.location.href = '/tenant'}
+                  variant="ghost" 
                   size="lg" 
-                  className="bg-white text-blue-600 hover:bg-blue-50 hover:scale-105 transition-all duration-300 px-6 sm:px-8 py-3 text-sm sm:text-base font-semibold shadow-lg"
+                  className="text-white border-2 border-white/50 hover:bg-white/20 hover:scale-105 transition-all duration-300 px-6 sm:px-8 py-3 text-sm sm:text-base font-semibold"
                 >
                   Tenant Portal
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant="ghost" 
                   size="lg" 
-                  className="border-2 border-white text-yellow-300 hover:bg-white hover:text-blue-600 hover:scale-105 transition-all duration-300 px-6 sm:px-8 py-3 text-sm sm:text-base font-semibold shadow-lg"
+                  className="text-white border-2 border-white/50 hover:bg-white/20 hover:scale-105 transition-all duration-300 px-6 sm:px-8 py-3 text-sm sm:text-base font-semibold"
                   onClick={() => window.location.href = '/admin'}
                 >
                   Management Portal
@@ -85,23 +86,20 @@ export default function Landing() {
           <div id="properties" className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12 lg:mb-16 items-stretch">
             {/* Property 934 */}
             <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group hover:scale-105 transform">
-              <div className="relative h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-slate-800 via-slate-700 to-emerald-800 overflow-hidden">
-                <div 
-                  className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500"
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-                  }}
+              <div className="relative h-40 sm:h-48 lg:h-64 overflow-hidden">
+                <img 
+                  src="@assets/Untitled-2_1749795498139.png" 
+                  alt="934 Kapahulu Ave Property" 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-900/80 to-transparent" />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
                 <div className="absolute top-4 right-4">
                   <div className="bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                     Premium
                   </div>
                 </div>
-                <div className="relative h-full flex items-center justify-center text-center">
-                  <div>
-                    <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Playfair Display, serif' }}>934</h3>
-                  </div>
+                <div className="absolute bottom-4 left-4">
+                  <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Playfair Display, serif' }}>934</h3>
                 </div>
               </div>
               <CardHeader className="pb-3 sm:pb-4 bg-blue-50">
@@ -146,23 +144,20 @@ export default function Landing() {
 
             {/* Property 949 */}
             <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group hover:scale-105 transform">
-              <div className="relative h-40 sm:h-48 lg:h-64 bg-gradient-to-br from-slate-800 via-slate-700 to-teal-800 overflow-hidden">
-                <div 
-                  className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500"
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-                  }}
+              <div className="relative h-40 sm:h-48 lg:h-64 overflow-hidden">
+                <img 
+                  src="@assets/Untitled-1_1749795498139.png" 
+                  alt="949 Kawaiahao St Property" 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-900/80 to-transparent" />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
                 <div className="absolute top-4 right-4">
                   <div className="bg-teal-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                     Shared
                   </div>
                 </div>
-                <div className="relative h-full flex items-center justify-center text-center">
-                  <div>
-                    <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Playfair Display, serif' }}>949</h3>
-                  </div>
+                <div className="absolute bottom-4 left-4">
+                  <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Playfair Display, serif' }}>949</h3>
                 </div>
               </div>
               <CardHeader className="pb-3 sm:pb-4 bg-blue-50">
