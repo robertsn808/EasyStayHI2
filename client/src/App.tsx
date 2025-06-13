@@ -14,6 +14,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import ModernDashboard from "@/pages/modern-dashboard";
 import EnterpriseDashboard from "@/pages/enterprise-dashboard";
 import EnterpriseDashboardComplete from "@/pages/enterprise-dashboard-complete";
+import EnterpriseDashboardWorking from "@/pages/enterprise-dashboard-working";
 import TenantPortalComplete from "@/pages/tenant-portal-complete";
 import InquiryComplete from "@/pages/inquiry-complete";
 import AdminLogin from "@/pages/admin-login";
@@ -55,13 +56,13 @@ function Router() {
       <Route path="/949" component={Property949} />
       <Route path="/admin-login" component={AdminLogin} />
       <Route path="/admin-dashboard">
-        {() => <ProtectedAdminRoute component={EnterpriseDashboardComplete} />}
+        {() => <ProtectedAdminRoute component={EnterpriseDashboardWorking} />}
       </Route>
       <Route path="/admin">
-        {() => <ProtectedAdminRoute component={EnterpriseDashboardComplete} />}
+        {() => <ProtectedAdminRoute component={EnterpriseDashboardWorking} />}
       </Route>
       <Route path="/enterprise-dashboard">
-        {() => <ProtectedAdminRoute component={EnterpriseDashboardComplete} />}
+        {() => <ProtectedAdminRoute component={EnterpriseDashboardWorking} />}
       </Route>
       <Route path="/modern-dashboard">
         {() => <ProtectedAdminRoute component={ModernDashboard} />}

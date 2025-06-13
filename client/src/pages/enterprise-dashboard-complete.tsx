@@ -841,7 +841,50 @@ export default function EnterpriseDashboardComplete() {
     </div>
   );
 
-
+  const renderFinancialTab = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Revenue</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">${monthlyRevenue.toLocaleString()}</div>
+            <p className="text-sm text-muted-foreground">This month</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Net Profit</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">${(monthlyRevenue * 0.7).toLocaleString()}</div>
+            <p className="text-sm text-muted-foreground">After expenses</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Outstanding</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">$2,400</div>
+            <p className="text-sm text-muted-foreground">Overdue payments</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Expenses</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-600">${(monthlyRevenue * 0.3).toLocaleString()}</div>
+            <p className="text-sm text-muted-foreground">This month</p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 
   const renderPropertiesTab = () => (
