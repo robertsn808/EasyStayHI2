@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Phone } from "lucide-react";
-import backgroundImage from"https://media.giphy.com/media/xUA7b9HAKGRDT3Rfsk/giphy.gif";
 
 export default function Landing() {
   const { data: announcements = [] } = useQuery({
@@ -49,7 +48,7 @@ export default function Landing() {
                 Welcome
               </h1>
               <p className="text-xl sm:text-2xl text-white/90 mb-8 font-light tracking-wide" style={{ fontFamily: 'Playfair Display, serif' }}>
-                To Your Luxury Hawaiian Experience
+                To Your EasyStay Experience
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
                 <Button 
@@ -74,9 +73,8 @@ export default function Landing() {
                   className="text-white border-2 border-white/50 hover:bg-white/20 hover:scale-105 transition-all duration-300 px-6 sm:px-8 py-3 text-sm sm:text-base font-semibold"
                   onClick={() => document.getElementById('properties')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                  View Properties
-                </Button>
-              </div>
+                   Refresh
+                </Button> </div>
             </div>
           </div>
         </div>
@@ -88,7 +86,7 @@ export default function Landing() {
             <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group hover:scale-105 transform">
               <div className="relative h-40 sm:h-48 lg:h-64 overflow-hidden">
                 <img 
-                  src="@assets/Untitled-2_1749795498139.png" 
+                  src="/attached_assets/Untitled-2_1749795498139.png" 
                   alt="934 Kapahulu Ave Property" 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -146,7 +144,7 @@ export default function Landing() {
             <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group hover:scale-105 transform">
               <div className="relative h-40 sm:h-48 lg:h-64 overflow-hidden">
                 <img 
-                  src="@assets/Untitled-1_1749795498139.png" 
+                  src="/attached_assets/Untitled-1_1749795498139.png" 
                   alt="949 Kawaiahao St Property" 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
