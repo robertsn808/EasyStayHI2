@@ -822,51 +822,84 @@ export default function EnterpriseDashboardComplete() {
                       </Button>
                     </div>
                     
-                    {/* Visual Room Status Grid */}
-                    <div className="grid grid-cols-6 gap-2 mb-4">
-                      {stats.rooms.map((room: any) => (
+                    {/* Visual Room Status Grid with Animations */}
+                    <div className="grid grid-cols-4 gap-3 mb-4">
+                      {stats.rooms.map((room: any, index: number) => (
                         <div 
                           key={room.id} 
                           className={`
-                            relative p-2 rounded-lg border-2 text-center text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity
-                            ${room.status === 'occupied' ? 'bg-red-100 border-red-300 text-red-800' :
-                              room.status === 'available' ? 'bg-green-100 border-green-300 text-green-800' :
-                              room.status === 'needs_cleaning' ? 'bg-orange-100 border-orange-300 text-orange-800' :
-                              room.status === 'maintenance' ? 'bg-yellow-100 border-yellow-300 text-yellow-800' :
-                              'bg-gray-100 border-gray-300 text-gray-800'
+                            relative p-3 rounded-xl border-2 text-center text-sm font-medium cursor-pointer 
+                            transform hover:scale-105 transition-all duration-300 hover:shadow-lg
+                            animate-in slide-in-from-bottom duration-500
+                            ${room.status === 'occupied' ? 'bg-gradient-to-br from-red-50 to-red-100 border-red-300 text-red-800 hover:from-red-100 hover:to-red-200' :
+                              room.status === 'available' ? 'bg-gradient-to-br from-green-50 to-green-100 border-green-300 text-green-800 hover:from-green-100 hover:to-green-200' :
+                              room.status === 'needs_cleaning' ? 'bg-gradient-to-br from-orange-50 to-orange-100 border-orange-300 text-orange-800 hover:from-orange-100 hover:to-orange-200' :
+                              room.status === 'out_of_service' ? 'bg-gradient-to-br from-gray-50 to-gray-100 border-gray-300 text-gray-800 hover:from-gray-100 hover:to-gray-200' :
+                              'bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-300 text-yellow-800 hover:from-yellow-100 hover:to-yellow-200'
                             }
                           `}
-                          title={`Room ${room.number} - ${room.status.replace('_', ' ')} - $${room.rentalRate}/month`}
-                          onClick={() => handleRoomStatusChange(room.id, room.status)}
+                          title={`Room ${room.number} - ${room.status.replace('_', ' ')} - $${room.rental_rate || room.rentalRate}/month`}
+                          onClick={() => handleRoomStatusChange && handleRoomStatusChange(room.id, room.status)}
+                          style={{
+                            animationDelay: `${index * 100}ms`
+                          }}
                         >
-                          <div className="font-bold">{room.number}</div>
-                          <div className="text-[10px] mt-1">
-                            {room.status === 'occupied' ? '🔴' :
-                             room.status === 'available' ? '🟢' :
-                             room.status === 'needs_cleaning' ? '🟠' :
-                             room.status === 'maintenance' ? '🟡' : '⚪'}
+                          {/* Animated Status Indicator */}
+                          <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full animate-pulse">
+                            {room.status === 'occupied' && <div className="w-full h-full bg-red-500 rounded-full animate-ping absolute"></div>}
+                            {room.status === 'available' && <div className="w-full h-full bg-green-500 rounded-full animate-pulse absolute"></div>}
+                            {room.status === 'needs_cleaning' && <div className="w-full h-full bg-orange-500 rounded-full animate-bounce absolute"></div>}
+                            {room.status === 'out_of_service' && <div className="w-full h-full bg-gray-500 rounded-full animate-pulse absolute"></div>}
+                          </div>
+                          
+                          <div className="font-bold text-lg mb-1">{room.number}</div>
+                          
+                          {/* Status Icon with Animation */}
+                          <div className="text-2xl mb-2">
+                            {room.status === 'occupied' && <span className="animate-pulse">🔴</span>}
+                            {room.status === 'available' && <span className="animate-bounce">🟢</span>}
+                            {room.status === 'needs_cleaning' && <span className="animate-spin">🧹</span>}
+                            {room.status === 'out_of_service' && <span className="animate-pulse">⚠️</span>}
+                          </div>
+                          
+                          {/* Status Text */}
+                          <div className="text-xs capitalize font-medium">
+                            {room.status.replace('_', ' ')}
+                          </div>
+                          
+                          {/* Rent Amount */}
+                          <div className="text-xs text-gray-600 mt-1">
+                            ${room.rental_rate || room.rentalRate}/mo
                           </div>
                         </div>
                       ))}
                     </div>
                     
-                    {/* Room Status Legend */}
-                    <div className="flex justify-center space-x-3 text-xs">
-                      <div className="flex items-center space-x-1">
-                        <div className="w-3 h-3 bg-green-200 border border-green-300 rounded"></div>
-                        <span>Available</span>
+                    {/* Enhanced Room Status Legend */}
+                    <div className="grid grid-cols-2 gap-2 text-xs bg-gray-50 p-3 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-green-100 border-2 border-green-300 rounded-lg flex items-center justify-center">
+                          <span className="text-xs">🟢</span>
+                        </div>
+                        <span className="font-medium">Available</span>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <div className="w-3 h-3 bg-red-200 border border-red-300 rounded"></div>
-                        <span>Occupied</span>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-red-100 border-2 border-red-300 rounded-lg flex items-center justify-center">
+                          <span className="text-xs">🔴</span>
+                        </div>
+                        <span className="font-medium">Occupied</span>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <div className="w-3 h-3 bg-orange-200 border border-orange-300 rounded"></div>
-                        <span>Needs Cleaning</span>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-orange-100 border-2 border-orange-300 rounded-lg flex items-center justify-center">
+                          <span className="text-xs">🧹</span>
+                        </div>
+                        <span className="font-medium">Needs Cleaning</span>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <div className="w-3 h-3 bg-yellow-200 border border-yellow-300 rounded"></div>
-                        <span>Maintenance</span>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-gray-100 border-2 border-gray-300 rounded-lg flex items-center justify-center">
+                          <span className="text-xs">⚠️</span>
+                        </div>
+                        <span className="font-medium">Out of Service</span>
                       </div>
                     </div>
                   </div>
