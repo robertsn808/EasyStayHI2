@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ArrowLeft, Check, Star, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, Check, Star, ChevronDown, ChevronRight, MapPin, Wifi, Coffee, Building2, Heart, Share } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Pricing() {
