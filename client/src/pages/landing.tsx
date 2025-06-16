@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { MapPin, Phone } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, Phone, Star, Heart, Share, Wifi, Car, Coffee, Utensils, ShoppingBag, Camera, Building2 } from "lucide-react";
 
 export default function Landing() {
   const { data: announcements = [] } = useQuery({
@@ -81,190 +82,310 @@ export default function Landing() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
           {/* Property Cards */}
-          <div id="properties" className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12 lg:mb-16 items-stretch">
-            {/* Property 934 */}
-            <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group">
-              <div className="relative h-40 sm:h-48 lg:h-64 overflow-hidden">
-                <img 
-                  src="/attached_assets/Untitled-2_1749795498139.png" 
-                  alt="934 Kapahulu Ave Property" 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
-                <div className="absolute top-4 right-4">
-                  <div className="bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    Premium
+          <div id="properties" className="grid lg:grid-cols-2 gap-8 mb-16 max-w-6xl mx-auto">
+            {/* Property 934 - Premium */}
+            <Card className="overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border-0">
+              <div className="relative">
+                <div className="relative h-80 overflow-hidden rounded-t-2xl">
+                  <img 
+                    src="/attached_assets/IMG_3985_1750110934140.jpeg" 
+                    alt="934 Kapahulu Ave Property" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" />
+                  
+                  {/* Top Action Buttons */}
+                  <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+                    <Badge className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 text-xs font-semibold">
+                      PREMIUM
+                    </Badge>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="ghost" className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-2 h-8 w-8">
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-2 h-8 w-8">
+                        <Share className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Property Number Overlay */}
+                  <div className="absolute bottom-4 left-4">
+                    <div className="text-white">
+                      <h2 className="text-3xl font-bold tracking-tight">934</h2>
+                      <div className="flex items-center gap-1 mt-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">4.9</span>
+                        <span className="text-sm text-white/80">(124)</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="absolute bottom-4 left-4">
-                  <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Playfair Display, serif' }}>934</h3>
+
+                <div className="p-6">
+                  {/* Location and Title */}
+                  <div className="mb-4">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                      Premium Downtown Studio
+                    </h3>
+                    <div className="flex items-center text-gray-600 mb-2">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span className="text-sm">934 Kapahulu Ave, Honolulu, HI</span>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <span>{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8} rooms</span>
+                      <span>•</span>
+                      <span className="text-green-600 font-medium">{kapahulu934Available} available</span>
+                    </div>
+                  </div>
+
+                  {/* Amenities */}
+                  <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
+                    <div className="flex items-center gap-1 text-gray-600">
+                      <Wifi className="h-4 w-4" />
+                      <span className="text-xs">WiFi</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-gray-600">
+                      <Car className="h-4 w-4" />
+                      <span className="text-xs">Parking</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-gray-600">
+                      <Building2 className="h-4 w-4" />
+                      <span className="text-xs">Elevator</span>
+                    </div>
+                  </div>
+
+                  {/* Nearby Attractions */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">Nearby</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                          <Coffee className="h-3 w-3 text-green-600" />
+                        </div>
+                        <span>Starbucks - 2 min</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                          <ShoppingBag className="h-3 w-3 text-blue-600" />
+                        </div>
+                        <span>Ala Moana - 5 min</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                          <Utensils className="h-3 w-3 text-orange-600" />
+                        </div>
+                        <span>Duke's Waikiki - 3 min</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+                          <Camera className="h-3 w-3 text-purple-600" />
+                        </div>
+                        <span>Diamond Head - 8 min</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="property-934" className="border-none">
+                      <AccordionTrigger className="text-left hover:no-underline py-3 text-sm font-medium text-gray-700">
+                        View pricing and details
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-2">
+                        <div className="space-y-4">
+                          {/* Pricing Grid */}
+                          <div className="grid grid-cols-3 gap-3">
+                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
+                              <div className="text-lg font-bold text-gray-900">$100</div>
+                              <div className="text-xs text-gray-600">per night</div>
+                            </div>
+                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
+                              <div className="text-lg font-bold text-gray-900">$500</div>
+                              <div className="text-xs text-gray-600">per week</div>
+                            </div>
+                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
+                              <div className="text-lg font-bold text-gray-900">$2,000</div>
+                              <div className="text-xs text-gray-600">per month</div>
+                            </div>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-3 pt-2">
+                            <Button 
+                              onClick={() => window.open('/inquiry?property=934', '_blank')}
+                              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white rounded-xl py-3 font-medium"
+                            >
+                              Reserve
+                            </Button>
+                            <Button 
+                              onClick={() => window.open('/pricing', '_blank')}
+                              variant="outline"
+                              className="flex-1 border-gray-300 rounded-xl py-3 font-medium"
+                            >
+                              Details
+                            </Button>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </div>
-              </div>
-              <div className="bg-blue-50 flex-grow flex flex-col">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg sm:text-xl">
-                    <span className="font-serif text-2xl font-extrabold text-blue-900 tracking-wider drop-shadow-sm">934</span> 
-                    <span className="text-gray-700"> Kapahulu Ave, Honolulu, HI</span>
-                  </CardTitle>
-                </CardHeader>
-                
-                <Accordion type="single" collapsible className="w-full px-6">
-                  <AccordionItem value="property-934" className="border-none">
-                    <AccordionTrigger className="text-left hover:no-underline py-2">
-                      <div className="flex justify-between items-center w-full pr-4">
-                        <span className="text-sm font-medium text-gray-700">Property Details</span>
-                        <div className="flex gap-4 text-sm">
-                          <span className="text-green-600 font-semibold">Available: {kapahulu934Available}</span>
-                          <span className="text-gray-600">Total: {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8}</span>
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-4">
-                      <div className="space-y-4">
-                        {/* Pricing Boxes */}
-                        <div className="grid grid-cols-3 gap-3">
-                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
-                            <div className="text-xl font-bold text-blue-900">$100</div>
-                            <div className="text-xs text-gray-600">Daily</div>
-                          </div>
-                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
-                            <div className="text-xl font-bold text-blue-900">$500</div>
-                            <div className="text-xs text-gray-600">Weekly</div>
-                          </div>
-                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
-                            <div className="text-xl font-bold text-blue-900">$2,000</div>
-                            <div className="text-xs text-gray-600">Monthly</div>
-                          </div>
-                        </div>
-
-                        {/* Room Stats */}
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Available Rooms:</span>
-                            <span className="font-semibold text-green-600">{kapahulu934Available}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Total Rooms:</span>
-                            <span className="font-semibold">{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8}</span>
-                          </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-2">
-                          <Button 
-                            onClick={() => window.open('/pricing', '_blank')}
-                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                          >
-                            View Pricing
-                          </Button>
-                          <Button 
-                            onClick={() => window.open('/inquiry?property=934', '_blank')}
-                            variant="outline"
-                            className="w-full border-2 border-gray-300 bg-white text-blue-700 hover:bg-gray-50"
-                          >
-                            Inquire Now
-                          </Button>
-                        </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
               </div>
             </Card>
 
-            {/* Property 949 */}
-            <Card className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col h-full group">
-              <div className="relative h-40 sm:h-48 lg:h-64 overflow-hidden">
-                <img 
-                  src="/attached_assets/Untitled-1_1749795498139.png" 
-                  alt="949 Kawaiahao St Property" 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
-                <div className="absolute top-4 right-4">
-                  <div className="bg-teal-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    Shared
+            {/* Property 949 - Shared */}
+            <Card className="overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border-0">
+              <div className="relative">
+                <div className="relative h-80 overflow-hidden rounded-t-2xl">
+                  <img 
+                    src="/attached_assets/IMG_3992_1750111055373.jpeg" 
+                    alt="949 Kawaiahao St Property" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" />
+                  
+                  {/* Top Action Buttons */}
+                  <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+                    <Badge className="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 text-xs font-semibold">
+                      SHARED LIVING
+                    </Badge>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="ghost" className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-2 h-8 w-8">
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-2 h-8 w-8">
+                        <Share className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Property Number Overlay */}
+                  <div className="absolute bottom-4 left-4">
+                    <div className="text-white">
+                      <h2 className="text-3xl font-bold tracking-tight">949</h2>
+                      <div className="flex items-center gap-1 mt-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">4.8</span>
+                        <span className="text-sm text-white/80">(89)</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="absolute bottom-4 left-4">
-                  <h3 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-wider text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Playfair Display, serif' }}>949</h3>
+
+                <div className="p-6">
+                  {/* Location and Title */}
+                  <div className="mb-4">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                      Modern Shared Suites
+                    </h3>
+                    <div className="flex items-center text-gray-600 mb-2">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span className="text-sm">949 Kawaiahao St, Honolulu, HI</span>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <span>{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10} suites</span>
+                      <span>•</span>
+                      <span className="text-green-600 font-medium">{kawaiahao949Available} available</span>
+                    </div>
+                  </div>
+
+                  {/* Amenities */}
+                  <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
+                    <div className="flex items-center gap-1 text-gray-600">
+                      <Wifi className="h-4 w-4" />
+                      <span className="text-xs">WiFi</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-gray-600">
+                      <Coffee className="h-4 w-4" />
+                      <span className="text-xs">Kitchen</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-gray-600">
+                      <Building2 className="h-4 w-4" />
+                      <span className="text-xs">Common Area</span>
+                    </div>
+                  </div>
+
+                  {/* Nearby Attractions */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">Nearby</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                          <Utensils className="h-3 w-3 text-red-600" />
+                        </div>
+                        <span>Chinatown - 4 min</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center">
+                          <Building2 className="h-3 w-3 text-indigo-600" />
+                        </div>
+                        <span>Downtown - 2 min</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                          <Coffee className="h-3 w-3 text-green-600" />
+                        </div>
+                        <span>Coffee Bean - 1 min</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center">
+                          <Camera className="h-3 w-3 text-yellow-600" />
+                        </div>
+                        <span>Iolani Palace - 3 min</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="property-949" className="border-none">
+                      <AccordionTrigger className="text-left hover:no-underline py-3 text-sm font-medium text-gray-700">
+                        View pricing and details
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-2">
+                        <div className="space-y-4">
+                          {/* Pricing Grid */}
+                          <div className="grid grid-cols-3 gap-3">
+                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
+                              <div className="text-lg font-bold text-gray-900">$50</div>
+                              <div className="text-xs text-gray-600">per night</div>
+                            </div>
+                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
+                              <div className="text-lg font-bold text-gray-900">$200</div>
+                              <div className="text-xs text-gray-600">per week</div>
+                            </div>
+                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
+                              <div className="text-lg font-bold text-gray-900">$600</div>
+                              <div className="text-xs text-gray-600">per month</div>
+                            </div>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-3 pt-2">
+                            <Button 
+                              onClick={() => window.open('/inquiry?property=949', '_blank')}
+                              className="flex-1 bg-teal-500 hover:bg-teal-600 text-white rounded-xl py-3 font-medium"
+                            >
+                              Reserve
+                            </Button>
+                            <Button 
+                              onClick={() => window.open('/pricing', '_blank')}
+                              variant="outline"
+                              className="flex-1 border-gray-300 rounded-xl py-3 font-medium"
+                            >
+                              Details
+                            </Button>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </div>
-              </div>
-              <div className="bg-blue-50 flex-grow flex flex-col">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg sm:text-xl">
-                    <span className="font-serif text-2xl font-extrabold text-blue-900 tracking-wider drop-shadow-sm">949</span> 
-                    <span className="text-gray-700"> Kawaiahao St, Honolulu, HI</span>
-                  </CardTitle>
-                </CardHeader>
-                
-                <Accordion type="single" collapsible className="w-full px-6">
-                  <AccordionItem value="property-949" className="border-none">
-                    <AccordionTrigger className="text-left hover:no-underline py-2">
-                      <div className="flex justify-between items-center w-full pr-4">
-                        <span className="text-sm font-medium text-gray-700">Property Details</span>
-                        <div className="flex gap-4 text-sm">
-                          <span className="text-green-600 font-semibold">Available: {kawaiahao949Available}</span>
-                          <span className="text-gray-600">Total: {Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10}</span>
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-4">
-                      <div className="space-y-4">
-                        {/* Pricing Boxes */}
-                        <div className="grid grid-cols-3 gap-3">
-                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
-                            <div className="text-xl font-bold text-blue-900">$50</div>
-                            <div className="text-xs text-gray-600">Daily</div>
-                          </div>
-                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
-                            <div className="text-xl font-bold text-blue-900">$200</div>
-                            <div className="text-xs text-gray-600">Weekly</div>
-                          </div>
-                          <div className="text-center p-3 border-2 border-blue-200 rounded-lg bg-white">
-                            <div className="text-xl font-bold text-blue-900">$600</div>
-                            <div className="text-xs text-gray-600">Monthly</div>
-                          </div>
-                        </div>
-
-                        {/* Suite Stats */}
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Available Suites:</span>
-                            <span className="font-semibold text-green-600">{kawaiahao949Available}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Total Suites:</span>
-                            <span className="font-semibold">{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10}</span>
-                          </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-2">
-                          <Button 
-                            onClick={() => window.open('/pricing', '_blank')}
-                            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
-                          >
-                            View Pricing
-                          </Button>
-                          <Button 
-                            onClick={() => window.open('/inquiry?property=949', '_blank')}
-                            variant="outline"
-                            className="w-full border-2 border-gray-300 bg-white text-blue-700 hover:bg-gray-50"
-                          >
-                            Inquire Now
-                          </Button>
-                        </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
               </div>
             </Card>
           </div>
 
           {/* Announcements Section */}
-          {announcements && announcements.length > 0 && (
+          {Array.isArray(announcements) && announcements.length > 0 && (
             <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-8">
               <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Latest Updates</h2>
               <div className="space-y-4">
