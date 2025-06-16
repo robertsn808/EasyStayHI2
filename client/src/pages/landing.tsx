@@ -82,11 +82,12 @@ export default function Landing() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
           {/* Property Cards */}
-          <div id="properties" className="grid lg:grid-cols-2 gap-8 mb-16 max-w-6xl mx-auto">
+          <div id="properties" className="space-y-8 mb-16 max-w-7xl mx-auto">
             {/* Property 934 - Premium */}
             <Card className="overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border-0">
-              <div className="relative">
-                <div className="relative h-80 overflow-hidden rounded-t-2xl">
+              <div className="flex flex-col lg:flex-row min-h-[400px]">
+                {/* Image Section */}
+                <div className="relative lg:w-1/2 h-80 lg:h-auto overflow-hidden rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none">
                   <img 
                     src="/attached_assets/IMG_3985_1750110934140.jpeg" 
                     alt="934 Kapahulu Ave Property" 
@@ -112,7 +113,7 @@ export default function Landing() {
                   {/* Property Number Overlay */}
                   <div className="absolute bottom-4 left-4">
                     <div className="text-white">
-                      <h2 className="text-3xl font-bold tracking-tight">934</h2>
+                      <h2 className="text-4xl font-bold tracking-tight">934</h2>
                       <div className="flex items-center gap-1 mt-1">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         <span className="text-sm font-medium">4.9</span>
@@ -122,121 +123,109 @@ export default function Landing() {
                   </div>
                 </div>
 
-                <div className="p-6">
-                  {/* Location and Title */}
-                  <div className="mb-4">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                      Premium Downtown Studio
-                    </h3>
-                    <div className="flex items-center text-gray-600 mb-2">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span className="text-sm">934 Kapahulu Ave, Honolulu, HI</span>
+                {/* Content Section */}
+                <div className="lg:w-1/2 p-8 flex flex-col justify-between">
+                  <div>
+                    {/* Location and Title */}
+                    <div className="mb-6">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                        Premium Downtown Studio
+                      </h3>
+                      <div className="flex items-center text-gray-600 mb-3">
+                        <MapPin className="h-5 w-5 mr-2" />
+                        <span className="text-base">934 Kapahulu Ave, Honolulu, HI</span>
+                      </div>
+                      <div className="flex items-center gap-4 text-base text-gray-600">
+                        <span>{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8} rooms</span>
+                        <span>•</span>
+                        <span className="text-green-600 font-semibold">{kapahulu934Available} available</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span>{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8} rooms</span>
-                      <span>•</span>
-                      <span className="text-green-600 font-medium">{kapahulu934Available} available</span>
-                    </div>
-                  </div>
 
-                  {/* Amenities */}
-                  <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <Wifi className="h-4 w-4" />
-                      <span className="text-xs">WiFi</span>
+                    {/* Amenities */}
+                    <div className="flex items-center gap-6 mb-6 pb-4 border-b border-gray-100">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Wifi className="h-5 w-5" />
+                        <span className="text-sm">WiFi</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Car className="h-5 w-5" />
+                        <span className="text-sm">Parking</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Building2 className="h-5 w-5" />
+                        <span className="text-sm">Elevator</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <Car className="h-4 w-4" />
-                      <span className="text-xs">Parking</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <Building2 className="h-4 w-4" />
-                      <span className="text-xs">Elevator</span>
-                    </div>
-                  </div>
 
-                  {/* Nearby Attractions */}
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">Nearby</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                          <Coffee className="h-3 w-3 text-green-600" />
-                        </div>
-                        <span>Starbucks - 2 min</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                          <ShoppingBag className="h-3 w-3 text-blue-600" />
-                        </div>
-                        <span>Ala Moana - 5 min</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
-                          <Utensils className="h-3 w-3 text-orange-600" />
-                        </div>
-                        <span>Duke's Waikiki - 3 min</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
-                          <Camera className="h-3 w-3 text-purple-600" />
-                        </div>
-                        <span>Diamond Head - 8 min</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="property-934" className="border-none">
-                      <AccordionTrigger className="text-left hover:no-underline py-3 text-sm font-medium text-gray-700">
-                        View pricing and details
-                      </AccordionTrigger>
-                      <AccordionContent className="pt-2">
-                        <div className="space-y-4">
-                          {/* Pricing Grid */}
-                          <div className="grid grid-cols-3 gap-3">
-                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
-                              <div className="text-lg font-bold text-gray-900">$100</div>
-                              <div className="text-xs text-gray-600">per night</div>
-                            </div>
-                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
-                              <div className="text-lg font-bold text-gray-900">$500</div>
-                              <div className="text-xs text-gray-600">per week</div>
-                            </div>
-                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
-                              <div className="text-lg font-bold text-gray-900">$2,000</div>
-                              <div className="text-xs text-gray-600">per month</div>
-                            </div>
+                    {/* Nearby Attractions */}
+                    <div className="mb-6">
+                      <h4 className="text-base font-semibold text-gray-900 mb-3">Nearby Attractions</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <Coffee className="h-4 w-4 text-green-600" />
                           </div>
-
-                          {/* Action Buttons */}
-                          <div className="flex gap-3 pt-2">
-                            <Button 
-                              onClick={() => window.open('/inquiry?property=934', '_blank')}
-                              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white rounded-xl py-3 font-medium"
-                            >
-                              Reserve
-                            </Button>
-                            <Button 
-                              onClick={() => window.open('/pricing', '_blank')}
-                              variant="outline"
-                              className="flex-1 border-gray-300 rounded-xl py-3 font-medium"
-                            >
-                              Details
-                            </Button>
-                          </div>
+                          <span>Starbucks - 2 min</span>
                         </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <ShoppingBag className="h-4 w-4 text-blue-600" />
+                          </div>
+                          <span>Ala Moana - 5 min</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                            <Utensils className="h-4 w-4 text-orange-600" />
+                          </div>
+                          <span>Duke's Waikiki - 3 min</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                            <Camera className="h-4 w-4 text-purple-600" />
+                          </div>
+                          <span>Diamond Head - 8 min</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pricing Summary */}
+                    <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-semibold text-gray-900">Starting at</span>
+                        <div className="text-right">
+                          <span className="text-2xl font-bold text-gray-900">$100</span>
+                          <span className="text-gray-600 ml-1">/ night</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4">
+                    <Button 
+                      onClick={() => window.open('/inquiry?property=934', '_blank')}
+                      className="flex-1 bg-rose-500 hover:bg-rose-600 text-white rounded-xl py-4 font-semibold text-lg"
+                    >
+                      Inquire Now
+                    </Button>
+                    <Button 
+                      onClick={() => window.open('/pricing', '_blank')}
+                      variant="outline"
+                      className="flex-1 border-2 border-gray-300 rounded-xl py-4 font-semibold text-lg hover:bg-gray-50"
+                    >
+                      View Details
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Card>
 
             {/* Property 949 - Shared */}
             <Card className="overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer border-0">
-              <div className="relative">
-                <div className="relative h-80 overflow-hidden rounded-t-2xl">
+              <div className="flex flex-col lg:flex-row min-h-[400px]">
+                {/* Image Section */}
+                <div className="relative lg:w-1/2 h-80 lg:h-auto overflow-hidden rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none">
                   <img 
                     src="/attached_assets/IMG_3992_1750111055373.jpeg" 
                     alt="949 Kawaiahao St Property" 
@@ -262,7 +251,7 @@ export default function Landing() {
                   {/* Property Number Overlay */}
                   <div className="absolute bottom-4 left-4">
                     <div className="text-white">
-                      <h2 className="text-3xl font-bold tracking-tight">949</h2>
+                      <h2 className="text-4xl font-bold tracking-tight">949</h2>
                       <div className="flex items-center gap-1 mt-1">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         <span className="text-sm font-medium">4.8</span>
@@ -272,113 +261,100 @@ export default function Landing() {
                   </div>
                 </div>
 
-                <div className="p-6">
-                  {/* Location and Title */}
-                  <div className="mb-4">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                      Modern Shared Suites
-                    </h3>
-                    <div className="flex items-center text-gray-600 mb-2">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span className="text-sm">949 Kawaiahao St, Honolulu, HI</span>
+                {/* Content Section */}
+                <div className="lg:w-1/2 p-8 flex flex-col justify-between">
+                  <div>
+                    {/* Location and Title */}
+                    <div className="mb-6">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                        Modern Shared Suites
+                      </h3>
+                      <div className="flex items-center text-gray-600 mb-3">
+                        <MapPin className="h-5 w-5 mr-2" />
+                        <span className="text-base">949 Kawaiahao St, Honolulu, HI</span>
+                      </div>
+                      <div className="flex items-center gap-4 text-base text-gray-600">
+                        <span>{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10} suites</span>
+                        <span>•</span>
+                        <span className="text-green-600 font-semibold">{kawaiahao949Available} available</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span>{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10} suites</span>
-                      <span>•</span>
-                      <span className="text-green-600 font-medium">{kawaiahao949Available} available</span>
-                    </div>
-                  </div>
 
-                  {/* Amenities */}
-                  <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <Wifi className="h-4 w-4" />
-                      <span className="text-xs">WiFi</span>
+                    {/* Amenities */}
+                    <div className="flex items-center gap-6 mb-6 pb-4 border-b border-gray-100">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Wifi className="h-5 w-5" />
+                        <span className="text-sm">WiFi</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Coffee className="h-5 w-5" />
+                        <span className="text-sm">Kitchen</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Building2 className="h-5 w-5" />
+                        <span className="text-sm">Common Area</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <Coffee className="h-4 w-4" />
-                      <span className="text-xs">Kitchen</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-gray-600">
-                      <Building2 className="h-4 w-4" />
-                      <span className="text-xs">Common Area</span>
-                    </div>
-                  </div>
 
-                  {/* Nearby Attractions */}
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">Nearby</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
-                          <Utensils className="h-3 w-3 text-red-600" />
-                        </div>
-                        <span>Chinatown - 4 min</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center">
-                          <Building2 className="h-3 w-3 text-indigo-600" />
-                        </div>
-                        <span>Downtown - 2 min</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                          <Coffee className="h-3 w-3 text-green-600" />
-                        </div>
-                        <span>Coffee Bean - 1 min</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center">
-                          <Camera className="h-3 w-3 text-yellow-600" />
-                        </div>
-                        <span>Iolani Palace - 3 min</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="property-949" className="border-none">
-                      <AccordionTrigger className="text-left hover:no-underline py-3 text-sm font-medium text-gray-700">
-                        View pricing and details
-                      </AccordionTrigger>
-                      <AccordionContent className="pt-2">
-                        <div className="space-y-4">
-                          {/* Pricing Grid */}
-                          <div className="grid grid-cols-3 gap-3">
-                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
-                              <div className="text-lg font-bold text-gray-900">$50</div>
-                              <div className="text-xs text-gray-600">per night</div>
-                            </div>
-                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
-                              <div className="text-lg font-bold text-gray-900">$200</div>
-                              <div className="text-xs text-gray-600">per week</div>
-                            </div>
-                            <div className="text-center p-3 bg-gray-50 rounded-xl border">
-                              <div className="text-lg font-bold text-gray-900">$600</div>
-                              <div className="text-xs text-gray-600">per month</div>
-                            </div>
+                    {/* Nearby Attractions */}
+                    <div className="mb-6">
+                      <h4 className="text-base font-semibold text-gray-900 mb-3">Nearby Attractions</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <Utensils className="h-4 w-4 text-red-600" />
                           </div>
-
-                          {/* Action Buttons */}
-                          <div className="flex gap-3 pt-2">
-                            <Button 
-                              onClick={() => window.open('/inquiry?property=949', '_blank')}
-                              className="flex-1 bg-teal-500 hover:bg-teal-600 text-white rounded-xl py-3 font-medium"
-                            >
-                              Reserve
-                            </Button>
-                            <Button 
-                              onClick={() => window.open('/pricing', '_blank')}
-                              variant="outline"
-                              className="flex-1 border-gray-300 rounded-xl py-3 font-medium"
-                            >
-                              Details
-                            </Button>
-                          </div>
+                          <span>Chinatown - 4 min</span>
                         </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <Building2 className="h-4 w-4 text-indigo-600" />
+                          </div>
+                          <span>Downtown - 2 min</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <Coffee className="h-4 w-4 text-green-600" />
+                          </div>
+                          <span>Coffee Bean - 1 min</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-gray-600">
+                          <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <Camera className="h-4 w-4 text-yellow-600" />
+                          </div>
+                          <span>Iolani Palace - 3 min</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pricing Summary */}
+                    <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-semibold text-gray-900">Starting at</span>
+                        <div className="text-right">
+                          <span className="text-2xl font-bold text-gray-900">$50</span>
+                          <span className="text-gray-600 ml-1">/ night</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4">
+                    <Button 
+                      onClick={() => window.open('/inquiry?property=949', '_blank')}
+                      className="flex-1 bg-teal-500 hover:bg-teal-600 text-white rounded-xl py-4 font-semibold text-lg"
+                    >
+                      Inquire Now
+                    </Button>
+                    <Button 
+                      onClick={() => window.open('/pricing', '_blank')}
+                      variant="outline"
+                      className="flex-1 border-2 border-gray-300 rounded-xl py-4 font-semibold text-lg hover:bg-gray-50"
+                    >
+                      View Details
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Card>
