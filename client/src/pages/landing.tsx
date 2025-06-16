@@ -129,16 +129,16 @@ export default function Landing() {
                     {/* Location and Title */}
                     <div className="mb-6">
                       <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                        Premium Downtown Studio
+                        Premium Shared Living
                       </h3>
                       <div className="flex items-center text-gray-600 mb-3">
                         <MapPin className="h-5 w-5 mr-2" />
                         <span className="text-base">934 Kapahulu Ave, Honolulu, HI</span>
                       </div>
                       <div className="flex items-center gap-4 text-base text-gray-600">
-                        <span>{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 10).length : 8} rooms</span>
+                        <span>8 rooms total</span>
                         <span>•</span>
-                        <span className="text-green-600 font-semibold">{kapahulu934Available} available</span>
+                        <span className="text-green-600 font-semibold">5 available</span>
                       </div>
                     </div>
 
@@ -149,12 +149,12 @@ export default function Landing() {
                         <span className="text-sm">WiFi</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
-                        <Car className="h-5 w-5" />
-                        <span className="text-sm">Parking</span>
+                        <Coffee className="h-5 w-5" />
+                        <span className="text-sm">Shared Kitchen</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <Building2 className="h-5 w-5" />
-                        <span className="text-sm">Elevator</span>
+                        <span className="text-sm">Shared Bathrooms</span>
                       </div>
                     </div>
 
@@ -267,16 +267,16 @@ export default function Landing() {
                     {/* Location and Title */}
                     <div className="mb-6">
                       <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                        Modern Shared Suites
+                        Modern Shared Living
                       </h3>
                       <div className="flex items-center text-gray-600 mb-3">
                         <MapPin className="h-5 w-5 mr-2" />
                         <span className="text-base">949 Kawaiahao St, Honolulu, HI</span>
                       </div>
                       <div className="flex items-center gap-4 text-base text-gray-600">
-                        <span>{Array.isArray(rooms) ? rooms.filter((room: any) => room.buildingId === 11).length : 10} suites</span>
+                        <span>10 rooms total</span>
                         <span>•</span>
-                        <span className="text-green-600 font-semibold">{kawaiahao949Available} available</span>
+                        <span className="text-green-600 font-semibold">9 available</span>
                       </div>
                     </div>
 
@@ -288,11 +288,11 @@ export default function Landing() {
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <Coffee className="h-5 w-5" />
-                        <span className="text-sm">Kitchen</span>
+                        <span className="text-sm">Shared Kitchen</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-600">
                         <Building2 className="h-5 w-5" />
-                        <span className="text-sm">Common Area</span>
+                        <span className="text-sm">Shared Bathrooms</span>
                       </div>
                     </div>
 
