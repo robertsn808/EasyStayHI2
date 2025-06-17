@@ -18,7 +18,23 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Send, FileText, AlertTriangle } from "lucide-react";
-import { insertInquirySchema, type InsertInquiry } from "@shared/schema";
+import { z } from "zod";
+
+// Define a proper schema for client inquiries
+const clientInquirySchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Valid email is required"),
+  phone: z.string().optional(),
+  inquiryType: z.enum(["booking", "general", "pricing", "availability", "tour"]),
+  propertyId: z.number().optional(),
+  roomType: z.enum(["private", "shared", "any"]).optional(),
+  moveInDate: z.string().optional(),
+  budgetRange: z.string().optional(),
+  message: z.string().min(10, "Please provide a detailed message"),
+});
+
+type ClientInquiryData = z.infer<typeof clientInquirySchema>;
 
 export default function InquiryForm() {
   const { toast } = useToast();
@@ -27,12 +43,15 @@ export default function InquiryForm() {
   const [hasReadAgreement, setHasReadAgreement] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
 
-  const form = useForm<InsertInquiry>({
-    resolver: zodResolver(insertInquirySchema),
+  const form = useForm<ClientInquiryData>({
+    resolver: zodResolver(clientInquirySchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       phone: "",
+      inquiryType: "general",
+      roomType: "any",
       message: "",
     },
   });

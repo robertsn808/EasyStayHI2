@@ -89,6 +89,7 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <Router />
+        <FloatingFeedbackButton />
       </TooltipProvider>
     </QueryClientProvider>
   );
