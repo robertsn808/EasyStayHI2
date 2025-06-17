@@ -1028,6 +1028,9 @@ export default function EnhancedAdminDashboard() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Bug Report System */}
+      <BugReportSystem />
     </div>
   );
 }
