@@ -1797,8 +1797,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getFeedback(filters?: { status?: string; type?: string; priority?: string }): Promise<Feedback[]> {
-    let query = db.select().from(feedback);
-    
     if (filters) {
       const conditions = [];
       if (filters.status) conditions.push(eq(feedback.status, filters.status));
@@ -1806,11 +1804,11 @@ export class DatabaseStorage implements IStorage {
       if (filters.priority) conditions.push(eq(feedback.priority, filters.priority));
       
       if (conditions.length > 0) {
-        query = query.where(and(...conditions));
+        return await db.select().from(feedback).where(and(...conditions)).orderBy(desc(feedback.createdAt));
       }
     }
     
-    return await query.orderBy(desc(feedback.createdAt));
+    return await db.select().from(feedback).orderBy(desc(feedback.createdAt));
   }
 
   async updateFeedback(id: number, data: Partial<InsertFeedback>): Promise<Feedback> {
