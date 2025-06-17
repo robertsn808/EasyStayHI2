@@ -469,26 +469,19 @@ export default function EnhancedAdminDashboard() {
               {/* Quick Actions */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Quick Actions {showAddTenantDialog && "(Dialog Open)"}</CardTitle>
+                  <CardTitle>Quick Actions {showAddTenantDialog ? "(Dialog Open)" : "(Dialog Closed)"}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <button 
-                    className="w-full flex items-center justify-start px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium transition-colors"
-                    type="button"
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onMouseUp={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log("Add New Tenant clicked!");
+                  <div 
+                    className="w-full flex items-center justify-start px-4 py-2 border border-gray-300 bg-white hover:bg-gray-50 rounded-md text-sm font-medium transition-colors cursor-pointer"
+                    onClick={() => {
+                      console.log("Button clicked - setting dialog to true");
                       setShowAddTenantDialog(true);
                     }}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add New Tenant
-                  </button>
+                  </div>
                   <Button className="w-full justify-start" variant="outline">
                     <Wrench className="h-4 w-4 mr-2" />
                     Schedule Maintenance
@@ -908,15 +901,15 @@ export default function EnhancedAdminDashboard() {
         </main>
       </div>
 
-      {/* Add New Tenant Modal - Direct Implementation */}
+      {/* Add New Tenant Modal */}
       {showAddTenantDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Add New Tenant</h2>
+              <h2 className="text-xl font-semibold text-gray-900">Add New Tenant</h2>
               <button 
                 onClick={() => setShowAddTenantDialog(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 text-xl"
               >
                 ✕
               </button>
