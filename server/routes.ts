@@ -17,7 +17,9 @@ import {
   insertMaintenanceRequestSchema,
   insertPaymentSchema,
   insertNotificationSchema,
-  insertGuestProfileSchema
+  insertGuestProfileSchema,
+  insertFeedbackSchema,
+  insertClientInquirySchema
 } from "@shared/schema";
 import { generateTenantQRCode, generateTenantToken, verifyTenantToken } from "./qrGenerator";
 import { aiChatBot } from "./aiChatBot";
@@ -1794,6 +1796,121 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Notification fetch error:", error);
       // Return empty array if table doesn't exist yet
       res.json([]);
+    }
+  });
+
+  // Feedback System API
+  app.post("/api/feedback", async (req, res) => {
+    try {
+      const feedbackData = {
+        ...req.body,
+        metadata: {
+          userAgent: req.get('User-Agent'),
+          ipAddress: req.ip,
+          url: req.get('Referer') || req.get('Origin'),
+          timestamp: new Date().toISOString()
+        }
+      };
+
+      const feedback = await storage.createFeedback(feedbackData);
+      
+      // Create notification for admins about new feedback
+      if (feedback.type === 'bug_report' || feedback.priority === 'urgent') {
+        await storage.createSystemNotification({
+          type: 'feedback_received',
+          title: `New ${feedback.type}: ${feedback.title}`,
+          message: `Priority: ${feedback.priority} - ${feedback.message.substring(0, 100)}...`,
+          priority: feedback.priority === 'urgent' ? 'urgent' : 'normal',
+          color: feedback.type === 'bug_report' ? 'red' : 'blue'
+        });
+      }
+
+      res.json({ success: true, id: feedback.id, message: "Feedback submitted successfully" });
+    } catch (error) {
+      console.error("Feedback submission error:", error);
+      res.status(400).json({ success: false, message: "Failed to submit feedback" });
+    }
+  });
+
+  app.get("/api/admin/feedback", simpleAdminAuth, async (req, res) => {
+    try {
+      const { status, type, priority } = req.query;
+      const feedback = await storage.getFeedback({ 
+        status: status as string, 
+        type: type as string, 
+        priority: priority as string 
+      });
+      res.json(feedback);
+    } catch (error) {
+      console.error("Feedback fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch feedback" });
+    }
+  });
+
+  app.patch("/api/admin/feedback/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      const feedback = await storage.updateFeedback(id, updates);
+      res.json(feedback);
+    } catch (error) {
+      console.error("Feedback update error:", error);
+      res.status(400).json({ message: "Failed to update feedback" });
+    }
+  });
+
+  // Client Inquiries API (fixed)
+  app.post("/api/client-inquiries", async (req, res) => {
+    try {
+      const inquiryData = {
+        ...req.body,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      const inquiry = await storage.createClientInquiry(inquiryData);
+      
+      // Create notification for new inquiry
+      await storage.createSystemNotification({
+        type: 'new_inquiry',
+        title: `New Client Inquiry: ${inquiry.inquiryType}`,
+        message: `${inquiry.firstName} ${inquiry.lastName} - ${inquiry.email}`,
+        priority: 'medium',
+        color: 'blue',
+        actionType: 'view_inquiry',
+        actionData: JSON.stringify({ inquiryId: inquiry.id })
+      });
+
+      res.json({ success: true, id: inquiry.id, message: "Inquiry submitted successfully" });
+    } catch (error) {
+      console.error("Client inquiry submission error:", error);
+      res.status(400).json({ success: false, message: "Failed to submit inquiry" });
+    }
+  });
+
+  app.get("/api/admin/client-inquiries", simpleAdminAuth, async (req, res) => {
+    try {
+      const { status, inquiryType } = req.query;
+      const inquiries = await storage.getClientInquiries({ 
+        status: status as string, 
+        inquiryType: inquiryType as string 
+      });
+      res.json(inquiries);
+    } catch (error) {
+      console.error("Client inquiries fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch client inquiries" });
+    }
+  });
+
+  app.patch("/api/admin/client-inquiries/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = { ...req.body, updatedAt: new Date() };
+      const inquiry = await storage.updateClientInquiry(id, updates);
+      res.json(inquiry);
+    } catch (error) {
+      console.error("Client inquiry update error:", error);
+      res.status(400).json({ message: "Failed to update client inquiry" });
     }
   });
 

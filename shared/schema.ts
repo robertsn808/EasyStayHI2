@@ -296,6 +296,49 @@ export const systemNotifications = pgTable("system_notifications", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Feedback and suggestions table
+export const feedback = pgTable("feedback", {
+  id: serial("id").primaryKey(),
+  type: text("type", { enum: ["feedback", "suggestion", "bug_report", "feature_request"] }).notNull(),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  rating: integer("rating"), // 1-5 stars for feedback
+  category: text("category", { enum: ["ui_ux", "functionality", "performance", "content", "other"] }),
+  userEmail: text("user_email"),
+  userType: text("user_type", { enum: ["guest", "tenant", "admin", "anonymous"] }).default("anonymous"),
+  status: text("status", { enum: ["new", "reviewing", "resolved", "dismissed"] }).default("new"),
+  priority: text("priority", { enum: ["low", "medium", "high", "urgent"] }).default("medium"),
+  attachments: text("attachments").array(),
+  metadata: jsonb("metadata"), // Additional context like browser info, page URL, etc.
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Client inquiries table for property inquiries
+export const clientInquiries = pgTable("client_inquiries", {
+  id: serial("id").primaryKey(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  inquiryType: text("inquiry_type", { 
+    enum: ["booking", "general", "pricing", "availability", "tour"] 
+  }).notNull(),
+  propertyId: integer("property_id").references(() => buildings.id),
+  roomType: text("room_type", { enum: ["private", "shared", "any"] }),
+  moveInDate: date("move_in_date"),
+  budgetRange: text("budget_range"),
+  message: text("message").notNull(),
+  source: text("source", { enum: ["website", "referral", "social_media", "other"] }).default("website"),
+  status: text("status", { enum: ["new", "contacted", "scheduled", "converted", "closed"] }).default("new"),
+  priority: text("priority", { enum: ["low", "medium", "high"] }).default("medium"),
+  assignedTo: text("assigned_to"),
+  notes: text("notes"),
+  followUpDate: timestamp("follow_up_date"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const temporaryAccessCodes = pgTable("temporary_access_codes", {
   id: serial("id").primaryKey(),
   roomId: integer("room_id").references(() => rooms.id).notNull(),
@@ -420,6 +463,15 @@ export type SelectAccessLog = typeof accessLogs.$inferSelect;
 export type SelectMaintenancePrediction = typeof maintenancePredictions.$inferSelect;
 export type SelectPublicContactSettings = typeof publicContactSettings.$inferSelect;
 
+// Add new schema types
+export type InsertFeedback = typeof feedback.$inferInsert;
+export type SelectFeedback = typeof feedback.$inferSelect;
+export type Feedback = SelectFeedback;
+
+export type InsertClientInquiry = typeof clientInquiries.$inferInsert;
+export type SelectClientInquiry = typeof clientInquiries.$inferSelect;
+export type ClientInquiry = SelectClientInquiry;
+
 // Type aliases for compatibility
 export type User = SelectUser;
 export type UpsertUser = InsertUser;
@@ -486,6 +538,14 @@ export const insertNotificationSchema = {
 };
 export const insertGuestProfileSchema = {
   parse: (data: any) => data as InsertGuestProfile
+};
+
+export const insertFeedbackSchema = {
+  parse: (data: any) => data as InsertFeedback
+};
+
+export const insertClientInquirySchema = {
+  parse: (data: any) => data as InsertClientInquiry
 };
 
 // Biometric authentication credentials table
