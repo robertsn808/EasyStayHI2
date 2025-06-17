@@ -31,6 +31,31 @@ app.use(express.urlencoded({ extended: false }));
 // Serve attached assets
 app.use('/attached_assets', express.static('attached_assets'));
 
+// Health check endpoint
+app.get("/health", (req: Request, res: Response) => {
+  const health = {
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    version: process.env.npm_package_version || "unknown",
+    environment: process.env.NODE_ENV || "development",
+  };
+  res.json(health);
+});
+
+app.get("/api/health", (req: Request, res: Response) => {
+  const health = {
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    version: process.env.npm_package_version || "unknown",
+    environment: process.env.NODE_ENV || "development",
+  };
+  res.json(health);
+});
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -69,7 +94,6 @@ app.use((req, res, next) => {
     const message = err.message || "Internal Server Error";
 
     res.status(status).json({ message });
-    throw err;
   });
 
   // importantly only setup vite in development and after

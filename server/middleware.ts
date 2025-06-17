@@ -21,11 +21,35 @@ declare global {
     interface Request {
       requestId: string;
       startTime: number;
-      user?: any;
       validatedBody?: any;
       validatedQuery?: any;
       validatedParams?: any;
     }
+    
+    interface User {
+      id: string;
+      isAdmin?: boolean;
+      roles?: string[];
+      role?: string;
+      roomId?: number;
+      [key: string]: any;
+    }
+  }
+}
+
+// Extend session type
+declare module "express-session" {
+  interface SessionData {
+    user?: {
+      id: string;
+      isAdmin: boolean;
+      [key: string]: any;
+    };
+    tenantData?: {
+      roomId: number;
+      sessionToken: string;
+      [key: string]: any;
+    };
   }
 }
 
@@ -71,7 +95,7 @@ export const securityMiddleware = helmet({
 
 // CORS middleware
 export const corsMiddleware = cors({
-  origin: (origin, callback) => {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     if (!origin || serverConfig.corsOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -226,7 +250,7 @@ export const validateRequest = <T extends z.ZodSchema>(
 // Authentication middleware
 export const authenticateAdmin = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.get("Authorization");
-  const sessionUser = req.session?.user;
+  const sessionUser = (req.session as any)?.user;
   
   // Check session first
   if (sessionUser && sessionUser.isAdmin) {
@@ -252,7 +276,7 @@ export const authenticateAdmin = asyncHandler(async (req: Request, res: Response
 
 // Tenant authentication middleware
 export const authenticateTenant = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const sessionData = req.session?.tenantData;
+  const sessionData = (req.session as any)?.tenantData;
   
   if (!sessionData || !sessionData.roomId) {
     throw new AuthenticationError("Tenant authentication required", undefined, req.requestId);
@@ -269,7 +293,7 @@ export const authorize = (roles: string[]) => {
       throw new AuthenticationError("Authentication required", undefined, req.requestId);
     }
     
-    const userRoles = Array.isArray(req.user.roles) ? req.user.roles : [req.user.role];
+    const userRoles = Array.isArray(req.user.roles) ? req.user.roles : (req.user.role ? [req.user.role] : []);
     const hasPermission = roles.some(role => userRoles.includes(role));
     
     if (!hasPermission) {
