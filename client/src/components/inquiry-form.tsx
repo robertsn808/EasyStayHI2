@@ -31,7 +31,7 @@ const clientInquirySchema = z.object({
   roomType: z.enum(["private", "shared", "any"]).optional(),
   moveInDate: z.string().optional(),
   budgetRange: z.string().optional(),
-  message: z.string().min(10, "Please provide a detailed message"),
+  message: z.string().min(1, "Please provide a message"),
 });
 
 type ClientInquiryData = z.infer<typeof clientInquirySchema>;
@@ -162,7 +162,6 @@ export default function InquiryForm() {
               type="tel"
               {...form.register("phone")}
               className="w-full"
-              required
             />
           </div>
           
@@ -218,7 +217,6 @@ export default function InquiryForm() {
               type="date"
               {...form.register("moveInDate")}
               className="w-full"
-              required
             />
           </div>
           
