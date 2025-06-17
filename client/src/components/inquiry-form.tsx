@@ -92,7 +92,7 @@ export default function InquiryForm() {
     },
   });
 
-  const onSubmit = (data: InsertInquiry) => {
+  const onSubmit = (data: ClientInquiryData) => {
     if (!contactPreference) {
       toast({
         title: "Error",
@@ -104,8 +104,7 @@ export default function InquiryForm() {
     
     const formData = {
       ...data,
-      message: `${data.message || ''} | Rental Period: ${selectedPeriod}`,
-      contactPreference,
+      message: `${data.message || ''}\n\nRental Period: ${selectedPeriod}\nContact Preference: ${contactPreference}`,
     };
     mutation.mutate(formData);
   };
@@ -118,12 +117,24 @@ export default function InquiryForm() {
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid md:grid-cols-2 gap-6">
           <div>
-            <Label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name
+            <Label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+              First Name
             </Label>
             <Input
-              id="name"
-              {...form.register("name")}
+              id="firstName"
+              {...form.register("firstName")}
+              className="w-full"
+              required
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+              Last Name
+            </Label>
+            <Input
+              id="lastName"
+              {...form.register("lastName")}
               className="w-full"
               required
             />
@@ -153,6 +164,28 @@ export default function InquiryForm() {
               className="w-full"
               required
             />
+          </div>
+          
+          <div>
+            <Label className="block text-sm font-medium text-gray-700 mb-2">
+              Inquiry Type
+            </Label>
+            <Select 
+              value={form.watch("inquiryType")} 
+              onValueChange={(value) => form.setValue("inquiryType", value as any)}
+              required
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select inquiry type..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="booking">Booking Inquiry</SelectItem>
+                <SelectItem value="general">General Information</SelectItem>
+                <SelectItem value="pricing">Pricing Information</SelectItem>
+                <SelectItem value="availability">Availability Check</SelectItem>
+                <SelectItem value="tour">Schedule Tour</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           <div>
