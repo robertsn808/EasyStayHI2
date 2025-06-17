@@ -1114,19 +1114,32 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTenant(id: number, data: any): Promise<any> {
+    const updateData: any = {
+      email: data.email,
+      phone: data.phone,
+      roomId: data.roomId,
+      updatedAt: new Date()
+    };
+
+    if (data.firstName || data.lastName) {
+      updateData.guestName = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+    }
+
+    if (data.monthlyRent) {
+      updateData.paymentAmount = data.monthlyRent.toString();
+    }
+
+    if (data.leaseStart) {
+      updateData.checkInDate = data.leaseStart;
+    }
+
+    if (data.leaseEnd) {
+      updateData.checkOutDate = data.leaseEnd;
+    }
+
     const [result] = await db
       .update(guestProfiles)
-      .set({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.phone,
-        roomId: data.roomId,
-        rentalRate: data.monthlyRent,
-        checkInDate: data.leaseStart,
-        checkOutDate: data.leaseEnd,
-        updatedAt: new Date()
-      })
+      .set(updateData)
       .where(eq(guestProfiles.id, id))
       .returning();
 
