@@ -44,6 +44,26 @@ export const buildings = pgTable("buildings", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const bugReports = pgTable("bug_reports", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  priority: varchar("priority", { length: 20 }).notNull(), // low, medium, high, critical
+  category: varchar("category", { length: 50 }).notNull(), // ui, functionality, performance, data, security
+  status: varchar("status", { length: 20 }).default("open"), // open, investigating, in-progress, resolved, closed
+  steps: text("steps"),
+  expectedBehavior: text("expected_behavior"),
+  actualBehavior: text("actual_behavior"),
+  browserInfo: text("browser_info"),
+  userAgent: text("user_agent"),
+  submittedBy: varchar("submitted_by", { length: 255 }),
+  assignedTo: varchar("assigned_to", { length: 255 }),
+  tags: jsonb("tags"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  resolvedAt: timestamp("resolved_at"),
+});
+
 export const rooms = pgTable("rooms", {
   id: serial("id").primaryKey(),
   number: varchar("number", { length: 50 }).notNull(),

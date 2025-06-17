@@ -1148,6 +1148,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bug Reports API
+  app.get("/api/bug-reports", async (req, res) => {
+    try {
+      const bugReports = await storage.getBugReports();
+      res.json(bugReports);
+    } catch (error) {
+      console.error("Error fetching bug reports:", error);
+      res.status(500).json({ message: "Failed to fetch bug reports" });
+    }
+  });
+
+  app.post("/api/bug-reports", async (req, res) => {
+    try {
+      const bugReport = await storage.createBugReport(req.body);
+      
+      // Auto-assign and start work immediately
+      console.log("🚨 NEW BUG REPORT:", bugReport.title);
+      console.log("Priority:", bugReport.priority);
+      console.log("Category:", bugReport.category);
+      console.log("Description:", bugReport.description);
+      
+      // Auto-assign based on category
+      let assignedTo = "developer";
+      if (bugReport.category === "ui") assignedTo = "frontend-team";
+      if (bugReport.category === "data") assignedTo = "backend-team";
+      if (bugReport.priority === "critical") assignedTo = "senior-developer";
+
+      // Update status to investigating immediately
+      await storage.updateBugReport(bugReport.id, { 
+        assignedTo,
+        status: "investigating"
+      });
+
+      // Send real-time notification
+      console.log("🔧 STARTING WORK ON BUG #" + bugReport.id);
+      console.log("Assigned to:", assignedTo);
+      
+      res.json({ ...bugReport, assignedTo, status: "investigating" });
+    } catch (error) {
+      console.error("Error creating bug report:", error);
+      res.status(500).json({ message: "Failed to create bug report" });
+    }
+  });
+
+  app.patch("/api/bug-reports/:id", async (req, res) => {
+    try {
+      const bugReport = await storage.updateBugReport(parseInt(req.params.id), req.body);
+      res.json(bugReport);
+    } catch (error) {
+      console.error("Error updating bug report:", error);
+      res.status(500).json({ message: "Failed to update bug report" });
+    }
+  });
+
   app.get("/api/admin/inventory", simpleAdminAuth, async (req, res) => {
     try {
       const inventory = await storage.getInventory();
