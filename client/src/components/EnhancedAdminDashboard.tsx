@@ -473,7 +473,18 @@ export default function EnhancedAdminDashboard() {
                   <CardTitle>Quick Actions {showAddTenantDialog ? "(Dialog Open)" : "(Dialog Closed)"}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <AddTenantButton rooms={rooms || []} />
+                  <button 
+                    className="w-full flex items-center justify-start px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium transition-colors"
+                    onClick={() => {
+                      console.log("DIRECT BUTTON CLICKED!");
+                      alert("Button works! Opening tenant form...");
+                      setShowAddTenantDialog(true);
+                    }}
+                    type="button"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add New Tenant
+                  </button>
                   <Button className="w-full justify-start" variant="outline">
                     <Wrench className="h-4 w-4 mr-2" />
                     Schedule Maintenance
@@ -894,6 +905,54 @@ export default function EnhancedAdminDashboard() {
       </div>
 
 
+
+      {/* Simple Add Tenant Modal */}
+      {showAddTenantDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h2 className="text-xl font-bold mb-4">Add New Tenant</h2>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const data = {
+                firstName: formData.get('firstName') as string,
+                lastName: formData.get('lastName') as string,
+                email: formData.get('email') as string,
+                phone: formData.get('phone') as string,
+                roomId: parseInt(formData.get('roomId') as string),
+                monthlyRent: parseFloat(formData.get('monthlyRent') as string)
+              };
+              
+              fetch('/api/admin/tenants', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+              }).then(() => {
+                setShowAddTenantDialog(false);
+                window.location.reload();
+              });
+            }}>
+              <div className="space-y-4">
+                <input name="firstName" placeholder="First Name" required className="w-full p-2 border rounded" />
+                <input name="lastName" placeholder="Last Name" required className="w-full p-2 border rounded" />
+                <input name="email" type="email" placeholder="Email" required className="w-full p-2 border rounded" />
+                <input name="phone" placeholder="Phone" className="w-full p-2 border rounded" />
+                <select name="roomId" required className="w-full p-2 border rounded">
+                  <option value="">Select Room</option>
+                  {(rooms || []).filter(room => room.status === 'available').map((room: any) => (
+                    <option key={room.id} value={room.id}>Room {room.number}</option>
+                  ))}
+                </select>
+                <input name="monthlyRent" type="number" step="0.01" placeholder="Monthly Rent" required className="w-full p-2 border rounded" />
+                <div className="flex justify-end space-x-2">
+                  <button type="button" onClick={() => setShowAddTenantDialog(false)} className="px-4 py-2 border rounded">Cancel</button>
+                  <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Add Tenant</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Bug Report System */}
       <BugReportSystem />
