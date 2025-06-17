@@ -467,15 +467,18 @@ export default function EnhancedAdminDashboard() {
               {/* Quick Actions */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
+                  <CardTitle>Quick Actions {showAddTenantDialog && "(Dialog Open)"}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button 
                     className="w-full justify-start" 
                     variant="outline"
-                    onClick={() => {
-                      console.log("Quick Actions Add New Tenant clicked");
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log("Quick Actions Add New Tenant clicked, current state:", showAddTenantDialog);
                       setShowAddTenantDialog(true);
+                      console.log("State should now be true");
                     }}
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -901,7 +904,10 @@ export default function EnhancedAdminDashboard() {
       </div>
 
       {/* Add New Tenant Dialog - Global */}
-      <Dialog open={showAddTenantDialog} onOpenChange={setShowAddTenantDialog}>
+      <Dialog open={showAddTenantDialog} onOpenChange={(open) => {
+        console.log("Dialog onOpenChange called with:", open);
+        setShowAddTenantDialog(open);
+      }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Add New Tenant</DialogTitle>
