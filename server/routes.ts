@@ -639,6 +639,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Dashboard statistics API
+  app.get("/api/admin/dashboard-stats", simpleAdminAuth, async (req, res) => {
+    try {
+      const rooms = await storage.getRooms();
+      const inquiries = await storage.getInquiries();
+      const maintenanceRequests = await storage.getMaintenanceRequests();
+      const payments = await storage.getPayments();
+
+      const totalRooms = rooms.length;
+      const occupiedRooms = rooms.filter(room => room.status === 'occupied').length;
+      const pendingInquiries = inquiries.filter(inquiry => inquiry.status === 'new').length;
+      const activeMaintenanceRequests = maintenanceRequests.filter(request => 
+        request && typeof request === 'object' && 'request' in request 
+          ? request.request?.status === 'pending' 
+          : request.status === 'pending'
+      ).length;
+      
+      // Calculate monthly revenue based on occupied rooms
+      const monthlyRevenue = rooms
+        .filter(room => room.status === 'occupied')
+        .reduce((total, room) => total + 1200, 0); // Standard rent per room
+      
+      const occupancyRate = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
+
+      res.json({
+        totalRooms,
+        occupiedRooms,
+        pendingInquiries,
+        activeMaintenanceRequests,
+        monthlyRevenue,
+        occupancyRate
+      });
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard statistics" });
+    }
+  });
+
+  // Enhanced admin routes for the management portal
+  app.patch("/api/admin/inquiries/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      const updatedInquiry = await storage.updateInquiryStatus(id, status);
+      res.json(updatedInquiry);
+    } catch (error) {
+      console.error("Error updating inquiry:", error);
+      res.status(500).json({ message: "Failed to update inquiry" });
+    }
+  });
+
+  app.patch("/api/admin/maintenance/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      const updatedRequest = await storage.updateMaintenanceRequest(id, { status });
+      res.json(updatedRequest);
+    } catch (error) {
+      console.error("Error updating maintenance request:", error);
+      res.status(500).json({ message: "Failed to update maintenance request" });
+    }
+  });
+
   // Property seeding endpoint discontinued
   app.post("/api/admin/seed-properties", adminAuth, async (req, res) => {
     res.status(410).json({ 

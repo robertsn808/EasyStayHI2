@@ -85,25 +85,48 @@ export default function EnhancedAdminDashboard() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  // Get admin token for authentication
+  const adminToken = localStorage.getItem('admin-token') || 'admin-authenticated';
+
   // Dashboard statistics
   const { data: stats } = useQuery<DashboardStats>({
     queryKey: ["/api/admin/dashboard-stats"],
     refetchInterval: 30000, // Refresh every 30 seconds
+    meta: {
+      headers: {
+        'x-admin-token': adminToken
+      }
+    }
   });
 
   // Rooms data
   const { data: rooms = [] } = useQuery<Room[]>({
     queryKey: ["/api/admin/rooms"],
+    meta: {
+      headers: {
+        'x-admin-token': adminToken
+      }
+    }
   });
 
   // Inquiries data
   const { data: inquiries = [] } = useQuery<Inquiry[]>({
     queryKey: ["/api/admin/inquiries"],
+    meta: {
+      headers: {
+        'x-admin-token': adminToken
+      }
+    }
   });
 
   // Maintenance requests
   const { data: maintenanceRequests = [] } = useQuery<MaintenanceRequest[]>({
     queryKey: ["/api/admin/maintenance"],
+    meta: {
+      headers: {
+        'x-admin-token': adminToken
+      }
+    }
   });
 
   // Update inquiry status mutation
