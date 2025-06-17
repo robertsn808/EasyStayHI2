@@ -148,6 +148,13 @@ export interface IStorage {
   getGuestProfilesByRoom(roomId: number): Promise<GuestProfile[]>;
   updateGuestProfile(id: number, data: Partial<InsertGuestProfile>): Promise<GuestProfile>;
   markPaymentReceived(guestId: number, paymentMethod: string): Promise<GuestProfile>;
+
+  // Tenant Management Operations
+  createTenant(data: any): Promise<any>;
+  getTenants(): Promise<any[]>;
+  getTenantById(id: number): Promise<any | undefined>;
+  updateTenant(id: number, data: any): Promise<any>;
+  deleteTenant(id: number): Promise<void>;
   markGuestMovedOut(guestId: number): Promise<GuestProfile>;
   getPaymentDueGuests(): Promise<GuestProfile[]>;
   getTodaysPaymentDueGuests(): Promise<GuestProfile[]>;
@@ -1040,6 +1047,102 @@ export class DatabaseStorage implements IStorage {
       .from(schema.accessLogs)
       .orderBy(desc(schema.accessLogs.timestamp))
       .limit(limit);
+  }
+
+  // Tenant Management Methods
+  async createTenant(data: any): Promise<any> {
+    const [result] = await db
+      .insert(guestProfiles)
+      .values({
+        guestName: `${data.firstName} ${data.lastName}`,
+        email: data.email,
+        phone: data.phone,
+        roomId: data.roomId,
+        bookingType: 'monthly',
+        isActive: true,
+        hasMovedOut: false,
+        paymentStatus: 'pending',
+        paymentAmount: data.monthlyRent ? data.monthlyRent.toString() : '1200',
+        checkInDate: data.leaseStart ? data.leaseStart.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        checkOutDate: data.leaseEnd ? data.leaseEnd.toISOString().split('T')[0] : null,
+        nextPaymentDue: new Date().toISOString().split('T')[0],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning();
+
+    return result;
+  }
+
+  async getTenants(): Promise<any[]> {
+    const results = await db
+      .select({
+        id: guestProfiles.id,
+        guestName: guestProfiles.guestName,
+        email: guestProfiles.email,
+        phone: guestProfiles.phone,
+        roomNumber: rooms.number,
+        status: guestProfiles.isActive,
+        leaseStart: guestProfiles.checkInDate,
+        leaseEnd: guestProfiles.checkOutDate,
+        monthlyRent: guestProfiles.paymentAmount,
+        createdAt: guestProfiles.createdAt
+      })
+      .from(guestProfiles)
+      .leftJoin(rooms, eq(guestProfiles.roomId, rooms.id))
+      .where(eq(guestProfiles.hasMovedOut, false))
+      .orderBy(desc(guestProfiles.createdAt));
+
+    return results.map(tenant => {
+      const nameParts = tenant.guestName.split(' ');
+      return {
+        ...tenant,
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || '',
+        status: tenant.status ? 'active' : 'inactive'
+      };
+    });
+  }
+
+  async getTenantById(id: number): Promise<any | undefined> {
+    const [result] = await db
+      .select()
+      .from(guestProfiles)
+      .where(eq(guestProfiles.id, id));
+
+    return result;
+  }
+
+  async updateTenant(id: number, data: any): Promise<any> {
+    const [result] = await db
+      .update(guestProfiles)
+      .set({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        roomId: data.roomId,
+        rentalRate: data.monthlyRent,
+        checkInDate: data.leaseStart,
+        checkOutDate: data.leaseEnd,
+        updatedAt: new Date()
+      })
+      .where(eq(guestProfiles.id, id))
+      .returning();
+
+    return result;
+  }
+
+  async deleteTenant(id: number): Promise<void> {
+    await db
+      .update(guestProfiles)
+      .set({
+        hasMovedOut: true,
+        isActive: false,
+        moveOutDate: new Date().toISOString().split('T')[0],
+        updatedAt: new Date()
+      })
+      .where(eq(guestProfiles.id, id));
   }
 
   async getSecurityAlerts(hours = 24) {

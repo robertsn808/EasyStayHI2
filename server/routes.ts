@@ -1035,8 +1035,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const room = rooms.find(r => r.id === tenantData.roomId);
         if (room) {
           await storage.updateRoomStatus(tenantData.roomId, "occupied", {
-            tenantName: `${tenantData.firstName} ${tenantData.lastName}`,
-            monthlyRent: tenantData.monthlyRent
+            tenantName: `${tenantData.firstName} ${tenantData.lastName}`
           });
         }
       }
