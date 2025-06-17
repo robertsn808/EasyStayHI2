@@ -57,11 +57,22 @@ export default function InquiryForm() {
   });
 
   const mutation = useMutation({
-    mutationFn: async (data: InsertInquiry) => {
+    mutationFn: async (data: ClientInquiryData) => {
       if (!hasReadAgreement) {
         throw new Error("Please read and agree to the rental agreement first.");
       }
-      await apiRequest("POST", "/api/inquiries", data);
+      const response = await fetch("/api/client-inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to submit inquiry");
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       toast({
