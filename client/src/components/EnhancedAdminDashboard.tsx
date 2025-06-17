@@ -78,6 +78,20 @@ interface MaintenanceRequest {
   createdAt: string;
 }
 
+interface Tenant {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  roomNumber?: string;
+  status: string;
+  leaseStart?: string;
+  leaseEnd?: string;
+  monthlyRent?: number;
+  createdAt: string;
+}
+
 export default function EnhancedAdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
@@ -257,6 +271,14 @@ export default function EnhancedAdminDashboard() {
                     {inquiries.filter(i => i.status === 'new').length}
                   </Badge>
                 )}
+              </Button>
+              <Button
+                variant={activeTab === "tenants" ? "default" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActiveTab("tenants")}
+              >
+                <Users className="w-4 h-4 mr-2" />
+                Tenants
               </Button>
               <Button
                 variant={activeTab === "maintenance" ? "default" : "ghost"}
