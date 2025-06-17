@@ -1797,18 +1797,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getFeedback(filters?: { status?: string; type?: string; priority?: string }): Promise<Feedback[]> {
-    if (filters) {
-      const conditions = [];
-      if (filters.status) conditions.push(eq(feedback.status, filters.status));
-      if (filters.type) conditions.push(eq(feedback.type, filters.type));
-      if (filters.priority) conditions.push(eq(feedback.priority, filters.priority));
-      
-      if (conditions.length > 0) {
-        return await db.select().from(feedback).where(and(...conditions)).orderBy(desc(feedback.createdAt));
-      }
+    try {
+      return await db.select().from(feedback).orderBy(desc(feedback.createdAt));
+    } catch (error) {
+      console.error('Error fetching feedback:', error);
+      return [];
     }
-    
-    return await db.select().from(feedback).orderBy(desc(feedback.createdAt));
   }
 
   async updateFeedback(id: number, data: Partial<InsertFeedback>): Promise<Feedback> {
@@ -1828,19 +1822,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getClientInquiries(filters?: { status?: string; inquiryType?: string }): Promise<ClientInquiry[]> {
-    let query = db.select().from(clientInquiries);
-    
-    if (filters) {
-      const conditions = [];
-      if (filters.status) conditions.push(eq(clientInquiries.status, filters.status));
-      if (filters.inquiryType) conditions.push(eq(clientInquiries.inquiryType, filters.inquiryType));
-      
-      if (conditions.length > 0) {
-        query = query.where(and(...conditions));
-      }
+    try {
+      return await db.select().from(clientInquiries).orderBy(desc(clientInquiries.createdAt));
+    } catch (error) {
+      console.error('Error fetching client inquiries:', error);
+      return [];
     }
-    
-    return query.orderBy(desc(clientInquiries.createdAt));
   }
 
   async updateClientInquiry(id: number, data: Partial<InsertClientInquiry>): Promise<ClientInquiry> {
