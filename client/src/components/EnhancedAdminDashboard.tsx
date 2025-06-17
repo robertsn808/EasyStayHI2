@@ -473,18 +473,44 @@ export default function EnhancedAdminDashboard() {
                   <CardTitle>Quick Actions {showAddTenantDialog ? "(Dialog Open)" : "(Dialog Closed)"}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <button 
-                    className="w-full flex items-center justify-start px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm font-medium transition-colors"
-                    onClick={() => {
-                      console.log("DIRECT BUTTON CLICKED!");
-                      alert("Button works! Opening tenant form...");
+                  <div 
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'flex-start',
+                      padding: '8px 16px',
+                      border: '1px solid #d1d5db',
+                      backgroundColor: '#ffffff',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log("MOUSE DOWN EVENT FIRED");
+                    }}
+                    onMouseUp={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log("MOUSE UP EVENT FIRED");
+                      alert("Mouse up detected! Opening form...");
                       setShowAddTenantDialog(true);
                     }}
-                    type="button"
+                    onTouchStart={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log("TOUCH START FIRED");
+                      alert("Touch detected! Opening form...");
+                      setShowAddTenantDialog(true);
+                    }}
                   >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4 mr-2" style={{ marginRight: '8px' }} />
                     Add New Tenant
-                  </button>
+                  </div>
                   <Button className="w-full justify-start" variant="outline">
                     <Wrench className="h-4 w-4 mr-2" />
                     Schedule Maintenance
