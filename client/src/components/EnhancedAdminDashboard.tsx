@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import RoomRecommendationSystem from "./RoomRecommendationSystem";
 import BugReportSystem from "./BugReportSystem";
+import AddTenantButton from "./AddTenantButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -472,16 +473,7 @@ export default function EnhancedAdminDashboard() {
                   <CardTitle>Quick Actions {showAddTenantDialog ? "(Dialog Open)" : "(Dialog Closed)"}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div 
-                    className="w-full flex items-center justify-start px-4 py-2 border border-gray-300 bg-white hover:bg-gray-50 rounded-md text-sm font-medium transition-colors cursor-pointer"
-                    onClick={() => {
-                      console.log("Button clicked - setting dialog to true");
-                      setShowAddTenantDialog(true);
-                    }}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add New Tenant
-                  </div>
+                  <AddTenantButton rooms={rooms || []} />
                   <Button className="w-full justify-start" variant="outline">
                     <Wrench className="h-4 w-4 mr-2" />
                     Schedule Maintenance
@@ -901,154 +893,7 @@ export default function EnhancedAdminDashboard() {
         </main>
       </div>
 
-      {/* Add New Tenant Modal */}
-      {showAddTenantDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto shadow-xl">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">Add New Tenant</h2>
-              <button 
-                onClick={() => setShowAddTenantDialog(false)}
-                className="text-gray-500 hover:text-gray-700 text-xl"
-              >
-                ✕
-              </button>
-            </div>
-            <p className="text-gray-600 mb-4">Enter tenant details and assign to a room</p>
-            
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const formData = {
-                firstName: tenantForm.firstName,
-                lastName: tenantForm.lastName,
-                email: tenantForm.email,
-                phone: tenantForm.phone,
-                roomId: tenantForm.roomId ? parseInt(tenantForm.roomId) : null,
-                monthlyRent: tenantForm.monthlyRent ? parseFloat(tenantForm.monthlyRent) : null,
-                leaseStart: tenantForm.leaseStart || null,
-                leaseEnd: tenantForm.leaseEnd || null
-              };
-              createTenantMutation.mutate(formData);
-            }} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">First Name *</label>
-                  <input
-                    type="text"
-                    value={tenantForm.firstName}
-                    onChange={(e) => setTenantForm({...tenantForm, firstName: e.target.value})}
-                    placeholder="John"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Last Name *</label>
-                  <input
-                    type="text"
-                    value={tenantForm.lastName}
-                    onChange={(e) => setTenantForm({...tenantForm, lastName: e.target.value})}
-                    placeholder="Doe"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Email *</label>
-                <input
-                  type="email"
-                  value={tenantForm.email}
-                  onChange={(e) => setTenantForm({...tenantForm, email: e.target.value})}
-                  placeholder="john.doe@example.com"
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Phone</label>
-                <input
-                  type="tel"
-                  value={tenantForm.phone}
-                  onChange={(e) => setTenantForm({...tenantForm, phone: e.target.value})}
-                  placeholder="(808) 555-0123"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Room *</label>
-                <select 
-                  value={tenantForm.roomId} 
-                  onChange={(e) => setTenantForm({...tenantForm, roomId: e.target.value})}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select a room</option>
-                  {(rooms || []).filter(room => room.status === 'available').map((room: any) => (
-                    <option key={room.id} value={room.id.toString()}>
-                      Room {room.number} - {room.size} (${room.rentalRate}/month)
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Monthly Rent *</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={tenantForm.monthlyRent}
-                  onChange={(e) => setTenantForm({...tenantForm, monthlyRent: e.target.value})}
-                  placeholder="1200.00"
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Lease Start</label>
-                  <input
-                    type="date"
-                    value={tenantForm.leaseStart}
-                    onChange={(e) => setTenantForm({...tenantForm, leaseStart: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Lease End</label>
-                  <input
-                    type="date"
-                    value={tenantForm.leaseEnd}
-                    onChange={(e) => setTenantForm({...tenantForm, leaseEnd: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex justify-end space-x-2 pt-4">
-                <button 
-                  type="button" 
-                  onClick={() => setShowAddTenantDialog(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  disabled={createTenantMutation.isPending}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {createTenantMutation.isPending ? "Adding..." : "Add Tenant"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+
 
       {/* Bug Report System */}
       <BugReportSystem />
