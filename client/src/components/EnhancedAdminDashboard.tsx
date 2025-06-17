@@ -96,6 +96,17 @@ export default function EnhancedAdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [showAddTenantDialog, setShowAddTenantDialog] = useState(false);
+  const [tenantForm, setTenantForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    roomId: "",
+    monthlyRent: "",
+    leaseStart: "",
+    leaseEnd: ""
+  });
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -143,6 +154,16 @@ export default function EnhancedAdminDashboard() {
     }
   });
 
+  // Tenants data
+  const { data: tenants = [] } = useQuery<Tenant[]>({
+    queryKey: ["/api/admin/tenants"],
+    meta: {
+      headers: {
+        'x-admin-token': adminToken
+      }
+    }
+  });
+
   // Update inquiry status mutation
   const updateInquiryMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
@@ -167,6 +188,48 @@ export default function EnhancedAdminDashboard() {
       toast({
         title: "Status Updated",
         description: "Maintenance request status has been updated successfully.",
+      });
+    },
+  });
+
+  // Create tenant mutation
+  const createTenantMutation = useMutation({
+    mutationFn: async (tenantData: any) => {
+      const response = await fetch("/api/admin/tenants", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-token": adminToken
+        },
+        body: JSON.stringify(tenantData),
+      });
+      if (!response.ok) throw new Error("Failed to create tenant");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/tenants"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/rooms"] });
+      setShowAddTenantDialog(false);
+      setTenantForm({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        roomId: "",
+        monthlyRent: "",
+        leaseStart: "",
+        leaseEnd: ""
+      });
+      toast({
+        title: "Tenant Added",
+        description: "New tenant has been successfully added to the system.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create tenant",
+        variant: "destructive",
       });
     },
   });
@@ -660,6 +723,211 @@ export default function EnhancedAdminDashboard() {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "tenants" && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Tenant Management</h2>
+                  <p className="text-gray-600">Manage tenant information and room assignments</p>
+                </div>
+                <Dialog open={showAddTenantDialog} onOpenChange={setShowAddTenantDialog}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add New Tenant
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Add New Tenant</DialogTitle>
+                      <DialogDescription>
+                        Enter tenant details and assign to a room
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      createTenantMutation.mutate(tenantForm);
+                    }} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="firstName">First Name *</Label>
+                          <Input
+                            id="firstName"
+                            value={tenantForm.firstName}
+                            onChange={(e) => setTenantForm({...tenantForm, firstName: e.target.value})}
+                            placeholder="John"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="lastName">Last Name *</Label>
+                          <Input
+                            id="lastName"
+                            value={tenantForm.lastName}
+                            onChange={(e) => setTenantForm({...tenantForm, lastName: e.target.value})}
+                            placeholder="Doe"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={tenantForm.email}
+                          onChange={(e) => setTenantForm({...tenantForm, email: e.target.value})}
+                          placeholder="john.doe@example.com"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone">Phone</Label>
+                        <Input
+                          id="phone"
+                          value={tenantForm.phone}
+                          onChange={(e) => setTenantForm({...tenantForm, phone: e.target.value})}
+                          placeholder="(808) 555-0123"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="roomId">Assign Room</Label>
+                        <Select value={tenantForm.roomId} onValueChange={(value) => setTenantForm({...tenantForm, roomId: value})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a room" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {rooms.filter(room => room.status === 'available').map((room) => (
+                              <SelectItem key={room.id} value={room.id.toString()}>
+                                Room {room.number}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="monthlyRent">Monthly Rent</Label>
+                        <Input
+                          id="monthlyRent"
+                          type="number"
+                          value={tenantForm.monthlyRent}
+                          onChange={(e) => setTenantForm({...tenantForm, monthlyRent: e.target.value})}
+                          placeholder="1200"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="leaseStart">Lease Start</Label>
+                          <Input
+                            id="leaseStart"
+                            type="date"
+                            value={tenantForm.leaseStart}
+                            onChange={(e) => setTenantForm({...tenantForm, leaseStart: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="leaseEnd">Lease End</Label>
+                          <Input
+                            id="leaseEnd"
+                            type="date"
+                            value={tenantForm.leaseEnd}
+                            onChange={(e) => setTenantForm({...tenantForm, leaseEnd: e.target.value})}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <Button type="button" variant="outline" onClick={() => setShowAddTenantDialog(false)}>
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={createTenantMutation.isPending}>
+                          {createTenantMutation.isPending ? "Adding..." : "Add Tenant"}
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {/* Tenants List */}
+              <div className="space-y-4">
+                {tenants.map((tenant) => (
+                  <Card key={tenant.id}>
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-3">
+                            <h3 className="font-semibold text-lg">
+                              {tenant.firstName} {tenant.lastName}
+                            </h3>
+                            <Badge className={getStatusColor(tenant.status)}>
+                              {tenant.status}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600">
+                            <div className="flex items-center space-x-1">
+                              <Mail className="w-4 h-4" />
+                              <span>{tenant.email}</span>
+                            </div>
+                            {tenant.phone && (
+                              <div className="flex items-center space-x-1">
+                                <Phone className="w-4 h-4" />
+                                <span>{tenant.phone}</span>
+                              </div>
+                            )}
+                            {tenant.roomNumber && (
+                              <div className="flex items-center space-x-1">
+                                <Home className="w-4 h-4" />
+                                <span>Room {tenant.roomNumber}</span>
+                              </div>
+                            )}
+                          </div>
+                          {tenant.monthlyRent && (
+                            <p className="text-sm text-gray-600">
+                              Monthly Rent: ${tenant.monthlyRent}
+                            </p>
+                          )}
+                          {tenant.leaseStart && tenant.leaseEnd && (
+                            <p className="text-xs text-gray-500">
+                              Lease: {new Date(tenant.leaseStart).toLocaleDateString()} - {new Date(tenant.leaseEnd).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm">
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            <Eye className="w-4 h-4 mr-1" />
+                            View
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+                
+                {tenants.length === 0 && (
+                  <Card>
+                    <CardContent className="p-12 text-center">
+                      <div className="space-y-4">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                          <Users className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900">No Tenants Yet</h3>
+                        <p className="text-gray-600">Get started by adding your first tenant to the system.</p>
+                        <Button onClick={() => setShowAddTenantDialog(true)}>
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add First Tenant
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
           )}

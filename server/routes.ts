@@ -1001,6 +1001,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Tenant Management API endpoints
+  app.get("/api/admin/tenants", simpleAdminAuth, async (req, res) => {
+    try {
+      const tenants = await storage.getTenants();
+      res.json(tenants);
+    } catch (error) {
+      console.error("Error fetching tenants:", error);
+      res.status(500).json({ message: "Failed to fetch tenants" });
+    }
+  });
+
+  app.post("/api/admin/tenants", simpleAdminAuth, async (req, res) => {
+    try {
+      const tenantData = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        phone: req.body.phone || null,
+        roomId: req.body.roomId ? parseInt(req.body.roomId) : null,
+        monthlyRent: req.body.monthlyRent ? parseFloat(req.body.monthlyRent) : null,
+        leaseStart: req.body.leaseStart ? new Date(req.body.leaseStart) : null,
+        leaseEnd: req.body.leaseEnd ? new Date(req.body.leaseEnd) : null,
+        status: "active",
+        createdAt: new Date()
+      };
+
+      const tenant = await storage.createTenant(tenantData);
+      
+      // If assigned to a room, update room status
+      if (tenantData.roomId) {
+        const rooms = await storage.getRooms();
+        const room = rooms.find(r => r.id === tenantData.roomId);
+        if (room) {
+          await storage.updateRoomStatus(tenantData.roomId, "occupied", {
+            tenantName: `${tenantData.firstName} ${tenantData.lastName}`,
+            monthlyRent: tenantData.monthlyRent
+          });
+        }
+      }
+
+      res.json(tenant);
+    } catch (error) {
+      console.error("Error creating tenant:", error);
+      res.status(500).json({ message: "Failed to create tenant" });
+    }
+  });
+
+  app.put("/api/admin/tenants/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const tenant = await storage.updateTenant(id, req.body);
+      res.json(tenant);
+    } catch (error) {
+      console.error("Error updating tenant:", error);
+      res.status(500).json({ message: "Failed to update tenant" });
+    }
+  });
+
+  app.delete("/api/admin/tenants/:id", simpleAdminAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteTenant(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting tenant:", error);
+      res.status(500).json({ message: "Failed to delete tenant" });
+    }
+  });
+
   app.get("/api/admin/contacts", simpleAdminAuth, async (req, res) => {
     try {
       const contacts = await storage.getContacts();
