@@ -91,12 +91,13 @@ export default function AdminLogin() {
 
       if (data?.success) {
         localStorage.setItem('admin-authenticated', 'true');
-        localStorage.setItem('admin-token', data.token);
+        localStorage.setItem('admin-token', data.token || 'admin-authenticated');
         toast({
           title: "Login Successful",
           description: "Welcome to the admin dashboard",
         });
-        setLocation("/admin");
+        // Force a page reload to ensure proper authentication state
+        window.location.href = "/admin";
       } else {
         setError(data?.message || "Invalid username or password");
       }
@@ -120,7 +121,8 @@ export default function AdminLogin() {
           title: "Biometric Login Successful",
           description: "Welcome to the admin dashboard",
         });
-        setLocation("/admin");
+        // Force a page reload to ensure proper authentication state
+        window.location.href = "/admin";
       } else {
         setError(result.message);
       }

@@ -24,6 +24,7 @@ import {
 import { generateTenantQRCode, generateTenantToken, verifyTenantToken } from "./qrGenerator";
 import { aiChatBot } from "./aiChatBot";
 import { fallbackAI } from "./fallbackAI";
+import { roomRecommendationEngine } from "./roomRecommendationEngine";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -1066,6 +1067,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting tenant:", error);
       res.status(500).json({ message: "Failed to delete tenant" });
+    }
+  });
+
+  // Room Recommendation API endpoints
+  app.post("/api/admin/room-recommendations", simpleAdminAuth, async (req, res) => {
+    try {
+      const preferences = req.body;
+      const recommendations = await roomRecommendationEngine.getRecommendations(preferences, 5);
+      const explanation = roomRecommendationEngine.generateRecommendationExplanation(recommendations);
+      
+      res.json({
+        recommendations,
+        explanation,
+        totalFound: recommendations.length
+      });
+    } catch (error) {
+      console.error("Error generating room recommendations:", error);
+      res.status(500).json({ message: "Failed to generate recommendations" });
+    }
+  });
+
+  app.post("/api/admin/personalized-recommendations", simpleAdminAuth, async (req, res) => {
+    try {
+      const { preferences, tenantProfile } = req.body;
+      const recommendations = await roomRecommendationEngine.getPersonalizedRecommendations(preferences, tenantProfile);
+      const explanation = roomRecommendationEngine.generateRecommendationExplanation(recommendations);
+      
+      res.json({
+        recommendations,
+        explanation,
+        totalFound: recommendations.length,
+        type: 'personalized'
+      });
+    } catch (error) {
+      console.error("Error generating personalized recommendations:", error);
+      res.status(500).json({ message: "Failed to generate personalized recommendations" });
     }
   });
 
