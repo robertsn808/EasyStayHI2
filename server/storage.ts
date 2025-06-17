@@ -1810,7 +1810,7 @@ export class DatabaseStorage implements IStorage {
       }
     }
     
-    return query.orderBy(desc(feedback.createdAt));
+    return await query.orderBy(desc(feedback.createdAt));
   }
 
   async updateFeedback(id: number, data: Partial<InsertFeedback>): Promise<Feedback> {

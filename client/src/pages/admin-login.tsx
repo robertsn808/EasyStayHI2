@@ -78,15 +78,20 @@ export default function AdminLogin() {
     setError("");
 
     try {
-      const response = await apiRequest("POST", "/api/auth/admin-login", {
-        username,
-        password,
+      const response = await fetch("/api/auth/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
       });
 
       const data = await response.json();
 
       if (data?.success) {
         localStorage.setItem('admin-authenticated', 'true');
+        localStorage.setItem('admin-token', data.token);
         toast({
           title: "Login Successful",
           description: "Welcome to the admin dashboard",
