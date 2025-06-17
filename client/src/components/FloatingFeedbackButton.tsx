@@ -1,37 +1,43 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Lightbulb, Bug, Zap } from "lucide-react";
+import { MessageSquare, Lightbulb, Bug, Zap, Bot, FileText } from "lucide-react";
 import { FeedbackForm } from "./FeedbackForm";
+import { FeedbackChatbot } from "./FeedbackChatbot";
 
 export function FloatingFeedbackButton() {
   const [showForm, setShowForm] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
   const [showQuickActions, setShowQuickActions] = useState(false);
   const [feedbackType, setFeedbackType] = useState<"feedback" | "suggestion" | "bug_report" | "feature_request">("feedback");
 
   const quickActions = [
     {
-      type: "feedback" as const,
-      label: "Feedback",
-      icon: MessageSquare,
-      color: "bg-blue-500 hover:bg-blue-600",
+      type: "chatbot" as const,
+      label: "Chat with AI",
+      icon: Bot,
+      color: "bg-indigo-500 hover:bg-indigo-600",
+      action: () => setShowChatbot(true),
     },
     {
-      type: "suggestion" as const,
-      label: "Suggestion",
-      icon: Lightbulb,
+      type: "form" as const,
+      label: "Feedback Form",
+      icon: FileText,
+      color: "bg-blue-500 hover:bg-blue-600",
+      action: () => setShowForm(true),
+    },
+    {
+      type: "feedback" as const,
+      label: "Quick Feedback",
+      icon: MessageSquare,
       color: "bg-green-500 hover:bg-green-600",
+      action: () => handleQuickAction("feedback"),
     },
     {
       type: "bug_report" as const,
-      label: "Bug Report",
+      label: "Report Bug",
       icon: Bug,
       color: "bg-red-500 hover:bg-red-600",
-    },
-    {
-      type: "feature_request" as const,
-      label: "Feature Request",
-      icon: Zap,
-      color: "bg-purple-500 hover:bg-purple-600",
+      action: () => handleQuickAction("bug_report"),
     },
   ];
 
