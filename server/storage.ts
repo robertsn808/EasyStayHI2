@@ -12,6 +12,8 @@ import {
   guestProfiles,
   portalSecurity,
   systemNotifications,
+  feedback,
+  clientInquiries,
   invoices,
   financialReports,
   maintenanceSchedules,
@@ -48,6 +50,10 @@ import {
   type PortalSecurity,
   type InsertPortalSecurity,
   type SystemNotification,
+  type Feedback,
+  type InsertFeedback,
+  type ClientInquiry,
+  type InsertClientInquiry,
   type InsertSystemNotification,
 } from "@shared/schema";
 import { db } from "./db";
@@ -192,6 +198,16 @@ export interface IStorage {
   getBiometricCredential(credentialId: string): Promise<schema.BiometricCredential | undefined>;
   updateBiometricCredentialCounter(credentialId: string, counter: number): Promise<schema.BiometricCredential>;
   deleteBiometricCredential(credentialId: string): Promise<void>;
+
+  // Feedback System
+  createFeedback(data: InsertFeedback): Promise<Feedback>;
+  getFeedback(filters?: { status?: string; type?: string; priority?: string }): Promise<Feedback[]>;
+  updateFeedback(id: number, data: Partial<InsertFeedback>): Promise<Feedback>;
+
+  // Client Inquiries
+  createClientInquiry(data: InsertClientInquiry): Promise<ClientInquiry>;
+  getClientInquiries(filters?: { status?: string; inquiryType?: string }): Promise<ClientInquiry[]>;
+  updateClientInquiry(id: number, data: Partial<InsertClientInquiry>): Promise<ClientInquiry>;
   getAllBiometricCredentials(): Promise<schema.BiometricCredential[]>;
 
   // Financial Reporting
