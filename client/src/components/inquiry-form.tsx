@@ -93,18 +93,9 @@ export default function InquiryForm() {
   });
 
   const onSubmit = (data: ClientInquiryData) => {
-    if (!contactPreference) {
-      toast({
-        title: "Error",
-        description: "Please select a contact preference.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     const formData = {
       ...data,
-      message: `${data.message || ''}\n\nRental Period: ${selectedPeriod}\nContact Preference: ${contactPreference}`,
+      message: `${data.message || 'Rental inquiry'}\n\nRental Period: ${selectedPeriod || 'Not specified'}\nContact Preference: ${contactPreference || 'Any method'}`,
     };
     mutation.mutate(formData);
   };
