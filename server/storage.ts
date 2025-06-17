@@ -1787,6 +1787,71 @@ export class DatabaseStorage implements IStorage {
       ]
     };
   }
+
+  // Feedback System Methods
+  async createFeedback(data: InsertFeedback): Promise<Feedback> {
+    const [feedbackRecord] = await db.insert(feedback)
+      .values(data)
+      .returning();
+    return feedbackRecord;
+  }
+
+  async getFeedback(filters?: { status?: string; type?: string; priority?: string }): Promise<Feedback[]> {
+    let query = db.select().from(feedback);
+    
+    if (filters) {
+      const conditions = [];
+      if (filters.status) conditions.push(eq(feedback.status, filters.status));
+      if (filters.type) conditions.push(eq(feedback.type, filters.type));
+      if (filters.priority) conditions.push(eq(feedback.priority, filters.priority));
+      
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+    }
+    
+    return query.orderBy(desc(feedback.createdAt));
+  }
+
+  async updateFeedback(id: number, data: Partial<InsertFeedback>): Promise<Feedback> {
+    const [feedbackRecord] = await db.update(feedback)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(feedback.id, id))
+      .returning();
+    return feedbackRecord;
+  }
+
+  // Client Inquiries Methods
+  async createClientInquiry(data: InsertClientInquiry): Promise<ClientInquiry> {
+    const [inquiry] = await db.insert(clientInquiries)
+      .values(data)
+      .returning();
+    return inquiry;
+  }
+
+  async getClientInquiries(filters?: { status?: string; inquiryType?: string }): Promise<ClientInquiry[]> {
+    let query = db.select().from(clientInquiries);
+    
+    if (filters) {
+      const conditions = [];
+      if (filters.status) conditions.push(eq(clientInquiries.status, filters.status));
+      if (filters.inquiryType) conditions.push(eq(clientInquiries.inquiryType, filters.inquiryType));
+      
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+    }
+    
+    return query.orderBy(desc(clientInquiries.createdAt));
+  }
+
+  async updateClientInquiry(id: number, data: Partial<InsertClientInquiry>): Promise<ClientInquiry> {
+    const [inquiry] = await db.update(clientInquiries)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(clientInquiries.id, id))
+      .returning();
+    return inquiry;
+  }
 }
 
 export const storage = new DatabaseStorage();

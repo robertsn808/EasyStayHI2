@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { FloatingFeedbackButton } from "@/components/FloatingFeedbackButton";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import Property949 from "@/pages/property-949";

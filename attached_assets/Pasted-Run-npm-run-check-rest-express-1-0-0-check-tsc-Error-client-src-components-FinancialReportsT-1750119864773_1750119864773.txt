@@ -1,0 +1,172 @@
+Run npm run check
+> rest-express@1.0.0 check
+> tsc
+Error: client/src/components/FinancialReportsTab.tsx(54,42): error TS2339: Property 'shareUrl' does not exist on type 'Response'.
+Error: client/src/components/FinancialReportsTab.tsx(55,44): error TS2339: Property 'shareUrl' does not exist on type 'Response'.
+Error: client/src/components/FinancialReportsTab.tsx(85,16): error TS2339: Property 'downloadUrl' does not exist on type 'Response'.
+Error: client/src/components/FinancialReportsTab.tsx(86,26): error TS2339: Property 'downloadUrl' does not exist on type 'Response'.
+Error: client/src/components/FinancialReportsTab.tsx(113,35): error TS2339: Property 'occupancyRate' does not exist on type '{ totalRevenue: any; totalExpenses: any; netProfit: number; profitMargin: number; filteredPayments: any[]; filteredExpenses: any[]; }'.
+Error: client/src/components/FinancialReportsTab.tsx(116,29): error TS2339: Property 'revenueByCategory' does not exist on type '{ totalRevenue: any; totalExpenses: any; netProfit: number; profitMargin: number; filteredPayments: any[]; filteredExpenses: any[]; }'.
+Error: client/src/components/FinancialReportsTab.tsx(117,30): error TS2339: Property 'expensesByCategory' does not exist on type '{ totalRevenue: any; totalExpenses: any; netProfit: number; profitMargin: number; filteredPayments: any[]; filteredExpenses: any[]; }'.
+Error: client/src/components/FinancialReportsTab.tsx(118,35): error TS2339: Property 'monthlyData' does not exist on type '{ totalRevenue: any; totalExpenses: any; netProfit: number; profitMargin: number; filteredPayments: any[]; filteredExpenses: any[]; }'.
+Error: client/src/components/FinancialReportsTab.tsx(119,40): error TS2339: Property 'propertyComparison' does not exist on type '{ totalRevenue: any; totalExpenses: any; netProfit: number; profitMargin: number; filteredPayments: any[]; filteredExpenses: any[]; }'.
+Error: client/src/components/FinancialReportsTab.tsx(151,20): error TS2339: Property 'shareUrl' does not exist on type 'Response'.
+Error: client/src/components/FinancialReportsTab.tsx(152,54): error TS2339: Property 'shareUrl' does not exist on type 'Response'.
+Error: client/src/components/FinancialReportsTab.tsx(225,32): error TS18046: 'paymentsData' is of type 'unknown'.
+Error: client/src/components/FinancialReportsTab.tsx(225,52): error TS7006: Parameter 'payment' implicitly has an 'any' type.
+Error: client/src/components/FinancialReportsTab.tsx(230,48): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+Error: client/src/components/FinancialReportsTab.tsx(230,53): error TS7006: Parameter 'payment' implicitly has an 'any' type.
+Error: client/src/components/FinancialReportsTab.tsx(254,29): error TS18046: 'paymentsData' is of type 'unknown'.
+Error: client/src/components/FinancialReportsTab.tsx(254,49): error TS7006: Parameter 'payment' implicitly has an 'any' type.
+Error: client/src/components/FinancialReportsTab.tsx(259,29): error TS18046: 'expenseData' is of type 'unknown'.
+Error: client/src/components/FinancialReportsTab.tsx(259,48): error TS7006: Parameter 'expense' implicitly has an 'any' type.
+Error: client/src/components/FinancialReportsTab.tsx(264,45): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+Error: client/src/components/FinancialReportsTab.tsx(264,50): error TS7006: Parameter 'payment' implicitly has an 'any' type.
+Error: client/src/components/FinancialReportsTab.tsx(269,46): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+Error: client/src/components/FinancialReportsTab.tsx(269,51): error TS7006: Parameter 'expense' implicitly has an 'any' type.
+Error: client/src/components/FinancialReportsTab.tsx(290,7): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+Error: client/src/components/FinancialReportsTab.tsx(290,35): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+Error: client/src/components/FinancialReportsTab.tsx(296,21): error TS18046: 'amount' is of type 'unknown'.
+Error: client/src/components/FinancialReportsTab.tsx(514,43): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: Props): Bar', gave the following error.
+    Type '(entry: any) => any' is not assignable to type 'string'.
+  Overload 2 of 2, '(props: Props, context: any): Bar', gave the following error.
+    Type '(entry: any) => any' is not assignable to type 'string'.
+Error: client/src/components/FinancialReportsTab.tsx(514,50): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+Error: client/src/components/FinancialReportsTab.tsx(528,37): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+Error: client/src/components/FinancialReportsTab.tsx(528,97): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+Error: client/src/components/FinancialReportsTab.tsx(643,52): error TS18046: 'category.value' is of type 'unknown'.
+Error: client/src/components/HousekeepingManagement.tsx(208,18): error TS18046: 'rooms' is of type 'unknown'.
+Error: client/src/components/MaintenancePredictionTab.tsx(116,31): error TS2339: Property 'map' does not exist on type '{}'.
+Error: client/src/components/MaintenancePredictionTab.tsx(224,27): error TS2339: Property 'map' does not exist on type '{}'.
+Error: client/src/components/MaintenancePredictionTab.tsx(235,34): error TS2322: Type '"destructive" | "secondary" | "blue" | "orange"' is not assignable to type '"default" | "destructive" | "outline" | "secondary" | null | undefined'.
+  Type '"blue"' is not assignable to type '"default" | "destructive" | "outline" | "secondary" | null | undefined'.
+Error: client/src/components/MaintenancePredictionTab.tsx(289,35): error TS2339: Property 'totalEstimatedCost' does not exist on type '{}'.
+Error: client/src/components/MaintenancePredictionTab.tsx(301,34): error TS2339: Property 'urgentItems' does not exist on type '{}'.
+Error: client/src/components/MaintenancePredictionTab.tsx(313,34): error TS2339: Property 'preventiveItems' does not exist on type '{}'.
+Error: client/src/components/MaintenancePredictionTab.tsx(328,30): error TS2339: Property 'suggestions' does not exist on type '{}'.
+Error: client/src/components/MaintenancePredictionTab.tsx(330,20): error TS18046: 'costAnalysis' is of type 'unknown'.
+Error: client/src/components/PaymentHistoryTab.tsx(61,28): error TS18046: 'paymentsData' is of type 'unknown'.
+Error: client/src/components/PaymentHistoryTab.tsx(136,27): error TS7006: Parameter 'field' implicitly has an 'any' type.
+Error: client/src/components/PaymentHistoryTab.tsx(229,18): error TS18046: 'paymentsData' is of type 'unknown'.
+Error: client/src/components/QRCodeManager.tsx(31,38): error TS2339: Property 'filter' does not exist on type '{}'.
+Error: client/src/components/QRCodeManager.tsx(99,18): error TS2339: Property 'qrCodes' does not exist on type '{}'.
+Error: client/src/components/QRCodeManager.tsx(101,12): error TS2339: Property 'qrCodes' does not exist on type '{}'.
+Error: client/src/components/QRCodeManager.tsx(109,42): error TS2339: Property 'qrCodes' does not exist on type '{}'.
+Error: client/src/components/QRCodeManager.tsx(130,20): error TS2339: Property 'qrCodes' does not exist on type '{}'.
+Error: client/src/components/QRCodeManager.tsx(185,40): error TS2339: Property 'find' does not exist on type '{}'.
+Error: client/src/components/QRCodeManager.tsx(194,25): error TS2339: Property 'qrCodes' does not exist on type '{}'.
+Error: client/src/components/QRCodeManager.tsx(196,25): error TS2339: Property 'qrCodes' does not exist on type '{}'.
+Error: client/src/components/SecurityTab.tsx(115,29): error TS2339: Property 'map' does not exist on type '{}'.
+Error: client/src/components/SecurityTab.tsx(172,27): error TS2339: Property 'map' does not exist on type '{}'.
+Error: client/src/components/SecurityTab.tsx(221,26): error TS2339: Property 'map' does not exist on type '{}'.
+Error: client/src/components/SecurityTab.tsx(256,30): error TS2339: Property 'length' does not exist on type '{}'.
+Error: client/src/components/SecurityTab.tsx(265,31): error TS2339: Property 'map' does not exist on type '{}'.
+Error: client/src/components/bulletin-board.tsx(56,27): error TS2339: Property 'map' does not exist on type '{}'.
+Error: client/src/components/bulletin-board.tsx(59,67): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+  Type 'null' is not assignable to type 'string'.
+Error: client/src/components/bulletin-board.tsx(64,31): error TS2345: Argument of type 'Date' is not assignable to parameter of type 'string'.
+Error: client/src/components/bulletin-board.tsx(70,45): error TS2339: Property 'length' does not exist on type '{}'.
+Error: client/src/components/inquiry-form.tsx(31,27): error TS2345: Argument of type '{ parse: (data: any) => InsertInquiry; }' is not assignable to parameter of type 'ZodType<any, any, any>'.
+  Type '{ parse: (data: any) => InsertInquiry; }' is missing the following properties from type 'ZodType<any, any, any>': _type, _output, _input, _def, and 33 more.
+Error: client/src/components/inquiry-form.tsx(156,33): error TS2345: Argument of type '"moveInDate"' is not assignable to parameter of type '"id" | "name" | "status" | "email" | "phone" | "message" | "checkInDate" | "checkOutDate" | "estimatedCost" | "createdAt" | "updatedAt" | "contactPreference" | "numberOfGuests" | "roomPreference"'.
+Error: client/src/components/public-room-display.tsx(76,17): error TS2339: Property 'map' does not exist on type '{}'.
+Error: client/src/pages/admin-dashboard.tsx(8,3): error TS2305: Module '"lucide-react"' has no exported member 'Inventory'.
+Error: client/src/pages/admin-dashboard.tsx(17,8): error TS2613: Module '"/home/runner/work/EasyStayHI2/EasyStayHI2/client/src/components/SettingsTab"' has no default export. Did you mean to use 'import { SettingsTab } from "/home/runner/work/EasyStayHI2/EasyStayHI2/client/src/components/SettingsTab"' instead?
+Error: client/src/pages/admin-dashboard.tsx(100,18): error TS2339: Property 'length' does not exist on type '{}'.
+Error: client/src/pages/admin-dashboard.tsx(101,21): error TS2339: Property 'filter' does not exist on type '{}'.
+Error: client/src/pages/admin-dashboard.tsx(102,22): error TS2339: Property 'filter' does not exist on type '{}'.
+Error: client/src/pages/admin-dashboard.tsx(103,24): error TS2339: Property 'filter' does not exist on type '{}'.
+Error: client/src/pages/admin-dashboard.tsx(104,21): error TS2339: Property 'filter' does not exist on type '{}'.
+Error: client/src/pages/admin-dashboard.tsx(108,44): error TS2339: Property 'filter' does not exist on type '{}'.
+Error: client/src/pages/admin-dashboard.tsx(116,41): error TS2339: Property 'filter' does not exist on type '{}'.
+Error: client/src/pages/admin-dashboard.tsx(236,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(237,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(238,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(239,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(240,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(241,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(242,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(243,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(244,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(245,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(246,17): error TS2740: Type '{}' is missing the following properties from type 'any[]': length, pop, push, concat, and 35 more.
+Error: client/src/pages/admin-dashboard.tsx(295,22): error TS2552: Cannot find name 'User'. Did you mean 'Users'?
+Error: client/src/pages/admin-dashboard.tsx(312,18): error TS2304: Cannot find name 'LogOut'.
+Error: client/src/pages/admin-dashboard.tsx(385,20): error TS2304: Cannot find name 'MessageSquare'.
+Error: client/src/pages/admin-dashboard.tsx(507,24): error TS2304: Cannot find name 'MessageSquare'.
+Error: client/src/pages/admin-dashboard.tsx(555,20): error TS2304: Cannot find name 'Megaphone'.
+Error: client/src/pages/admin-dashboard.tsx(565,20): error TS2552: Cannot find name 'Contact'. Did you mean 'contacts'?
+Error: client/src/pages/enterprise-dashboard-complete.tsx(890,9): error TS2451: Cannot redeclare block-scoped variable 'renderPropertiesTab'.
+Error: client/src/pages/enterprise-dashboard-complete.tsx(992,9): error TS2451: Cannot redeclare block-scoped variable 'renderPropertiesTab'.
+Error: client/src/pages/enterprise-dashboard-working.tsx(95,33): error TS2339: Property 'totalRooms' does not exist on type '{}'.
+Error: client/src/pages/enterprise-dashboard-working.tsx(96,36): error TS2339: Property 'occupiedRooms' does not exist on type '{}'.
+Error: client/src/pages/enterprise-dashboard-working.tsx(97,37): error TS2339: Property 'availableRooms' does not exist on type '{}'.
+Error: client/src/pages/enterprise-dashboard-working.tsx(100,41): error TS2339: Property 'thisMonthRevenue' does not exist on type '{}'.
+Error: client/src/pages/inquiry-complete.tsx(41,43): error TS2345: Argument of type '{ method: string; body: any; }' is not assignable to parameter of type 'string'.
+Error: client/src/pages/inquiry.tsx(59,59): error TS2345: Argument of type '{ method: string; headers: { 'Content-Type': string; }; body: string; }' is not assignable to parameter of type 'string'.
+Error: client/src/pages/inquiry.tsx(364,29): error TS2322: Type 'Dispatch<SetStateAction<boolean>>' is not assignable to type '(checked: CheckedState) => void'.
+  Types of parameters 'value' and 'checked' are incompatible.
+    Type 'CheckedState' is not assignable to type 'SetStateAction<boolean>'.
+      Type '"indeterminate"' is not assignable to type 'SetStateAction<boolean>'.
+Error: client/src/pages/marketing-dashboard.tsx(124,65): error TS2345: Argument of type '{ method: string; headers: { 'Content-Type': string; 'x-admin-token': string; }; body: string; }' is not assignable to parameter of type 'string'.
+Error: client/src/pages/marketing-dashboard.tsx(162,63): error TS2345: Argument of type '{ method: string; headers: { 'Content-Type': string; 'x-admin-token': string; }; body: string; }' is not assignable to parameter of type 'string'.
+Error: client/src/pages/modern-dashboard.tsx(152,7): error TS2353: Object literal may only specify known properties, and '"todos"' does not exist in type 'Record<TabType, string>'.
+Error: client/src/pages/modern-dashboard.tsx(166,10): error TS2304: Cannot find name 'AdminTabs'.
+Error: client/src/pages/modern-dashboard.tsx(189,8): error TS2304: Cannot find name 'ExpandableSideNav'.
+Error: client/src/pages/modern-dashboard.tsx(197,38): error TS2304: Cannot find name 'announcements'.
+Error: client/src/pages/modern-dashboard.tsx(197,55): error TS2304: Cannot find name 'announcements'.
+Error: client/src/pages/modern-dashboard.tsx(198,39): error TS2304: Cannot find name 'calendarEvents'.
+Error: client/src/pages/modern-dashboard.tsx(198,57): error TS2304: Cannot find name 'calendarEvents'.
+Error: client/src/pages/modern-dashboard.tsx(199,33): error TS2304: Cannot find name 'contacts'.
+Error: client/src/pages/modern-dashboard.tsx(199,45): error TS2304: Cannot find name 'contacts'.
+Error: client/src/pages/modern-dashboard.tsx(200,34): error TS2304: Cannot find name 'inventory'.
+Error: client/src/pages/modern-dashboard.tsx(200,47): error TS2304: Cannot find name 'inventory'.
+Error: client/src/pages/modern-dashboard.tsx(201,33): error TS2304: Cannot find name 'receipts'.
+Error: client/src/pages/modern-dashboard.tsx(201,45): error TS2304: Cannot find name 'receipts'.
+Error: client/src/pages/modern-dashboard.tsx(202,30): error TS2304: Cannot find name 'todos'.
+Error: client/src/pages/modern-dashboard.tsx(202,39): error TS2304: Cannot find name 'todos'.
+Error: client/src/pages/modern-dashboard.tsx(234,22): error TS2304: Cannot find name 'pendingInquiries'.
+Error: client/src/pages/modern-dashboard.tsx(237,28): error TS2304: Cannot find name 'pendingInquiries'.
+Error: client/src/pages/property-934.tsx(44,20): error TS18046: 'buildings' is of type 'unknown'.
+Error: client/src/pages/property-934.tsx(45,25): error TS18046: 'rooms' is of type 'unknown'.
+Error: client/src/pages/property-934.tsx(57,39): error TS18046: 'maintenanceRequests' is of type 'unknown'.
+Error: client/src/pages/property-934.tsx(65,28): error TS18046: 'payments' is of type 'unknown'.
+Error: client/src/pages/property-934.tsx(129,50): error TS18046: 'rooms' is of type 'unknown'.
+Error: client/src/pages/property-934.tsx(129,61): error TS7006: Parameter 'r' implicitly has an 'any' type.
+Error: client/src/pages/property-934.tsx(265,65): error TS18046: 'maintenanceRequests' is of type 'unknown'.
+Error: client/src/pages/property-934.tsx(315,39): error TS7006: Parameter 'room' implicitly has an 'any' type.
+Error: client/src/pages/property-934.tsx(356,53): error TS7006: Parameter 'request' implicitly has an 'any' type.
+Error: client/src/pages/property-934.tsx(357,53): error TS7006: Parameter 'r' implicitly has an 'any' type.
+Error: client/src/pages/property-934.tsx(399,42): error TS7006: Parameter 'payment' implicitly has an 'any' type.
+Error: client/src/pages/property-934.tsx(400,53): error TS7006: Parameter 'r' implicitly has an 'any' type.
+Error: client/src/pages/property-934.tsx(438,20): error TS18046: 'rooms' is of type 'unknown'.
+Error: client/src/pages/property-934.tsx(438,33): error TS7006: Parameter 'room' implicitly has an 'any' type.
+Error: client/src/pages/property-934.tsx(438,74): error TS7006: Parameter 'room' implicitly has an 'any' type.
+Error: client/src/pages/property-934.tsx(473,29): error TS18046: 'rooms' is of type 'unknown'.
+Error: client/src/pages/property-934.tsx(473,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+Error: client/src/pages/property-949.tsx(157,45): error TS18046: 'rooms' is of type 'unknown'.
+Error: client/src/pages/property-949.tsx(157,56): error TS7006: Parameter 'r' implicitly has an 'any' type.
+Error: client/src/pages/property-949.tsx(265,65): error TS18046: 'maintenanceRequests' is of type 'unknown'.
+Error: client/src/pages/property-949.tsx(439,20): error TS18046: 'rooms' is of type 'unknown'.
+Error: client/src/pages/property-949.tsx(439,33): error TS7006: Parameter 'room' implicitly has an 'any' type.
+Error: client/src/pages/property-949.tsx(439,74): error TS7006: Parameter 'room' implicitly has an 'any' type.
+Error: client/src/pages/property-949.tsx(474,24): error TS18046: 'rooms' is of type 'unknown'.
+Error: client/src/pages/property-949.tsx(474,35): error TS7006: Parameter 'r' implicitly has an 'any' type.
+Error: client/src/pages/security-dashboard.tsx(161,69): error TS2345: Argument of type '{ method: string; headers: { 'Content-Type': string; 'x-admin-token': string; }; body: string; }' is not assignable to parameter of type 'string'.
+Error: client/src/pages/security-dashboard.tsx(201,84): error TS2345: Argument of type '{ method: string; headers: { 'Content-Type': string; 'x-admin-token': string; }; body: string; }' is not assignable to parameter of type 'string'.
+Error: server/replitAuth.ts(60,28): error TS2345: Argument of type '{ id: any; email: any; firstName: any; lastName: any; profileImageUrl: any; }' is not assignable to parameter of type '{ id: string; email: string | null; firstName: string | null; lastName: string | null; profileImageUrl: string | null; createdAt: Date | null; updatedAt: Date | null; }'.
+  Type '{ id: any; email: any; firstName: any; lastName: any; profileImageUrl: any; }' is missing the following properties from type '{ id: string; email: string | null; firstName: string | null; lastName: string | null; profileImageUrl: string | null; createdAt: Date | null; updatedAt: Date | null; }': createdAt, updatedAt
+Error: server/replitAuth.ts(84,20): error TS2345: Argument of type '{}' is not assignable to parameter of type 'false | User | null | undefined'.
+Error: server/routes.ts(1815,38): error TS2339: Property 'createFeedback' does not exist on type 'DatabaseStorage'.
+Error: server/routes.ts(1838,38): error TS2339: Property 'getFeedback' does not exist on type 'DatabaseStorage'.
+Error: server/routes.ts(1854,38): error TS2339: Property 'updateFeedback' does not exist on type 'DatabaseStorage'.
+Error: server/routes.ts(1871,37): error TS2551: Property 'createClientInquiry' does not exist on type 'DatabaseStorage'. Did you mean 'createInquiry'?
+Error: server/routes.ts(1894,39): error TS2551: Property 'getClientInquiries' does not exist on type 'DatabaseStorage'. Did you mean 'getInquiries'?
+Error: server/routes.ts(1909,37): error TS2339: Property 'updateClientInquiry' does not exist on type 'DatabaseStorage'.
+Error: server/storage.ts(277,14): error TS2420: Class 'DatabaseStorage' incorrectly implements interface 'IStorage'.
+  Type 'DatabaseStorage' is missing the following properties from type 'IStorage': createFeedback, getFeedback, updateFeedback, createClientInquiry, and 2 more.
+Error: server/vite.ts(39,5): error TS2322: Type '{ middlewareMode: boolean; hmr: { server: Server<typeof IncomingMessage, typeof ServerResponse>; }; allowedHosts: boolean; }' is not assignable to type 'ServerOptions'.
+  Types of property 'allowedHosts' are incompatible.
+    Type 'boolean' is not assignable to type 'true | string[] | undefined'.
+Error: Process completed with exit code 2.
