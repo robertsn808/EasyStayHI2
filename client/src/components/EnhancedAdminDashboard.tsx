@@ -464,6 +464,38 @@ export default function EnhancedAdminDashboard() {
                 </Card>
               </div>
 
+              {/* Quick Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => {
+                      console.log("Quick Actions Add New Tenant clicked");
+                      setShowAddTenantDialog(true);
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add New Tenant
+                  </Button>
+                  <Button className="w-full justify-start" variant="outline">
+                    <Wrench className="h-4 w-4 mr-2" />
+                    Schedule Maintenance
+                  </Button>
+                  <Button className="w-full justify-start" variant="outline">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Generate Report
+                  </Button>
+                  <Button className="w-full justify-start" variant="outline">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Send Announcement
+                  </Button>
+                </CardContent>
+              </Card>
+
               {/* Recent Activity */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
@@ -750,132 +782,13 @@ export default function EnhancedAdminDashboard() {
                   <h2 className="text-2xl font-bold text-gray-900">Tenant Management</h2>
                   <p className="text-gray-600">Manage tenant information and room assignments</p>
                 </div>
-                <Dialog open={showAddTenantDialog} onOpenChange={setShowAddTenantDialog}>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add New Tenant
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Add New Tenant</DialogTitle>
-                      <DialogDescription>
-                        Enter tenant details and assign to a room
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={(e) => {
-                      e.preventDefault();
-                      const formData = {
-                        firstName: tenantForm.firstName,
-                        lastName: tenantForm.lastName,
-                        email: tenantForm.email,
-                        phone: tenantForm.phone,
-                        roomId: tenantForm.roomId ? parseInt(tenantForm.roomId) : null,
-                        monthlyRent: tenantForm.monthlyRent ? parseFloat(tenantForm.monthlyRent) : null,
-                        leaseStart: tenantForm.leaseStart || null,
-                        leaseEnd: tenantForm.leaseEnd || null
-                      };
-                      createTenantMutation.mutate(formData);
-                    }} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="firstName">First Name *</Label>
-                          <Input
-                            id="firstName"
-                            value={tenantForm.firstName}
-                            onChange={(e) => setTenantForm({...tenantForm, firstName: e.target.value})}
-                            placeholder="John"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="lastName">Last Name *</Label>
-                          <Input
-                            id="lastName"
-                            value={tenantForm.lastName}
-                            onChange={(e) => setTenantForm({...tenantForm, lastName: e.target.value})}
-                            placeholder="Doe"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={tenantForm.email}
-                          onChange={(e) => setTenantForm({...tenantForm, email: e.target.value})}
-                          placeholder="john.doe@example.com"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="phone">Phone</Label>
-                        <Input
-                          id="phone"
-                          value={tenantForm.phone}
-                          onChange={(e) => setTenantForm({...tenantForm, phone: e.target.value})}
-                          placeholder="(808) 555-0123"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="roomId">Assign Room</Label>
-                        <Select value={tenantForm.roomId} onValueChange={(value) => setTenantForm({...tenantForm, roomId: value})}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a room" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {rooms.filter(room => room.status === 'available').map((room) => (
-                              <SelectItem key={room.id} value={room.id.toString()}>
-                                Room {room.number}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="monthlyRent">Monthly Rent</Label>
-                        <Input
-                          id="monthlyRent"
-                          type="number"
-                          value={tenantForm.monthlyRent}
-                          onChange={(e) => setTenantForm({...tenantForm, monthlyRent: e.target.value})}
-                          placeholder="1200"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="leaseStart">Lease Start</Label>
-                          <Input
-                            id="leaseStart"
-                            type="date"
-                            value={tenantForm.leaseStart}
-                            onChange={(e) => setTenantForm({...tenantForm, leaseStart: e.target.value})}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="leaseEnd">Lease End</Label>
-                          <Input
-                            id="leaseEnd"
-                            type="date"
-                            value={tenantForm.leaseEnd}
-                            onChange={(e) => setTenantForm({...tenantForm, leaseEnd: e.target.value})}
-                          />
-                        </div>
-                      </div>
-                      <div className="flex justify-end space-x-2">
-                        <Button type="button" variant="outline" onClick={() => setShowAddTenantDialog(false)}>
-                          Cancel
-                        </Button>
-                        <Button type="submit" disabled={createTenantMutation.isPending}>
-                          {createTenantMutation.isPending ? "Adding..." : "Add Tenant"}
-                        </Button>
-                      </div>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <Button onClick={() => {
+                  console.log("Tenants tab Add New Tenant button clicked");
+                  setShowAddTenantDialog(true);
+                }}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add New Tenant
+                </Button>
               </div>
 
               {/* Tenants List */}
@@ -986,6 +899,131 @@ export default function EnhancedAdminDashboard() {
           )}
         </main>
       </div>
+
+      {/* Add New Tenant Dialog - Global */}
+      <Dialog open={showAddTenantDialog} onOpenChange={setShowAddTenantDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Tenant</DialogTitle>
+            <DialogDescription>
+              Enter tenant details and assign to a room
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = {
+              firstName: tenantForm.firstName,
+              lastName: tenantForm.lastName,
+              email: tenantForm.email,
+              phone: tenantForm.phone,
+              roomId: tenantForm.roomId ? parseInt(tenantForm.roomId) : null,
+              monthlyRent: tenantForm.monthlyRent ? parseFloat(tenantForm.monthlyRent) : null,
+              leaseStart: tenantForm.leaseStart || null,
+              leaseEnd: tenantForm.leaseEnd || null
+            };
+            createTenantMutation.mutate(formData);
+          }} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName">First Name *</Label>
+                <Input
+                  id="firstName"
+                  value={tenantForm.firstName}
+                  onChange={(e) => setTenantForm({...tenantForm, firstName: e.target.value})}
+                  placeholder="John"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="lastName">Last Name *</Label>
+                <Input
+                  id="lastName"
+                  value={tenantForm.lastName}
+                  onChange={(e) => setTenantForm({...tenantForm, lastName: e.target.value})}
+                  placeholder="Doe"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="email">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={tenantForm.email}
+                onChange={(e) => setTenantForm({...tenantForm, email: e.target.value})}
+                placeholder="john.doe@example.com"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={tenantForm.phone}
+                onChange={(e) => setTenantForm({...tenantForm, phone: e.target.value})}
+                placeholder="(808) 555-0123"
+              />
+            </div>
+            <div>
+              <Label htmlFor="roomId">Room *</Label>
+              <Select value={tenantForm.roomId} onValueChange={(value) => setTenantForm({...tenantForm, roomId: value})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a room" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(rooms || []).filter(room => room.status === 'available').map((room: any) => (
+                    <SelectItem key={room.id} value={room.id.toString()}>
+                      Room {room.number} - {room.size} (${room.rentalRate}/month)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="monthlyRent">Monthly Rent *</Label>
+              <Input
+                id="monthlyRent"
+                type="number"
+                step="0.01"
+                value={tenantForm.monthlyRent}
+                onChange={(e) => setTenantForm({...tenantForm, monthlyRent: e.target.value})}
+                placeholder="1200.00"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="leaseStart">Lease Start</Label>
+                <Input
+                  id="leaseStart"
+                  type="date"
+                  value={tenantForm.leaseStart}
+                  onChange={(e) => setTenantForm({...tenantForm, leaseStart: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label htmlFor="leaseEnd">Lease End</Label>
+                <Input
+                  id="leaseEnd"
+                  type="date"
+                  value={tenantForm.leaseEnd}
+                  onChange={(e) => setTenantForm({...tenantForm, leaseEnd: e.target.value})}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button type="button" variant="outline" onClick={() => setShowAddTenantDialog(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={createTenantMutation.isPending}>
+                {createTenantMutation.isPending ? "Adding..." : "Add Tenant"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
