@@ -197,6 +197,7 @@ export default function EnhancedAdminDashboard() {
   // Create tenant mutation
   const createTenantMutation = useMutation({
     mutationFn: async (tenantData: any) => {
+      console.log("Submitting tenant data:", tenantData);
       const response = await fetch("/api/admin/tenants", {
         method: "POST",
         headers: {
@@ -205,7 +206,12 @@ export default function EnhancedAdminDashboard() {
         },
         body: JSON.stringify(tenantData),
       });
-      if (!response.ok) throw new Error("Failed to create tenant");
+      console.log("Response status:", response.status);
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("Error response:", errorData);
+        throw new Error(`Failed to create tenant: ${errorData}`);
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -760,7 +766,17 @@ export default function EnhancedAdminDashboard() {
                     </DialogHeader>
                     <form onSubmit={(e) => {
                       e.preventDefault();
-                      createTenantMutation.mutate(tenantForm);
+                      const formData = {
+                        firstName: tenantForm.firstName,
+                        lastName: tenantForm.lastName,
+                        email: tenantForm.email,
+                        phone: tenantForm.phone,
+                        roomId: tenantForm.roomId ? parseInt(tenantForm.roomId) : null,
+                        monthlyRent: tenantForm.monthlyRent ? parseFloat(tenantForm.monthlyRent) : null,
+                        leaseStart: tenantForm.leaseStart || null,
+                        leaseEnd: tenantForm.leaseEnd || null
+                      };
+                      createTenantMutation.mutate(formData);
                     }} className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
