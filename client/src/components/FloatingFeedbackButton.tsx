@@ -55,7 +55,10 @@ export function FloatingFeedbackButton() {
           {quickActions.map((action) => (
             <Button
               key={action.type}
-              onClick={() => handleQuickAction(action.type)}
+              onClick={() => {
+                action.action();
+                setShowQuickActions(false);
+              }}
               className={`${action.color} text-white shadow-lg transition-all duration-200 transform hover:scale-105`}
               size="sm"
             >
@@ -88,6 +91,12 @@ export function FloatingFeedbackButton() {
         isOpen={showForm}
         onClose={() => setShowForm(false)}
         defaultType={feedbackType}
+      />
+
+      {/* Feedback Chatbot */}
+      <FeedbackChatbot
+        isOpen={showChatbot}
+        onClose={() => setShowChatbot(false)}
       />
     </>
   );
