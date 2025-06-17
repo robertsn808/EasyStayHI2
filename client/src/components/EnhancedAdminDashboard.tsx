@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import RoomRecommendationSystem from "./RoomRecommendationSystem";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,6 +29,7 @@ import {
   Trash2,
   CheckCircle,
   Clock,
+  Brain,
   AlertCircle,
   TrendingUp,
   Home,
@@ -371,6 +373,14 @@ export default function EnhancedAdminDashboard() {
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 Calendar
+              </Button>
+              <Button
+                variant={activeTab === "recommendations" ? "default" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActiveTab("recommendations")}
+              >
+                <Brain className="w-4 h-4 mr-2" />
+                AI Recommendations
               </Button>
               <Button
                 variant={activeTab === "settings" ? "default" : "ghost"}
@@ -929,6 +939,12 @@ export default function EnhancedAdminDashboard() {
                   </Card>
                 )}
               </div>
+            </div>
+          )}
+
+          {activeTab === "recommendations" && (
+            <div className="space-y-6">
+              <RoomRecommendationSystem />
             </div>
           )}
 
