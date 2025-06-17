@@ -191,7 +191,7 @@ export default function InquiryForm() {
             <Label className="block text-sm font-medium text-gray-700 mb-2">
               Rental Period
             </Label>
-            <Select value={selectedPeriod} onValueChange={setSelectedPeriod} required>
+            <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
               <SelectTrigger>
                 <SelectValue placeholder="Select rental period..." />
               </SelectTrigger>
